@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tylos Labour · Time sheets &amp; agency payroll</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f2a44'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='17' fill='%2357d3c3' text-anchor='middle'%3ET%3C/text%3E%3C/svg%3E">
+<style>
+:root{--ink:#14202e;--muted:#5d6b7a;--line:#e2e7ec;--bg:#f3f5f8;--card:#fff;--navy:#0f2a44;--teal:#0e7c74;--teal2:#57d3c3;--warn:#b86a00;--warnbg:#fff6e5;--err:#b42318;--errbg:#fdecea;--ok:#127a3e;--okbg:#e8f6ee;--r:10px;
+--gAir:#1d5fbf;--gInsight:#0e7c74;--gCOR:#7a3fb5;--gIn:#b7791f;--g0:#4a5a6a;--gIg:#98a2ad;--gNew:#b42318}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif}
+svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+h2{font-size:17px;margin:0 0 4px}h3{font-size:15px;margin:0}small{font-size:12px}.small{font-size:12.5px}.muted{color:var(--muted)}.c{text-align:center}.r{text-align:right}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;padding:10px 22px;background:var(--navy);color:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.brand{display:flex;align-items:center;gap:10px}.brand b{display:block;font-size:15px;letter-spacing:.2px}.brand small{color:#a9bccd}.logo{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#123a5c,#0e7c74);color:var(--teal2);font-weight:800;font-size:18px}
+.brand.big .logo{width:46px;height:46px;font-size:24px}.brand.big b{font-size:20px;color:var(--ink)}.brand.big small{color:var(--muted)}
+.tabs{display:flex;gap:6px;flex:1}.tabs button{display:flex;align-items:center;gap:8px;padding:9px 16px;border:0;border-radius:9px;background:transparent;color:#c9d6e2;font:inherit;font-weight:600;cursor:pointer}
+.tabs button:hover{background:rgba(255,255,255,.08);color:#fff}.tabs button.on{background:#fff;color:var(--navy)}
+.top-r{display:flex;align-items:center;gap:10px}.saved{opacity:0;transition:.3s;color:var(--teal2);font-size:12px}.saved.on{opacity:1}
+main{max-width:1500px;margin:0 auto;padding:20px 22px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+.card.sub{box-shadow:none;background:#fbfcfd}.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.steps{display:grid;grid-template-columns:1fr 1.25fr 1.25fr;gap:16px}.step{margin:0 0 16px}.step-h{display:flex;gap:10px;align-items:center;margin-bottom:12px}.step-h small{display:block;color:var(--muted)}
+.n{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700}
+.fld{display:flex;flex-direction:column;gap:4px;margin:6px 0}.fld>span{font-size:12px;color:var(--muted);font-weight:600}.fld.inline{flex-direction:row;align-items:center;gap:10px}.fld.inline>span{min-width:230px}
+input,select{font:inherit;color:inherit;border:1px solid #cfd7df;border-radius:7px;padding:6px 8px;background:#fff;min-width:0}input:focus,select:focus{outline:2px solid #9fd8d1;border-color:var(--teal)}
+input[type=date]{padding:8px 10px;font-size:15px}input.xs{width:70px}input.sm{width:120px}input.num{width:90px;text-align:right}input.search{width:240px}
+.drop{display:flex;align-items:center;gap:12px;padding:16px;border:2px dashed #c3cdd7;border-radius:9px;cursor:pointer;color:var(--muted);transition:.15s}.drop:hover,.drop.over{border-color:var(--teal);background:#f0faf8;color:var(--ink)}.drop input{display:none}.drop svg{width:26px;height:26px;flex:none;color:var(--teal)}.drop.slim{padding:10px 14px}
+.wbline{margin:8px 0 0}.pill{display:inline-block;padding:1px 8px;border-radius:20px;background:#eef2f5;color:var(--muted);font-size:11.5px}.pill.ok{background:var(--okbg);color:var(--ok)}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chip{border:1px solid #cfd7df;background:#fff;border-radius:20px;padding:4px 10px;font:inherit;font-size:12.5px;cursor:pointer}.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}.alert.sm{padding:4px 10px;margin:0}.chip:hover{border-color:var(--teal);color:var(--teal)}.chip.sm{padding:2px 8px}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid #c6d0da;background:#fff;color:var(--ink);border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}.btn.primary:hover{background:#0b6a63}.btn.ghost{background:transparent}.btn.sm{padding:5px 10px;font-size:12.5px}.btn.wide{width:100%;justify-content:center;padding:11px}.btn:disabled{opacity:.5;cursor:not-allowed}.btn.danger{color:var(--err);border-color:#f0c4c0}
+.top .btn.ghost{color:#c9d6e2;border-color:rgba(255,255,255,.25)}.icon{border:0;background:transparent;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;font-size:15px}.icon:hover{background:#eef2f5;color:var(--err)}
+.empty{display:flex;align-items:center;gap:14px;color:var(--muted)}.empty svg{width:34px;height:34px;color:#b8c3ce}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}.bulk{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.seg{display:flex;border:1px solid #cfd7df;border-radius:8px;overflow:hidden}.seg button{border:0;background:#fff;padding:6px 11px;font:inherit;font-size:12.5px;cursor:pointer;border-right:1px solid #e3e8ed}.seg button:last-child{border-right:0}.seg button.on{background:var(--navy);color:#fff}.seg i{font-style:normal;opacity:.65;margin-left:3px}
+.totals{display:flex;gap:6px;flex-wrap:wrap}.tot{padding:4px 10px;border-radius:8px;background:#eef2f5;font-size:12.5px;border-left:4px solid var(--g0)}
+.tbl-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;max-height:70vh}
+table.grid{border-collapse:separate;border-spacing:0;width:100%;font-size:13px}table.grid th{position:sticky;top:0;background:#f6f8fa;text-align:left;font-weight:600;color:#3c4a58;padding:8px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1}table.grid th.r{text-align:right}
+table.grid td{padding:5px 8px;border-bottom:1px solid #eef1f4;vertical-align:middle}table.grid tr:hover td{background:#fafcfd}
+.confirm input[type=time]{width:96px;padding:4px 6px}.confirm select{padding:4px 6px;max-width:170px}.confirm .prof{width:150px;font-size:12px}
+.confirm tr.off td{opacity:.5}.confirm tr.off td:nth-child(2){opacity:1}.confirm tr.warn td{background:#fffaf0}.confirm tr.bad td{background:#fff3f2}
+.nm b{display:block;white-space:nowrap}.nm small{display:block;color:var(--muted)}.raw{font-variant-numeric:tabular-nums;white-space:nowrap;color:#3c4a58}.paid{white-space:nowrap;font-variant-numeric:tabular-nums}
+.hrs{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}.hrs small{display:block;font-weight:500;color:var(--warn);font-size:11px}
+.fl{min-width:300px}table.confirm{min-width:1480px}.confirm select[data-k=status]{width:118px}.confirm select[data-k=group]{width:104px}.flag{display:flex;gap:4px;align-items:flex-start;font-size:11.5px;color:var(--warn);margin-bottom:2px}.flag svg{width:13px;height:13px;flex:none;margin-top:2px}.flag.f-early,.flag.f-late{color:#5d6b7a}.flag.f-dup,.flag.f-kept{color:var(--muted)}.flag.f-kept{color:#1d5fbf}.flag .chip{margin-left:4px;color:var(--teal);border-color:var(--teal)}.flag.f-new,.flag.f-short,.flag.f-auto{color:var(--err)}
+.rem{width:100%;font-size:12px;padding:3px 6px;border-color:#e3e8ed}
+.sw{position:relative;display:inline-block;width:36px;height:20px}.sw input{opacity:0;width:0;height:0}.sw i{position:absolute;inset:0;background:#cdd5dd;border-radius:20px;transition:.15s;cursor:pointer}.sw i:before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}.sw input:checked+i{background:var(--teal)}.sw input:checked+i:before{transform:translateX(16px)}
+select.g{font-weight:600;border-left:4px solid var(--g0)}
+.g-Air{border-left-color:var(--gAir)!important}.g-Insight{border-left-color:var(--gInsight)!important}.g-COR{border-left-color:var(--gCOR)!important}.g-Inhouse{border-left-color:var(--gIn)!important}.g-0hour{border-left-color:var(--g0)!important}.g-Ignore{border-left-color:var(--gIg)!important}.g-New{border-left-color:var(--gNew)!important}
+.dot{display:inline-block;width:10px;height:10px;border-radius:3px;border-left:10px solid;margin-right:6px;vertical-align:-1px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12px;color:var(--muted)}
+.addp{margin-top:10px}.addp select{min-width:300px}
+.gen{display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}.gen-btns{display:flex;gap:10px;flex-wrap:wrap}.gen .btn.primary{padding:11px 18px;font-size:14.5px}
+.alert{display:flex;gap:10px;padding:10px 12px;border-radius:8px;margin:8px 0;font-size:13px}.alert ul{margin:4px 0 0;padding-left:18px}.alert.info{background:#eaf3fb;color:#123a5c}.alert.warn{background:var(--warnbg);color:#6b4100}.alert.err{background:var(--errbg);color:var(--err)}.alert svg{flex:none}
+.alert.first{margin-bottom:16px;align-items:center}.alert.first .btn{margin-left:8px}.ok-line{color:var(--ok);margin:6px 0}
+.logent{border-top:1px solid var(--line);padding:8px 0}.logent ul{margin:4px 0;padding-left:18px;font-size:12.5px}.logent li.w{color:var(--warn)}
+.agency{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}.agency .card-h{margin-bottom:8px;align-items:center}
+.row{display:flex;align-items:flex-end;flex-wrap:wrap}.gap{gap:14px}
+.setup{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start}.side{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:8px}
+.side button{text-align:left;border:0;background:transparent;padding:9px 12px;border-radius:7px;font:inherit;cursor:pointer;color:#3c4a58}.side button:hover{background:#f1f4f7}.side button.on{background:#e6f4f2;color:var(--teal);font-weight:700}
+table.edit input{border-color:transparent;background:transparent;width:100%;min-width:90px}table.edit input:hover{border-color:#dfe5ea}table.edit input:focus{background:#fff;border-color:var(--teal)}table.edit input[type=time]{min-width:96px}table.edit input.xs{min-width:70px}table.edit select{max-width:180px}table.edit input[data-k=name],table.edit input[data-k=display]{min-width:170px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(560px,1fr));gap:14px}.rule{margin:0}.rule-h{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}.rule-h .title{font-weight:700;font-size:15px;flex:1;border-color:transparent;background:transparent}.rule-h .title:hover{border-color:#dfe5ea}
+.rgrid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px}fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:0}legend{font-weight:700;font-size:12px;color:var(--teal);padding:0 4px;text-transform:uppercase;letter-spacing:.4px}
+.rgrid label{display:block;font-size:12.5px;margin:5px 0}.rgrid select{font-size:12.5px;padding:3px 5px}.ck{display:flex!important;gap:7px;align-items:flex-start}.ck input{margin-top:3px}
+.note{display:flex;gap:8px;align-items:center;margin:8px 0;font-size:12.5px;color:var(--muted)}.note input{flex:1;font-size:12.5px}
+.tester{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:#eef7f6;border-radius:8px;padding:8px 10px;font-size:12.5px}.tester input{padding:3px 5px;width:92px}.tester .res{margin-left:auto}.tester .big{font-size:15px;color:var(--teal)}
+fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:8px}form.box legend{display:block;margin-bottom:6px}fieldset.box label.ck{margin:6px 0}
+.login{min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 20% 10%,#16416a 0,#0f2a44 55%,#0a1d30 100%)}.login-card{width:360px;padding:28px}.login-card .brand{margin-bottom:18px}
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:50}.toast{background:var(--navy);color:#fff;padding:10px 14px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px;font-size:13px;transition:.35s}.toast.warn{background:#7a4b00}.toast.err{background:var(--err)}.toast.out{opacity:0;transform:translateY(8px)}.toast svg{stroke:var(--teal2)}
+@media (max-width:1100px){.steps{grid-template-columns:1fr}.setup{grid-template-columns:1fr}.side{position:static;flex-direction:row;flex-wrap:wrap}.rgrid{grid-template-columns:1fr}.rules{grid-template-columns:1fr}.tabs span{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>This page needs JavaScript.</noscript>
+<script>/* Tylos Labour engine — zip/xlsx patching + payroll rules. No dependencies. */
+(function (G) {
+  'use strict';
+  const TL = {};
+
+  /* ---------------- CRC32 ---------------- */
+  const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  function crc32(buf) { let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+
+  async function streamBytes(bytes, stream) {
+    const s = new Blob([bytes]).stream().pipeThrough(stream);
+    return new Uint8Array(await new Response(s).arrayBuffer());
+  }
+  const inflateRaw = (b) => streamBytes(b, new DecompressionStream('deflate-raw'));
+  const deflateRaw = (b) => streamBytes(b, new CompressionStream('deflate-raw'));
+  const enc = new TextEncoder(), dec = new TextDecoder('utf-8');
+
+  /* ---------------- ZIP ---------------- */
+  class Zip {
+    constructor() { this.entries = new Map(); this.order = []; }
+    static async read(buf) {
+      const u8 = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+      const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+      let eocd = -1;
+      for (let i = u8.length - 22; i >= Math.max(0, u8.length - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+      if (eocd < 0) throw new Error('Not a valid .xlsx file (zip directory not found).');
+      const count = dv.getUint16(eocd + 10, true); let p = dv.getUint32(eocd + 16, true);
+      const z = new Zip();
+      for (let i = 0; i < count; i++) {
+        if (dv.getUint32(p, true) !== 0x02014b50) throw new Error('Corrupt zip directory.');
+        const method = dv.getUint16(p + 10, true), time = dv.getUint16(p + 12, true), date = dv.getUint16(p + 14, true);
+        const crc = dv.getUint32(p + 16, true), csize = dv.getUint32(p + 20, true), usize = dv.getUint32(p + 24, true);
+        const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+        const off = dv.getUint32(p + 42, true);
+        const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+        const lnl = dv.getUint16(off + 26, true), lxl = dv.getUint16(off + 28, true);
+        const ds = off + 30 + lnl + lxl;
+        z.entries.set(name, { name, method, time, date, crc, csize, usize, raw: u8.subarray(ds, ds + csize), data: null, dirty: false });
+        z.order.push(name);
+        p += 46 + nlen + xlen + clen;
+      }
+      return z;
+    }
+    has(n) { return this.entries.has(n); }
+    async bytes(n) {
+      const e = this.entries.get(n); if (!e) return null;
+      if (!e.data) e.data = e.method === 0 ? e.raw : await inflateRaw(e.raw);
+      return e.data;
+    }
+    async text(n) { const b = await this.bytes(n); return b ? dec.decode(b) : null; }
+    setText(n, s) { this.setBytes(n, enc.encode(s)); }
+    setBytes(n, b) {
+      let e = this.entries.get(n);
+      if (!e) { e = { name: n, method: 8, time: 0, date: 0x5821 }; this.entries.set(n, e); this.order.push(n); }
+      e.data = b; e.dirty = true;
+    }
+    remove(n) { this.entries.delete(n); this.order = this.order.filter(x => x !== n); }
+    async write() {
+      const parts = [], central = []; let offset = 0;
+      for (const n of this.order) {
+        const e = this.entries.get(n);
+        let raw, crc, csize, usize, method;
+        if (e.dirty) { usize = e.data.length; crc = crc32(e.data); raw = await deflateRaw(e.data); method = 8; csize = raw.length; }
+        else { raw = e.raw; crc = e.crc; csize = e.csize; usize = e.usize; method = e.method; }
+        const nb = enc.encode(n);
+        const lh = new Uint8Array(30 + nb.length); const lv = new DataView(lh.buffer);
+        lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true); lv.setUint16(8, method, true);
+        lv.setUint16(10, e.time || 0, true); lv.setUint16(12, e.date || 0x5821, true); lv.setUint32(14, crc, true);
+        lv.setUint32(18, csize, true); lv.setUint32(22, usize, true); lv.setUint16(26, nb.length, true); lv.setUint16(28, 0, true);
+        lh.set(nb, 30);
+        const ch = new Uint8Array(46 + nb.length); const cv = new DataView(ch.buffer);
+        cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true); cv.setUint16(8, 0x0800, true); cv.setUint16(10, method, true);
+        cv.setUint16(12, e.time || 0, true); cv.setUint16(14, e.date || 0x5821, true); cv.setUint32(16, crc, true); cv.setUint32(20, csize, true); cv.setUint32(24, usize, true);
+        cv.setUint16(28, nb.length, true); cv.setUint32(42, offset, true); ch.set(nb, 46);
+        parts.push(lh, raw); central.push(ch); offset += lh.length + raw.length;
+      }
+      let csz = 0; for (const c of central) csz += c.length;
+      const end = new Uint8Array(22); const ev = new DataView(end.buffer);
+      ev.setUint32(0, 0x06054b50, true); ev.setUint16(8, central.length, true); ev.setUint16(10, central.length, true);
+      ev.setUint32(12, csz, true); ev.setUint32(16, offset, true);
+      const out = new Uint8Array(offset + csz + 22); let p = 0;
+      for (const a of parts) { out.set(a, p); p += a.length; } for (const a of central) { out.set(a, p); p += a.length; } out.set(end, p);
+      return out;
+    }
+  }
+  TL.Zip = Zip;
+
+  /* ---------------- XML helpers ---------------- */
+  const escXml = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const unescXml = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (m, d) => String.fromCharCode(+d)).replace(/&#x([0-9a-f]+);/gi, (m, h) => String.fromCharCode(parseInt(h, 16))).replace(/&amp;/g, '&');
+  TL.escXml = escXml;
+
+  function colToNum(c) { let n = 0; for (const ch of c) n = n * 26 + ch.charCodeAt(0) - 64; return n; }
+  function numToCol(n) { let s = ''; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+  function splitRef(ref) { const m = /^([A-Z]+)(\d+)$/.exec(ref); return { col: m[1], row: +m[2], c: colToNum(m[1]) }; }
+  TL.colToNum = colToNum; TL.numToCol = numToCol;
+
+  /* Shift relative A1 references in a formula by dRow/dCol (for expanding shared formulas). */
+  function shiftFormula(f, dRow, dCol) {
+    return f.split('"').map((seg, i) => i % 2 ? seg : seg.replace(/(^|[^A-Za-z0-9_$.])(\$?)([A-Z]{1,3})(\$?)(\d{1,7})(?![A-Za-z0-9_(])/g,
+      (m, pre, dc, col, dr, row) => pre + dc + (dc ? col : numToCol(colToNum(col) + dCol)) + dr + (dr ? row : (+row + dRow)))).join('"');
+  }
+  TL.shiftFormula = shiftFormula;
+
+  function parseSharedStrings(xml) {
+    const out = []; if (!xml) return out;
+    const re = /<si>([\s\S]*?)<\/si>/g; let m;
+    while ((m = re.exec(xml))) {
+      let t = ''; const tr = /<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/g; let n;
+      const body = m[1].replace(/<rPh[\s\S]*?<\/rPh>/g, '');
+      while ((n = tr.exec(body))) t += n[1];
+      out.push(unescXml(t));
+    }
+    return out;
+  }
+
+  /* ---------------- Sheet document ---------------- */
+  const CELL_RE = /<c\b([^>]*?)(?:\/>|>([\s\S]*?)<\/c>)/g;
+  function attr(s, name) { const m = new RegExp('\\b' + name + '="([^"]*)"').exec(s); return m ? m[1] : null; }
+
+  class Sheet {
+    constructor(xml, sst) {
+      this.sst = sst || [];
+      const a = xml.indexOf('<sheetData'); const aEnd = xml.indexOf('>', a);
+      const selfClosing = xml[aEnd - 1] === '/';
+      const b = selfClosing ? aEnd + 1 : xml.indexOf('</sheetData>');
+      this.head = xml.slice(0, selfClosing ? aEnd - 1 : aEnd + 1) + (selfClosing ? '>' : '');
+      this.tail = selfClosing ? '</sheetData>' + xml.slice(aEnd + 1) : xml.slice(b);
+      const body = selfClosing ? '' : xml.slice(aEnd + 1, b);
+      this.rows = new Map(); // r -> {open, cells: Map(col -> {attrs, inner}) | null, raw}
+      this.rowOrder = [];
+      const RR = /<row\b([^>]*?)(?:\/>|>([\s\S]*?)<\/row>)/g; let m;
+      while ((m = RR.exec(body))) {
+        const r = +attr(m[1], 'r');
+        this.rows.set(r, { attrs: m[1], inner: m[2] || '', cells: null });
+        this.rowOrder.push(r);
+      }
+      this.dirty = false;
+      this._shared = null;
+    }
+    _cells(row) {
+      if (!row.cells) {
+        row.cells = new Map(); let m; CELL_RE.lastIndex = 0;
+        while ((m = CELL_RE.exec(row.inner))) { const ref = attr(m[1], 'r'); row.cells.set(splitRef(ref).col, { attrs: m[1], inner: m[2] || '' }); }
+      }
+      return row.cells;
+    }
+    rowNumbers() { return this.rowOrder; }
+    hasRow(r) { return this.rows.has(r); }
+    rawCell(ref) { const { col, row } = splitRef(ref); const R = this.rows.get(row); if (!R) return null; return this._cells(R).get(col) || null; }
+    /* Returns {s, t, f, v, value} — value is the display/cached value (number or string). */
+    cell(ref) {
+      const c = this.rawCell(ref); if (!c) return null;
+      const t = attr(c.attrs, 't'), s = attr(c.attrs, 's');
+      const fm = /<f\b([^>]*?)(?:\/>|>([\s\S]*?)<\/f>)/.exec(c.inner);
+      const vm = /<v>([\s\S]*?)<\/v>/.exec(c.inner);
+      let value = null;
+      if (t === 's' && vm) value = this.sst[+vm[1]];
+      else if (t === 'inlineStr') { const im = /<t(?:\s[^>]*)?>([\s\S]*?)<\/t>/.exec(c.inner); value = im ? unescXml(im[1]) : ''; }
+      else if (t === 'str' || t === 'e') value = vm ? unescXml(vm[1]) : null;
+      else if (t === 'b') value = vm ? vm[1] === '1' : null;
+      else if (vm) value = +vm[1];
+      return { s, t, f: fm ? unescXml(fm[2] || '') : null, fAttrs: fm ? fm[1] : null, value };
+    }
+    value(ref) { const c = this.cell(ref); return c ? c.value : null; }
+    styleNear(col, row, look = 80) {
+      for (let r = row; r > Math.max(0, row - look); r--) { const R = this.rows.get(r); if (!R) continue; const c = this._cells(R).get(col); if (c) { const s = attr(c.attrs, 's'); if (s) return s; } }
+      return null;
+    }
+    _sharedIndex() {
+      if (this._shared) return this._shared;
+      const idx = new Map();
+      for (const r of this.rowOrder) {
+        const R = this.rows.get(r); const inner = R.cells ? null : R.inner;
+        if (inner !== null && inner.indexOf('t="shared"') < 0) continue;
+        for (const [col, c] of this._cells(R)) {
+          if (c.inner.indexOf('t="shared"') < 0) continue;
+          const fm = /<f\b([^>]*?)(?:\/>|>([\s\S]*?)<\/f>)/.exec(c.inner); if (!fm) continue;
+          const si = attr(fm[1], 'si'); if (si == null) continue;
+          if (!idx.has(si)) idx.set(si, { master: null, children: [] });
+          const e = idx.get(si); const ref = col + r;
+          if (attr(fm[1], 'ref') && fm[2]) e.master = { ref, formula: unescXml(fm[2]) }; else e.children.push(ref);
+        }
+      }
+      this._shared = idx; return idx;
+    }
+    /* If a cell is a shared-formula master, give each remaining child its own explicit formula. */
+    _detachShared(ref, rewrittenRefs) {
+      const c = this.rawCell(ref); if (!c || c.inner.indexOf('t="shared"') < 0) return;
+      const fm = /<f\b([^>]*?)(?:\/>|>([\s\S]*?)<\/f>)/.exec(c.inner);
+      if (!fm || !attr(fm[1], 'ref') || !fm[2]) return; // child: overwritten safely
+      const si = attr(fm[1], 'si'); const e = this._sharedIndex().get(si); if (!e) return;
+      const m0 = splitRef(ref); const master = unescXml(fm[2]);
+      for (const ch of e.children) {
+        if (rewrittenRefs && rewrittenRefs.has(ch)) continue;
+        const p = splitRef(ch); const f = shiftFormula(master, p.row - m0.row, p.c - m0.c);
+        const cc = this.rawCell(ch); if (!cc) continue;
+        cc.inner = cc.inner.replace(/<f\b[^>]*?(?:\/>|>[\s\S]*?<\/f>)/, '<f>' + escXml(f) + '</f>');
+        this._touch(p.row);
+      }
+      e.children = []; e.master = null;
+    }
+    _touch(r) { const R = this.rows.get(r); R.dirtyRow = true; this.dirty = true; }
+    _ensureRow(r) {
+      if (!this.rows.has(r)) {
+        this.rows.set(r, { attrs: ` r="${r}"`, inner: '', cells: new Map() });
+        const i = this.rowOrder.findIndex(x => x > r); if (i < 0) this.rowOrder.push(r); else this.rowOrder.splice(i, 0, r);
+      }
+      return this.rows.get(r);
+    }
+    /* spec: {v:number} | {s:string} | {f:string, v?:number|string} | null (clear). style: optional s override. */
+    set(ref, spec, opts = {}) {
+      const { col, row } = splitRef(ref); const R = this._ensureRow(row); const cells = this._cells(R);
+      this._detachShared(ref, opts.rewritten);
+      const old = cells.get(col);
+      let s = opts.style || (old ? attr(old.attrs, 's') : null) || this.styleNear(col, row - 1);
+      let a = ` r="${ref}"` + (s ? ` s="${s}"` : ''); let inner = '';
+      if (spec == null || spec === '') { /* empty, keep style */ }
+      else if (spec.f != null) {
+        inner = '<f>' + escXml(spec.f) + '</f>';
+        if (typeof spec.v === 'number' && isFinite(spec.v)) inner += '<v>' + fmtNum(spec.v) + '</v>';
+        else if (typeof spec.v === 'string') { a += ' t="str"'; inner += '<v>' + escXml(spec.v) + '</v>'; }
+      } else if (spec.v != null) inner = '<v>' + fmtNum(spec.v) + '</v>';
+      else if (spec.s != null) { a += ' t="inlineStr"'; inner = '<is><t xml:space="preserve">' + escXml(spec.s) + '</t></is>'; }
+      cells.set(col, { attrs: a, inner });
+      this._touch(row);
+    }
+    /* Update cached value of an existing formula cell (keeps formula). */
+    setCached(ref, v) {
+      const c = this.rawCell(ref); if (!c || c.inner.indexOf('<f') < 0) return;
+      c.attrs = c.attrs.replace(/\s+t="[^"]*"/, '');
+      if (typeof v === 'number' && isFinite(v)) {
+        if (/<v>[\s\S]*?<\/v>/.test(c.inner)) c.inner = c.inner.replace(/<v>[\s\S]*?<\/v>/, '<v>' + fmtNum(v) + '</v>'); else c.inner += '<v>' + fmtNum(v) + '</v>';
+      } else c.inner = c.inner.replace(/<v>[\s\S]*?<\/v>/, '');
+      this._touch(splitRef(attr(c.attrs, 'r')).row);
+    }
+    cloneRow(fromRow, toRow) { // copy row attrs/styles (no values) — used by template builder
+      const src = this.rows.get(fromRow); if (!src) return;
+      const R = this._ensureRow(toRow); R.attrs = src.attrs.replace(/\br="\d+"/, `r="${toRow}"`).replace(/\s+spans="[^"]*"/, '');
+      R.cells = new Map();
+      for (const [col, c] of this._cells(src)) R.cells.set(col, { attrs: c.attrs.replace(/\br="[A-Z]+\d+"/, `r="${col}${toRow}"`), inner: '' });
+      this._touch(toRow);
+    }
+    deleteRow(r) { this.rows.delete(r); this.rowOrder = this.rowOrder.filter(x => x !== r); this.dirty = true; }
+    toXml() {
+      let out = this.head;
+      for (const r of this.rowOrder) {
+        const R = this.rows.get(r);
+        if (!R.cells && !R.dirtyRow) { out += R.inner ? `<row${R.attrs}>${R.inner}</row>` : `<row${R.attrs}/>`; continue; }
+        const cols = [...R.cells.keys()].sort((x, y) => colToNum(x) - colToNum(y));
+        let inner = ''; for (const col of cols) { const c = R.cells.get(col); inner += c.inner ? `<c${c.attrs}>${c.inner}</c>` : `<c${c.attrs}/>`; }
+        out += inner ? `<row${R.attrs}>${inner}</row>` : `<row${R.attrs}/>`;
+      }
+      return out + this.tail;
+    }
+  }
+  function fmtNum(v) { if (Number.isInteger(v)) return String(v); return String(+v.toPrecision(15)); }
+  TL.Sheet = Sheet;
+
+  /* ---------------- Workbook ---------------- */
+  class Workbook {
+    static async open(buf) {
+      const wb = new Workbook(); wb.zip = await Zip.read(buf);
+      wb.workbookXml = await wb.zip.text('xl/workbook.xml');
+      if (!wb.workbookXml) throw new Error('This file is not an Excel workbook (.xlsx).');
+      const rels = await wb.zip.text('xl/_rels/workbook.xml.rels') || '';
+      const relMap = {}; let m; const rr = /<Relationship\b([^>]*?)\/?>/g;
+      while ((m = rr.exec(rels))) relMap[attr(m[1], 'Id')] = attr(m[1], 'Target');
+      wb.sheetList = []; const sr = /<sheet\b([^>]*?)\/?>/g;
+      while ((m = sr.exec(wb.workbookXml))) {
+        let t = relMap[attr(m[1], 'r:id')] || ''; t = t.replace(/^\//, ''); if (!t.startsWith('xl/')) t = 'xl/' + t;
+        wb.sheetList.push({ name: unescXml(attr(m[1], 'name')), path: t });
+      }
+      wb.sst = parseSharedStrings(await wb.zip.text('xl/sharedStrings.xml'));
+      wb.sheets = new Map();
+      return wb;
+    }
+    findSheetName(pred) { const s = this.sheetList.find(x => pred(x.name)); return s ? s.name : null; }
+    async sheet(name) {
+      if (this.sheets.has(name)) return this.sheets.get(name);
+      const info = this.sheetList.find(s => s.name === name); if (!info) return null;
+      const sh = new Sheet(await this.zip.text(info.path), this.sst); sh.path = info.path; this.sheets.set(name, sh); return sh;
+    }
+    async save() {
+      for (const sh of this.sheets.values()) if (sh.dirty) this.zip.setText(sh.path, sh.toXml());
+      // force recalculation on open; drop calcChain (Excel rebuilds it)
+      let wx = this.workbookXml;
+      if (/<calcPr\b[^>]*fullCalcOnLoad=/.test(wx)) wx = wx.replace(/fullCalcOnLoad="[^"]*"/, 'fullCalcOnLoad="1"');
+      else if (/<calcPr\b/.test(wx)) wx = wx.replace(/<calcPr\b/, '<calcPr fullCalcOnLoad="1"');
+      else wx = wx.replace('</workbook>', '<calcPr fullCalcOnLoad="1"/></workbook>').replace(/(<\/definedNames>|<\/sheets>)(?![\s\S]*<calcPr)/, '$1');
+      this.zip.setText('xl/workbook.xml', wx);
+      if (this.zip.has('xl/calcChain.xml')) {
+        this.zip.remove('xl/calcChain.xml');
+        const ct = await this.zip.text('[Content_Types].xml'); this.zip.setText('[Content_Types].xml', ct.replace(/<Override[^>]*calcChain[^>]*\/>/, ''));
+        const rl = await this.zip.text('xl/_rels/workbook.xml.rels'); this.zip.setText('xl/_rels/workbook.xml.rels', rl.replace(/<Relationship[^>]*calcChain[^>]*\/>/, ''));
+      }
+      return this.zip.write();
+    }
+  }
+  TL.Workbook = Workbook;
+
+  /* ---------------- Dates & times ---------------- */
+  const EPOCH = Date.UTC(1899, 11, 30);
+  TL.serialToISO = s => new Date(EPOCH + Math.round(s) * 86400000).toISOString().slice(0, 10);
+  TL.isoToSerial = iso => Math.round((Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) - EPOCH) / 86400000);
+  TL.addDays = (iso, n) => TL.serialToISO(TL.isoToSerial(iso) + n);
+  TL.weekday = iso => new Date(iso + 'T12:00:00Z').getUTCDay(); // 0 Sun
+  TL.mondayOf = iso => TL.addDays(iso, -((TL.weekday(iso) + 6) % 7));
+  TL.fmtDMY = (iso, sep = '/') => iso.slice(8, 10) + sep + iso.slice(5, 7) + sep + iso.slice(2, 4);
+  const hm = s => { if (s == null || s === '') return null; const m = /^(\d{1,2}):?(\d{2})/.exec(String(s).trim()); return m ? (+m[1]) * 60 + (+m[2]) : null; };
+  const toHM = m => m == null ? '' : String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  TL.hm = hm; TL.toHM = toHM;
+  function parseExcelDateish(v) {
+    if (typeof v === 'number' && v > 40000 && v < 60000) return TL.serialToISO(v);
+    if (typeof v === 'string') { const m = /^(\d{2})[./](\d{2})[./](\d{2,4})$/.exec(v.trim()); if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${m[2]}-${m[1]}`; } }
+    return null;
+  }
+
+  /* ---------------- Rules ---------------- */
+  function roundMin(m, mode, q = 15) {
+    if (m == null) return m;
+    switch (mode) { case 'up15': return Math.ceil(m / q) * q; case 'down15': return Math.floor(m / q) * q; case 'nearest15': return Math.round(m / q) * q; default: return m; }
+  }
+  /* Compute paid in/out & hours.  e: {inMin, outMin, start, end, status}  p: rule profile */
+  TL.compute = function (e, p, leaveHours = 8) {
+    const r = { paidIn: null, paidOut: null, worked: 0, breakH: 0, hours: 0, ot: 0, notes: [] };
+    if (e.status && e.status !== 'worked') { r.hours = (e.status === 'annual' || e.status === 'sick-paid') ? leaveHours : 0; return r; }
+    if (e.inMin == null || e.outMin == null) { r.notes.push('Missing time'); return r; }
+    const sched = e.start != null ? e.start : null;
+    let pin = e.inMin, clamped = false;
+    if (sched != null && p.clampStart && pin < sched) { pin = sched; clamped = true; }
+    else if (sched != null && +p.graceMin > 0 && pin > sched && pin - sched <= +p.graceMin) { pin = sched; clamped = true; }
+    if (!clamped) pin = roundMin(pin, p.inRound);
+    let pout = e.outMin;
+    if (p.capEnd && e.end != null && pout > e.end) pout = e.end;
+    pout = roundMin(pout, p.outRound);
+    if (pout < pin) pout = pin;
+    const dur = pout - pin;
+    let h = (p.durRound === 'none' ? dur : roundMin(dur, p.durRound)) / 60;
+    r.worked = h;
+    if (p.breakH > 0 && dur > p.breakAfterH * 60) { r.breakH = p.breakH; h -= p.breakH; }
+    r.paidIn = pin; r.paidOut = pout; r.hours = Math.max(0, Math.round(h * 100) / 100);
+    if (p.otAfterH > 0) r.ot = Math.round((r.hours - p.otAfterH) * 100) / 100;
+    return r;
+  };
+  /* Does profile behave exactly like the sheet's R formula (so we can write the formula)? */
+  TL.matchesDailyFormula = p => p.durRound === 'down15' && +p.breakH === 0.5 && +p.breakAfterH === 4;
+  TL.matchesQuarterFormula = p => p.durRound === 'down15' && !(+p.breakH > 0);
+
+  /* ---------------- CSV (site export) ---------------- */
+  TL.parseCSV = function (text) {
+    text = text.replace(/^﻿/, ''); const rows = []; let row = [], f = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += c; }
+      else if (c === '"') q = true; else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; }
+      else f += c;
+    }
+    if (f !== '' || row.length) { row.push(f); rows.push(row); }
+    const head = (rows.shift() || []).map(h => h.trim().toLowerCase());
+    return rows.filter(r => r.some(x => x.trim() !== '')).map(r => Object.fromEntries(head.map((h, i) => [h, (r[i] || '').trim()])));
+  };
+  TL.normName = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+  TL.catKey = row => { const c = (row.category_name || '').trim(); return c ? c : (row.type || 'staff').trim().toLowerCase() === 'staff' ? 'staff' : (row.type || '').trim(); };
+  TL.personKey = (name, cat) => TL.normName(name) + '|' + String(cat || '').toLowerCase();
+
+  /* Parse source rows for a date → merged list per person. */
+  TL.sourceForDate = function (rows, iso) {
+    const map = new Map();
+    for (const r of rows) {
+      const ci = (r.checkin_time || '').trim(); if (ci.slice(0, 10) !== iso) continue;
+      const co = (r.checkout_time || '').trim();
+      const name = [r.forename, r.surname].map(x => (x || '').trim()).filter(Boolean).join(' ');
+      const cat = TL.catKey(r); const key = TL.personKey(name, cat);
+      const inMin = hm(ci.slice(11, 16)), inSec = +ci.slice(17, 19) || 0;
+      let outMin = co ? hm(co.slice(11, 16)) : null; const outDay = co.slice(0, 10);
+      if (co && outDay > iso) outMin = 24 * 60 - 1;
+      const rec = { key, name, cat, inMin, outMin, rawIn: ci.slice(11, 19), rawOut: co.slice(11, 19), reason: r.reason || '', scans: 1, flags: [] };
+      if (map.has(key)) {
+        const p = map.get(key); p.scans++;
+        if (inMin < p.inMin) { p.inMin = inMin; p.rawIn = rec.rawIn; }
+        if (outMin != null && (p.outMin == null || outMin > p.outMin)) { p.outMin = outMin; p.rawOut = rec.rawOut; }
+      } else map.set(key, rec);
+    }
+    for (const p of map.values()) {
+      if (p.scans > 1) p.flags.push({ code: 'dup', text: `${p.scans} scans merged (first in, last out)` });
+      if (p.outMin == null) p.flags.push({ code: 'noout', text: 'No check-out recorded' });
+      else if (p.outMin >= 23 * 60 + 50) { p.flags.push({ code: 'auto', text: 'Forgot to check out (system closed at ' + p.rawOut.slice(0, 5) + ')' }); p.autoOut = true; }
+      if (p.outMin != null && p.outMin - p.inMin < 20) p.flags.push({ code: 'short', text: 'Very short scan (' + Math.max(0, p.outMin - p.inMin) + ' min) — real times probably missing' });
+      if (p.reason) { try { const j = JSON.parse(p.reason); const t = j.map(o => Object.entries(o).map(([k, v]) => k.replace(/_/g, ' ') + ': ' + v).join(', ')).join('; '); if (t) p.note = t; } catch (e) { p.note = p.reason; } }
+    }
+    return [...map.values()].sort((a, b) => a.inMin - b.inMin);
+  };
+
+  /* ---------------- Workbook structure discovery ---------------- */
+  TL.findDailyBlocks = function (sh) {
+    const dates = [];
+    for (const r of sh.rowNumbers()) { const v = sh.value('A' + r); const iso = parseExcelDateish(v); if (iso && iso >= '2020-01-01') dates.push({ r, iso }); }
+    const blocks = new Map();
+    for (let i = 0; i < dates.length; i++) {
+      const r0 = dates[i].r, next = i + 1 < dates.length ? dates[i + 1].r : r0 + 26;
+      let total = null;
+      for (let r = next - 1; r > r0; r--) { const c = sh.cell('R' + r); if (c && c.f && /^\s*sum\(/i.test(c.f)) { total = r; break; } }
+      const last = total ? total - 1 : next - 1;
+      blocks.set(dates[i].iso, { iso: dates[i].iso, r0, last, total, capacity: last - r0 + 1 });
+    }
+    return blocks;
+  };
+  /* Person-column sheets (JASHAN / 0 hour): find slots from header row 1. */
+  TL.findSlots = function (sh) {
+    const slots = []; const R = sh.rows.get(1); if (!R) return slots;
+    for (const [col] of sh._cells(R)) {
+      const v = sh.value(col + '1'); if (typeof v !== 'string' || v.trim().toLowerCase() !== 'date') continue;
+      const c = colToNum(col); const nameCol = numToCol(c - 2);
+      const name = String(sh.value(nameCol + '1') || '').replace(/\s+/g, ' ').trim();
+      if (!name || /candidate name/i.test(name)) continue;
+      const hourHdr = String(sh.value(numToCol(c + 3) + '1') || '').trim().toLowerCase();
+      if (hourHdr !== 'hour') continue;
+      slots.push({ name, dateCol: col, inCol: numToCol(c + 1), outCol: numToCol(c + 2), hourCol: numToCol(c + 3), calcCol: numToCol(c + 4) });
+    }
+    return slots;
+  };
+  TL.findSlotRow = function (sh, slot, iso) {
+    for (const r of sh.rowNumbers()) { if (r < 2) continue; const v = sh.value(slot.dateCol + r); if (parseExcelDateish(v) === iso) return r; }
+    return null;
+  };
+  /* Detect whether a slot uses HHMM numbers (900) or time fractions (0.375). */
+  TL.slotTimeStyle = function (sh, slot, beforeRow) {
+    for (let r = beforeRow - 1; r > 1 && r > beforeRow - 60; r--) { const v = sh.value(slot.inCol + r); if (typeof v === 'number') return v >= 1 ? 'hhmm' : 'time'; }
+    return 'time';
+  };
+
+  /* ---------------- Writers ---------------- */
+  const minToFrac = m => m / 1440;
+  const minToHHMM = m => Math.floor(m / 60) * 100 + (m % 60);
+  TL.DAILY_R = r => `INT((Q${r}-P${r})*24)+LOOKUP(MINUTE(Q${r}-P${r}),{0,15,30,45},{0,0.25,0.5,0.75})-IF((Q${r}-P${r})*24>4,0.5,0)`;
+  TL.QUARTER_F = (a, b, r) => `INT((${b}${r}-${a}${r})*24) + LOOKUP(MINUTE(${b}${r}-${a}${r}),{0,15,30,45},{0,0.25,0.5,0.75})`;
+
+  /* lines: [{name, source, role, paidIn, paidOut, hours, formula:boolean, remark, rate, status}] in write order */
+  TL.writeDaily = function (sh, block, lines) {
+    if (lines.length > block.capacity) throw new Error(`Daily Record ${TL.fmtDMY(block.iso)} has room for ${block.capacity} people but ${lines.length} are selected. Insert more rows for that day in the workbook (above the total row) and run again, or untick some people.`);
+    const cols = ['M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'];
+    const rewritten = new Set(); for (let r = block.r0; r <= block.last; r++) for (const c of cols) rewritten.add(c + r);
+    for (let r = block.r0; r <= block.last; r++) {
+      const L = lines[r - block.r0];
+      const o = { rewritten };
+      if (!L) { for (const c of cols) if (sh.rawCell(c + r)) sh.set(c + r, null, o); continue; }
+      sh.set('M' + r, { s: L.name }, o);
+      sh.set('N' + r, L.source ? { s: L.source } : null, o);
+      sh.set('O' + r, L.role ? { s: L.role } : null, o);
+      if (L.status && L.status !== 'worked') {
+        sh.set('P' + r, { s: L.statusLabel }, o); sh.set('Q' + r, null, o); sh.set('R' + r, { v: L.hours }, o);
+      } else if (L.paidIn == null || L.paidOut == null) {
+        sh.set('P' + r, L.rawIn != null ? { v: minToFrac(L.rawIn) } : null, o); sh.set('Q' + r, L.rawOut != null ? { v: minToFrac(L.rawOut) } : null, o); sh.set('R' + r, null, o);
+      } else {
+        sh.set('P' + r, { v: minToFrac(L.paidIn) }, o); sh.set('Q' + r, { v: minToFrac(L.paidOut) }, o);
+        sh.set('R' + r, L.formula ? { f: TL.DAILY_R(r), v: L.hours } : { v: L.hours }, o);
+      }
+      sh.set('S' + r, L.remark ? { s: L.remark } : null, o);
+      if (L.rate != null && L.rate !== '') { sh.set('T' + r, { v: +L.rate }, o); sh.set('U' + r, { f: `R${r}*T${r}`, v: Math.round(L.hours * L.rate * 100) / 100 }, o); }
+      else { sh.set('T' + r, null, o); sh.set('U' + r, null, o); }
+    }
+  };
+  /* JASHAN-type slot: In/Out time, calc col = hours formula, hour col = OT formula (kept) */
+  TL.writeSlot = function (sh, slot, row, L, kind) {
+    const style = TL.slotTimeStyle(sh, slot, row);
+    const t = m => style === 'hhmm' ? { v: minToHHMM(m) } : { v: minToFrac(m) };
+    if (L.status && L.status !== 'worked') {
+      sh.set(slot.inCol + row, { s: L.statusLabel }); sh.set(slot.outCol + row, null);
+      if (kind === 'inhouse') { sh.set(slot.calcCol + row, { v: L.hours }); sh.setCached(slot.hourCol + row, L.hours - L.otAfter); }
+      else sh.set(slot.hourCol + row, { v: L.hours });
+      return;
+    }
+    if (L.paidIn == null || L.paidOut == null) { sh.set(slot.inCol + row, L.paidIn != null ? t(L.paidIn) : null); sh.set(slot.outCol + row, L.paidOut != null ? t(L.paidOut) : null); return; }
+    sh.set(slot.inCol + row, t(L.paidIn)); sh.set(slot.outCol + row, t(L.paidOut));
+    if (kind === 'inhouse') {
+      sh.set(slot.calcCol + row, L.formula && style === 'time' ? { f: TL.QUARTER_F(slot.inCol, slot.outCol, row), v: L.hours } : { v: L.hours });
+      const hc = sh.cell(slot.hourCol + row);
+      if (hc && hc.f != null) sh.setCached(slot.hourCol + row, Math.round((L.hours - L.otAfter) * 100) / 100);
+      else sh.set(slot.hourCol + row, { f: `${slot.calcCol}${row}-${L.otAfter}`, v: L.hours - L.otAfter });
+    } else sh.set(slot.hourCol + row, { v: L.hours });
+  };
+
+  /* Read the Daily Record for a week → {name -> {role, days:{iso:hours}}} */
+  TL.readWeek = function (sh, blocks, mondayIso) {
+    const people = new Map();
+    for (let d = 0; d < 7; d++) {
+      const iso = TL.addDays(mondayIso, d); const b = blocks.get(iso); if (!b) continue;
+      for (let r = b.r0; r <= b.last; r++) {
+        const name = sh.value('M' + r); if (typeof name !== 'string' || !name.trim()) continue;
+        const role = String(sh.value('O' + r) || '').trim(); const h = sh.value('R' + r);
+        if (typeof h !== 'number') continue;
+        const k = TL.normName(name) + '|' + role.toLowerCase();
+        if (!people.has(k)) people.set(k, { name: name.trim(), role, days: {}, rate: null });
+        const p = people.get(k); p.days[iso] = (p.days[iso] || 0) + h;
+        const t = sh.value('T' + r); if (typeof t === 'number') p.rate = t;
+      }
+    }
+    return people;
+  };
+
+  /* Agency weekly timesheet builder on the provided template.
+     sections: {warehouse:[{name, days:[7], normal, ot, otHours}], flt:[...]}  */
+  TL.buildAgencySheet = async function (tplBytes, mondayIso, sections, meta = {}) {
+    const wb = await Workbook.open(tplBytes);
+    const name = wb.sheetList[0].name; const sh = await wb.sheet(name);
+    // locate template rows
+    let whHead = null, fltHead = null, totalRow = null;
+    for (const r of sh.rowNumbers()) {
+      const v = String(sh.value('C' + r) || '').toUpperCase();
+      if (!whHead && /WAREHOUSE/.test(v)) whHead = r; else if (!fltHead && /FLT|FORK/.test(v)) fltHead = r;
+      const f = sh.cell('K' + r); if (f && f.f && /^K\d+\+K\d+$/.test(f.f.replace(/\s/g, ''))) totalRow = r;
+    }
+    if (!whHead || !fltHead || !totalRow) throw new Error('Agency template layout not recognised (needs WAREHOUSE, FLT and total rows).');
+    const whRows = fltHead - whHead - 1, fltRows = totalRow - fltHead - 1;
+    const W = sections.warehouse || [], F = sections.flt || [];
+    const nW = Math.max(whRows, W.length), nF = Math.max(fltRows, F.length);
+    const shift = (nW - whRows) + (nF - fltRows);
+    // snapshot template rows (attrs only) then rebuild from whHead downward
+    const snap = r => { const R = sh.rows.get(r); return R ? { attrs: R.attrs, cells: new Map([...sh._cells(R)].map(([c, x]) => [c, { attrs: x.attrs, inner: x.inner }])) } : null; };
+    const tplHead = snap(whHead), tplWh = snap(whHead + 1), tplWhLast = snap(fltHead - 1), tplFltHead = snap(fltHead), tplFlt = snap(fltHead + 1), tplFltLast = snap(totalRow - 1), tplTotal = snap(totalRow);
+    const after = sh.rowNumbers().filter(r => r > totalRow).map(r => ({ r, s: snap(r) }));
+    for (const r of [...sh.rowNumbers()]) if (r >= whHead) sh.deleteRow(r);
+    const put = (tpl, r, keepValues) => {
+      const R = sh._ensureRow(r); R.attrs = tpl.attrs.replace(/\br="\d+"/, `r="${r}"`); R.cells = new Map();
+      for (const [col, c] of tpl.cells) R.cells.set(col, { attrs: c.attrs.replace(/\br="[A-Z]+\d+"/, `r="${col}${r}"`), inner: keepValues ? c.inner : '' });
+      sh._touch(r);
+    };
+    let r = whHead;
+    const writeSection = (head, tplRow, tplLast, list, n) => {
+      put(head, r, true); const hr = r; r++;
+      const hm_ = /(\d+(?:\.\d+)?)/.exec(String(sh.value('C' + hr) || '')); const headRate = hm_ ? +hm_[1] : null;
+      const first = r;
+      for (let i = 0; i < n; i++, r++) {
+        put(i === n - 1 ? tplLast : tplRow, r, false);
+        const p = list[i]; const cols = ['C', 'D', 'E', 'F', 'G', 'H', 'I'];
+        if (p) {
+          sh.set('B' + r, { s: p.name });
+          cols.forEach((c, k) => { const v = p.days[k]; sh.set(c + r, v ? { v } : null); });
+        }
+        const J = p ? p.days.reduce((a, b) => a + (b || 0), 0) : 0; const M = p ? p.otHours || 0 : 0;
+        sh.set('J' + r, { f: `SUM(C${r}:I${r})`, v: J });
+        sh.set('K' + r, { f: `J${r}-M${r}`, v: J - M });
+        const Lr = p ? (p.normal != null && p.normal !== '' ? +p.normal : headRate) : null;
+        const Nr = p ? (p.ot != null && p.ot !== '' ? +p.ot : Lr) : null;
+        sh.set('L' + r, Lr != null ? { v: Lr } : null);
+        sh.set('M' + r, { v: M }); sh.set('N' + r, { v: Nr != null ? Nr : 0 });
+        sh.set('O' + r, { v: 0 }); sh.set('P' + r, { v: 0 });
+        const q = (J - M) * (Lr || 0) + M * (Nr || 0);
+        sh.set('Q' + r, { f: `(K${r}*L${r})+(M${r}*N${r}+O${r}*P${r})`, v: Math.round(q * 100) / 100 });
+      }
+      const last = r - 1;
+      sh.set('K' + hr, { f: `SUM(K${first}:K${last})` }); sh.set('Q' + hr, { f: `SUM(Q${first}:Q${last})` });
+      return hr;
+    };
+    const h1 = writeSection(tplHead, tplWh, tplWhLast, W, nW);
+    const h2 = writeSection(tplFltHead, tplFlt, tplFltLast, F, nF);
+    put(tplTotal, r, false);
+    sh.set('J' + r, { f: `SUM(J${h1}:J${r - 1})` }); sh.set('K' + r, { f: `K${h1}+K${h2}` }); sh.set('M' + r, { f: `M${h1}+M${h2}` });
+    sh.set('O' + r, { f: `O${h1}+O${h2}` }); sh.set('Q' + r, { f: `Q${h1}+Q${h2}` });
+    const tRow = r; r++;
+    for (const a of after) { put(a.s, a.r + shift, true); }
+    // header: week dates
+    const days = ['C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    let dateRow = null; for (const rr of sh.rowNumbers()) { if (rr < whHead && typeof sh.value('C' + rr) === 'number' && sh.value('C' + rr) > 40000) dateRow = rr; }
+    if (dateRow) days.forEach((c, k) => sh.set(c + dateRow, { v: TL.isoToSerial(TL.addDays(mondayIso, k)) }));
+    for (const rr of sh.rowNumbers()) { if (rr >= whHead) break; const lab = String(sh.value('D' + rr) || '').toUpperCase(); if (/WEEK COMMENCING/.test(lab)) sh.set('J' + rr, { v: TL.isoToSerial(mondayIso) }); }
+    // shift merged cells / print area / conditional formats below the original total row
+    if (shift) {
+      const shiftRef = ref => ref.replace(/([A-Z]+)(\d+)/g, (m, c, n) => +n > totalRow ? c + (+n + shift) : m);
+      sh.tail = sh.tail.replace(/<mergeCell ref="([^"]+)"\/>/g, (m, ref) => {
+        const [a, b] = ref.split(':'); const ra = splitRef(a).row;
+        if (ra > totalRow) return `<mergeCell ref="${shiftRef(ref)}"/>`;
+        if (ra === whHead) return m; if (ra === fltHead) return `<mergeCell ref="${ref.replace(/\d+/g, String(h2))}"/>`; return m;
+      }).replace(/sqref="([^"]+)"/g, (m, s) => `sqref="${shiftRef(s)}"`);
+      sh.head = sh.head.replace(/<dimension ref="([^"]+)"\/>/, (m, s) => `<dimension ref="A1:R${tRow + after.length + 1}"/>`);
+      wb.workbookXml = wb.workbookXml.replace(/(_xlnm\.Print_Area"[^>]*>[^<]*?\$)(\d+)(<)/, (m, a, n, c) => a + (+n + shift) + c);
+    }
+    return wb.save();
+  };
+
+
+  /* ---------- sheet surgery for agency templates ---------- */
+  Sheet.prototype.unshareAll = function () {
+    const idx = this._sharedIndex();
+    for (const [si, e] of idx) {
+      if (!e.master) continue;
+      const m0 = splitRef(e.master.ref);
+      const mc = this.rawCell(e.master.ref);
+      mc.inner = mc.inner.replace(/<f\b[^>]*?>([\s\S]*?)<\/f>/, (m, f) => '<f>' + f + '</f>');
+      this._touch(m0.row);
+      for (const ch of e.children) {
+        const p = splitRef(ch); const cc = this.rawCell(ch); if (!cc) continue;
+        cc.inner = cc.inner.replace(/<f\b[^>]*?(?:\/>|>[\s\S]*?<\/f>)/, '<f>' + escXml(shiftFormula(e.master.formula, p.row - m0.row, p.c - m0.c)) + '</f>');
+        this._touch(p.row);
+      }
+    }
+    this._shared = new Map();
+  };
+  const shiftRowsIn = (text, at, n) => text.split('"').map((seg, i) => i % 2 ? seg : seg.replace(/(^|[^A-Za-z0-9_.])(\$?)([A-Z]{1,3})(\$?)(\d{1,7})(?![A-Za-z0-9_(])/g,
+    (m, pre, dc, col, dr, row) => pre + dc + col + dr + (+row >= at ? +row + n : row))).join('"');
+  TL.shiftRowsIn = shiftRowsIn;
+  /* Insert n rows before row `at`, copying row `at`'s look and formulas into the new rows. */
+  Sheet.prototype.insertRowsBefore = function (at, n, fromRow = at) {
+    if (n <= 0) return;
+    const tpl = this.rows.get(fromRow); const tplCells = tpl ? [...this._cells(tpl)].map(([c, x]) => [c, { attrs: x.attrs, inner: x.inner }]) : [];
+    const tplAttrs = tpl ? tpl.attrs : ` r="${at}"`;
+    // move rows down
+    const moved = new Map(); const order = [];
+    for (const r of this.rowOrder) {
+      const R = this.rows.get(r); const cells = this._cells(R);
+      const nr = r >= at ? r + n : r;
+      R.attrs = R.attrs.replace(/\br="\d+"/, `r="${nr}"`);
+      const nc = new Map();
+      for (const [col, c] of cells) {
+        c.attrs = c.attrs.replace(/\br="[A-Z]+\d+"/, `r="${col}${nr}"`);
+        c.inner = c.inner.replace(/<f>([\s\S]*?)<\/f>/, (m, f) => '<f>' + escXml(shiftRowsIn(unescXml(f), at, n)) + '</f>');
+        nc.set(col, c);
+      }
+      R.cells = nc; R.dirtyRow = true; moved.set(nr, R); order.push(nr);
+    }
+    this.rows = moved; this.rowOrder = order;
+    for (let k = 0; k < n; k++) {
+      const r = at + k; const R = this._ensureRow(r); R.attrs = tplAttrs.replace(/\br="\d+"/, `r="${r}"`); R.cells = new Map();
+      for (const [col, c] of tplCells) {
+        let inner = c.inner.replace(/<v>[\s\S]*?<\/v>/, '');
+        inner = inner.replace(/<f>([\s\S]*?)<\/f>/, (m, f) => '<f>' + escXml(shiftFormula(unescXml(f), r - fromRow, 0)) + '</f>');
+        R.cells.set(col, { attrs: c.attrs.replace(/\br="[A-Z]+\d+"/, `r="${col}${r}"`).replace(/\s+t="(?:s|str|inlineStr)"/, ''), inner: /<f>/.test(inner) ? inner : (/<v>/.test(c.inner) && !/t="(s|str|inlineStr)"/.test(c.attrs) ? c.inner : '') });
+      }
+      R.dirtyRow = true;
+    }
+    this.rowOrder.sort((a, b) => a - b);
+    const sh = t => shiftRowsIn(t, at, n);
+    this.tail = this.tail.replace(/(<mergeCell ref=")([^"]+)(")/g, (m, a, r, b) => a + sh(r) + b).replace(/(sqref=")([^"]+)(")/g, (m, a, r, b) => a + sh(r) + b)
+      .replace(/<formula>([\s\S]*?)<\/formula>/g, (m, f) => '<formula>' + sh(f) + '</formula>');
+    this.head = this.head.replace(/(<dimension ref=")([^"]+)(")/, (m, a, r, b) => a + sh(r) + b);
+    this.dirty = true; this.insertedAt = (this.insertedAt || []).concat([[at, n]]);
+  };
+
+  /* Detect agency template sections: header rows (text in C, SUM in K) and their data rows. */
+  TL.agencyLayout = function (sh) {
+    let nameRow = null, dateRow = null, totalRow = null; const heads = [];
+    for (const r of sh.rowNumbers()) {
+      const b = String(sh.value('B' + r) || '').trim().toUpperCase();
+      if (!nameRow && b === 'NAME') nameRow = r;
+      const c8 = sh.value('C' + r); if (!nameRow && typeof c8 === 'number' && c8 > 40000) dateRow = r;
+      if (!nameRow) continue;
+      const c = sh.value('C' + r); const k = sh.cell('K' + r); const j = sh.cell('J' + r);
+      if (typeof c === 'string' && c.trim() && k && k.f && /^SUM\(/i.test(k.f.trim())) heads.push({ label: c.trim().replace(/\s+/g, ' '), headRow: r });
+      if (j && j.f && /^SUM\(J\d+:J\d+\)$/i.test(j.f.replace(/\s/g, '')) && heads.length) { totalRow = r; break; }
+    }
+    if (!nameRow || !heads.length || !totalRow) throw new Error('Timesheet layout not recognised (need a NAME header, section rows like "WAREHOUSE 12.71", and a total row).');
+    heads.forEach((h, i) => { h.first = h.headRow + 1; h.last = (i + 1 < heads.length ? heads[i + 1].headRow : totalRow) - 1; h.capacity = h.last - h.first + 1; });
+    return { nameRow, dateRow, totalRow, sections: heads };
+  };
+  TL.agencySectionLabels = async function (bytes) {
+    const wb = await Workbook.open(bytes); const sh = await wb.sheet(wb.sheetList[0].name); return TL.agencyLayout(sh).sections.map(s => s.label);
+  };
+  /* Fill ONLY names (B) and daily hours (C–I) + week dates. people: [{name, days[7], section}] */
+  TL.fillAgency = async function (tplBytes, mondayIso, people) {
+    const wb = await Workbook.open(tplBytes); const sh = await wb.sheet(wb.sheetList[0].name);
+    sh.unshareAll();
+    let L = TL.agencyLayout(sh);
+    const norm = x => String(x || '').toUpperCase().replace(/\s+/g, ' ').trim();
+    const bySec = new Map(L.sections.map(s => [s.label, []]));
+    const unplaced = [];
+    for (const p of people) { const s = L.sections.find(x => norm(x.label) === norm(p.section)) || L.sections[0]; if (norm(s.label) !== norm(p.section)) unplaced.push(p.name); bySec.get(s.label).push(p); }
+    // grow sections bottom-up
+    for (const s of [...L.sections].reverse()) { const need = bySec.get(s.label).length - s.capacity; if (need > 0) sh.insertRowsBefore(s.last, need, s.first < s.last ? s.first : s.last); }
+    let added = 0; for (const s of L.sections) added += Math.max(0, bySec.get(s.label).length - s.capacity);
+    L = TL.agencyLayout(sh);
+    if (added) {
+      for (const s of L.sections) { for (const c of ['K', 'Q']) { const x = sh.cell(c + s.headRow); if (x && x.f && /^SUM\(/i.test(x.f.trim())) sh.set(c + s.headRow, { f: `SUM(${c}${s.first}:${c}${s.last})` }); } }
+      sh.set('J' + L.totalRow, { f: `SUM(J${L.sections[0].headRow}:J${L.totalRow - 1})` });
+    }
+    const cols = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    for (const s of L.sections) {
+      const list = bySec.get(s.label) || [];
+      for (let r = s.first; r <= s.last; r++) {
+        const p = list[r - s.first];
+        for (const c of cols) sh.set(c + r, null);
+        if (!p) continue;
+        sh.set('B' + r, { s: p.name });
+        p.days.forEach((h, k) => { if (h) sh.set(cols[k + 1] + r, { v: h }); });
+      }
+    }
+    // week dates
+    const days = ['C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    if (L.dateRow) days.forEach((c, k) => sh.set(c + L.dateRow, { v: TL.isoToSerial(TL.addDays(mondayIso, k)) }));
+    for (const r of sh.rowNumbers()) {
+      if (r >= L.nameRow) break;
+      const lab = String(sh.value('D' + r) || '').toUpperCase();
+      const isStart = /WEEK COMMENCING/.test(lab), isEnd = /WEEK ENDING/.test(lab); if (!isStart && !isEnd) continue;
+      const iso = isStart ? mondayIso : TL.addDays(mondayIso, 6); const cur = sh.cell('J' + r);
+      if (cur && cur.f) continue; // formula like =J4+6 recalculates itself
+      if (cur && typeof cur.value === 'string') sh.set('J' + r, { s: TL.fmtDMY(iso, '.') }); else sh.set('J' + r, { v: TL.isoToSerial(iso) });
+    }
+    // drop stale cached results so Excel / Sheets / LibreOffice all recalculate the totals
+    for (const r of sh.rowNumbers()) { const R = sh.rows.get(r); for (const [, c] of sh._cells(R)) if (c.inner.indexOf('<f') >= 0 && c.inner.indexOf('<v>') >= 0) { c.inner = c.inner.replace(/<v>[\s\S]*?<\/v>/, ''); c.attrs = c.attrs.replace(/\s+t="(?:str|e|n|b)"/, ''); R.dirtyRow = true; sh.dirty = true; } }
+    if (sh.insertedAt) {
+      for (const [at, n] of sh.insertedAt) {
+        wb.workbookXml = wb.workbookXml.replace(/(<definedName[^>]*Print_Area[^>]*>)([^<]*)(<)/, (m, a, r, b) => a + TL.shiftRowsIn(r, at, n) + b);
+        for (const name of wb.zip.order.filter(x => /^xl\/drawings\/drawing\d+\.xml$/.test(x))) {
+          const x = await wb.zip.text(name); wb.zip.setText(name, x.replace(/<xdr:row>(\d+)<\/xdr:row>/g, (m, v) => `<xdr:row>${+v + 1 >= at ? +v + n : v}</xdr:row>`));
+        }
+      }
+    }
+    const bytes = await wb.save();
+    return { bytes, added, unplaced, sections: L.sections.map(s => ({ label: s.label, rows: s.capacity, used: (bySec.get(s.label) || []).length })) };
+  };
+  G.TL = TL;
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>/* Planner: source rows + settings → confirm lines → workbook writes. Shared by UI and tests. */
+(function (G) {
+  'use strict';
+  const TL = G.TL;
+  const GROUP_ORDER = { 'COR': 0, 'Air': 1, 'Insight': 2, 'In-house': 3, '0-hour': 4, 'Ignore': 9, 'New': 8 };
+  TL.GROUP_ORDER = GROUP_ORDER;
+  TL.STATUS = { worked: 'Worked', annual: 'Annual Leave', 'sick-paid': 'Sick (paid)', sick: 'Sick (unpaid)', absent: 'Absent' };
+
+  TL.rosterIndex = function (settings) {
+    const m = new Map(); for (const p of settings.roster) m.set(TL.personKey(p.name, p.cat), p); return m;
+  };
+  TL.profileOf = (settings, id) => settings.profiles.find(p => p.id === id) || settings.profiles[0];
+  TL.rateFor = function (settings, person) {
+    const keys = [person.display, person.name].map(TL.normName);
+    for (const r of settings.rates) { const k = TL.normName(r.name); if (keys.includes(k)) return r; }
+    return null;
+  };
+
+  /* Build confirm lines for a date. */
+  TL.plan = function (settings, srcRows, iso) {
+    const idx = TL.rosterIndex(settings); const recs = TL.sourceForDate(srcRows, iso); const lines = []; const seen = new Set();
+    for (const rec of recs) {
+      let p = idx.get(rec.key); let isNew = false;
+      if (!p) {
+        isNew = true; const rule = settings.categoryRules[String(rec.cat).toLowerCase()] || 'Ask';
+        const group = rule === 'Ask' ? 'New' : rule;
+        p = { name: rec.name, cat: rec.cat, display: rec.name, group, profile: group === 'COR' ? 'cor' : 'agency', start: settings.defaultStart, end: '', source: '', role: (group === 'Air' || group === 'Insight') ? group : '', agencyRole: 'Warehouse', slot: '', active: true };
+      }
+      seen.add(rec.key);
+      const L = TL.lineFrom(settings, p, rec, iso); L.isNew = isNew;
+      if (isNew && p.group !== 'Ignore') L.flags.push({ code: 'new', text: p.group === 'New' ? 'New person — choose a group' : 'New person — added as ' + p.group });
+      lines.push(L);
+    }
+    const wd = TL.weekday(iso);
+    for (const p of settings.roster) {
+      if (!p.active || p.group === 'Ignore' || seen.has(TL.personKey(p.name, p.cat))) continue;
+      const L = TL.lineFrom(settings, p, null, iso); L.include = false; L.missing = true;
+      L.flags.push({ code: 'missing', text: 'Not in today’s file — tick to add (enter times)' });
+      if ((wd === 0 || wd === 6) && (p.group === 'COR' || p.group === '0-hour')) L.weekend = true;
+      lines.push(L);
+    }
+    return TL.sortLines(lines);
+  };
+  TL.sortLines = lines => lines.sort((a, b) => (GROUP_ORDER[a.group] ?? 7) - (GROUP_ORDER[b.group] ?? 7) || (a.missing - b.missing) || ((a.inMin ?? 9999) - (b.inMin ?? 9999)) || a.display.localeCompare(b.display));
+
+  TL.lineFrom = function (settings, p, rec, iso) {
+    const L = {
+      key: TL.personKey(p.name, p.cat), name: p.name, cat: p.cat, display: p.display || p.name, group: p.group, profile: p.profile,
+      start: TL.hm(p.start || settings.defaultStart), end: TL.hm(p.end), source: p.source || '', role: p.role || '', agencyRole: p.agencyRole || 'Warehouse', slot: p.slot || '',
+      rawIn: rec ? rec.rawIn : '', rawOut: rec ? rec.rawOut : '', inMin: rec ? rec.inMin : null, outMin: rec ? rec.outMin : null,
+      flags: rec ? rec.flags.slice() : [], note: rec ? rec.note || '' : '', status: 'worked', include: p.group !== 'Ignore' && p.group !== 'New', remark: '', edited: {}
+    };
+    if (rec && rec.autoOut) { L.outMin = null; L.needsOut = true; }
+    if (!rec) { L.inMin = L.start; L.outMin = L.end; }
+    return L;
+  };
+
+  TL.evalLine = function (settings, L) {
+    const p = TL.profileOf(settings, L.profile);
+    const r = TL.compute({ inMin: L.inMin, outMin: L.outMin, start: L.start, end: L.end, status: L.status }, p, settings.leaveHours);
+    r.profile = p; return r;
+  };
+
+  TL.problems = function (settings, lines) {
+    const out = [];
+    for (const L of lines) {
+      if (!L.include) continue;
+      if (L.group === 'New') out.push(`${L.display}: choose a group (or untick).`);
+      if (L.status === 'worked' && (L.inMin == null || L.outMin == null)) out.push(`${L.display}: ${L.inMin == null ? 'start' : 'finish'} time is missing.`);
+      if (L.status === 'worked' && L.inMin != null && L.outMin != null && L.outMin <= L.inMin) out.push(`${L.display}: finish time is before start time.`);
+      if ((L.group === 'In-house' || L.group === '0-hour') && !L.slot) out.push(`${L.display}: no column chosen on the ${L.group} sheet (Setup → Staff).`);
+    }
+    return out;
+  };
+
+  function sheetName(pattern, iso) { return pattern.replace('{YYYY}', iso.slice(0, 4)); }
+  async function resolveSheet(wb, pattern, iso) {
+    const want = sheetName(pattern, iso).trim().toLowerCase();
+    const n = wb.findSheetName(x => x.trim().toLowerCase() === want) || wb.findSheetName(x => x.trim().toLowerCase().startsWith(want));
+    return n ? wb.sheet(n) : null;
+  }
+
+  /* Write one day into the internal workbook. Returns {log:[], warnings:[]} */
+  TL.applyDay = async function (wb, settings, iso, lines) {
+    const log = [], warnings = [];
+    const inc = lines.filter(l => l.include && l.group !== 'Ignore' && l.group !== 'New');
+    const ev = new Map(inc.map(l => [l, TL.evalLine(settings, l)]));
+    const remarkOf = (L) => {
+      const parts = [];
+      if (L.missing) parts.push('Added manually (no scan)');
+      if (L.needsOut && L.edited.out) parts.push('Check-out entered manually (forgot to check out)');
+      else if (L.edited.out) parts.push('Check-out adjusted');
+      if (L.edited.in) parts.push('Check-in adjusted');
+      if (L.remark) parts.push(L.remark);
+      return parts.join('; ');
+    };
+    // ---- Daily Record
+    const daily = inc.filter(l => l.group === 'Air' || l.group === 'Insight' || l.group === 'COR');
+    if (daily.length) {
+      const sh = await resolveSheet(wb, settings.sheets.daily, iso);
+      if (!sh) throw new Error(`Sheet "${sheetName(settings.sheets.daily, iso)}" not found in the workbook.`);
+      const blocks = TL.findDailyBlocks(sh); const b = blocks.get(iso);
+      if (!b) throw new Error(`Date ${TL.fmtDMY(iso)} not found in column A of "${sheetName(settings.sheets.daily, iso)}".`);
+      const existing = []; for (let r = b.r0; r <= b.last; r++) { const v = sh.value('M' + r); if (typeof v === 'string' && v.trim()) existing.push(v.trim()); }
+      if (existing.length) warnings.push(`Daily Record ${TL.fmtDMY(iso)} already had ${existing.length} name(s) — replaced columns M–U for that date.`);
+      const sorted = TL.sortLines(daily.slice());
+      const rows = sorted.map(L => {
+        const r = ev.get(L); const isAg = L.group === 'Air' || L.group === 'Insight';
+        let rate = null;
+        if (isAg && settings.agency.writeRateInDaily) { const rr = TL.rateFor(settings, L); rate = rr ? rr.normal : (settings.groupRates[L.group] ?? null); }
+        return {
+          name: L.display, source: L.source, role: isAg ? (L.role || L.group) : (L.role || ''), paidIn: r.paidIn, paidOut: r.paidOut, hours: r.hours,
+          formula: isAg && TL.matchesDailyFormula(r.profile) && L.status === 'worked', remark: (r.paidIn == null || r.paidOut == null) && L.status === 'worked' ? ['TIME MISSING – please complete', remarkOf(L)].filter(Boolean).join('; ') : remarkOf(L), rate, status: L.status, statusLabel: TL.STATUS[L.status], rawIn: L.inMin, rawOut: L.outMin
+        };
+      });
+      TL.writeDaily(sh, b, rows);
+      log.push(`Daily Record ${TL.fmtDMY(iso)}: ${rows.length} people written (rows ${b.r0}–${b.r0 + rows.length - 1}, capacity ${b.capacity}).`);
+    }
+    // ---- person-column sheets
+    async function slotWrite(pattern, kind, list, label) {
+      if (!list.length) return;
+      const sh = await resolveSheet(wb, pattern, iso); if (!sh) { warnings.push(`Sheet "${sheetName(pattern, iso)}" not found — ${label} skipped.`); return; }
+      const slots = TL.findSlots(sh);
+      for (const L of list) {
+        const slot = slots.find(s => TL.normName(s.name) === TL.normName(L.slot)) || slots.find(s => TL.normName(s.name).startsWith(TL.normName(L.slot)));
+        if (!slot) { warnings.push(`${label}: column "${L.slot}" not found for ${L.display}.`); continue; }
+        const row = TL.findSlotRow(sh, slot, iso); if (!row) { warnings.push(`${label}: date ${TL.fmtDMY(iso)} not found under ${slot.name}.`); continue; }
+        const r = ev.get(L); const p = r.profile;
+        const showIn = p.showActual && L.inMin != null ? L.inMin : r.paidIn, showOut = p.showActual && L.outMin != null ? L.outMin : r.paidOut;
+        TL.writeSlot(sh, slot, row, { paidIn: showIn, paidOut: showOut, hours: r.hours, formula: TL.matchesQuarterFormula(p) && !p.showActual && showIn === r.paidIn && showOut === r.paidOut, otAfter: p.otAfterH || 0, status: L.status, statusLabel: TL.STATUS[L.status] }, kind);
+        log.push(`${label} ${TL.fmtDMY(iso)}: ${slot.name} → ${L.status === 'worked' ? TL.toHM(showIn) + '–' + TL.toHM(showOut) + ', ' + r.hours + ' h' : TL.STATUS[L.status]} (row ${row}).`);
+      }
+    }
+    await slotWrite(settings.sheets.inhouse, 'inhouse', inc.filter(l => l.group === 'In-house'), 'In-house sheet');
+    await slotWrite(settings.sheets.zero, 'zero', inc.filter(l => (l.group === '0-hour' || l.group === 'COR') && l.slot), '0 hour sheet');
+    return { log, warnings };
+  };
+
+  /* Weekly agency data from workbook. Returns {Air:{warehouse:[], flt:[]}, Insight:{...}} */
+  TL.weekAgencyData = async function (wb, settings, mondayIso) {
+    const sh = await resolveSheet(wb, settings.sheets.daily, mondayIso) || await resolveSheet(wb, settings.sheets.daily, TL.addDays(mondayIso, 6));
+    if (!sh) throw new Error('Daily Record sheet not found for that week.');
+    const blocks = TL.findDailyBlocks(sh); const people = TL.readWeek(sh, blocks, mondayIso);
+    const byNorm = new Map(); for (const p of settings.roster) { byNorm.set(TL.normName(p.display), p); if (!byNorm.has(TL.normName(p.name))) byNorm.set(TL.normName(p.name), p); }
+    const out = {}; const ag = settings.agency;
+    for (const g of ag.groups) out[g] = { warehouse: [], flt: [] };
+    for (const p of people.values()) {
+      const g = ag.groups.find(x => x.toLowerCase() === p.role.toLowerCase()); if (!g) continue;
+      const ros = byNorm.get(TL.normName(p.name)) || { display: p.name, name: p.name, agencyRole: 'Warehouse' };
+      const days = [0, 1, 2, 3, 4, 5, 6].map(d => p.days[TL.addDays(mondayIso, d)] || 0);
+      const total = days.reduce((a, b) => a + b, 0);
+      let otHours = 0;
+      if (ag.otMode === 'weekly') otHours = Math.max(0, total - ag.otWeekly);
+      else if (ag.otMode === 'daily') otHours = days.reduce((a, h) => a + Math.max(0, h - ag.otDaily), 0);
+      const rate = ag.rateSource === 'section' ? null : TL.rateFor(settings, ros);
+      const fb = ag.rateSource === 'section' ? null : (p.rate ?? settings.groupRates[g] ?? null);
+      const rec = { name: p.name, display: ros.display, days, total, otHours: Math.round(otHours * 100) / 100, agencyRole: ros.agencyRole || 'Warehouse', normal: rate ? rate.normal : fb, ot: rate ? (rate.ot ?? rate.normal) : fb };
+      (ros.agencyRole === 'FLT' ? out[g].flt : out[g].warehouse).push(rec);
+    }
+    for (const g in out) for (const k in out[g]) out[g][k].sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* ---- Existing workbook entries for a date (so re-runs and manual fixes are never lost) ---- */
+(function (G) {
+  const TL = G.TL;
+  const toMin = v => { if (typeof v !== 'number') return null; if (v > 0 && v < 1) return Math.round(v * 1440); if (v >= 1 && v < 2400) return Math.floor(v / 100) * 60 + Math.round(v % 100); return null; };
+  async function sheetFor(wb, pattern, iso) {
+    const want = pattern.replace('{YYYY}', iso.slice(0, 4)).trim().toLowerCase();
+    const n = wb.findSheetName(x => x.trim().toLowerCase() === want) || wb.findSheetName(x => x.trim().toLowerCase().startsWith(want));
+    return n ? wb.sheet(n) : null;
+  }
+  TL.readExisting = async function (wb, settings, iso) {
+    const out = { daily: [], slots: [], capacity: null };
+    const sh = await sheetFor(wb, settings.sheets.daily, iso);
+    if (sh) {
+      const b = TL.findDailyBlocks(sh).get(iso);
+      if (b) {
+        out.capacity = b.capacity;
+        for (let r = b.r0; r <= b.last; r++) {
+          const name = sh.value('M' + r); if (typeof name !== 'string' || !name.trim()) continue;
+          const P = sh.value('P' + r), Q = sh.value('Q' + r);
+          out.daily.push({ name: name.trim(), source: String(sh.value('N' + r) || '').trim(), role: String(sh.value('O' + r) || '').trim(), inMin: toMin(P), outMin: toMin(Q), statusText: typeof P === 'string' ? P : '', hours: sh.value('R' + r), remark: String(sh.value('S' + r) || '') });
+        }
+      }
+    }
+    for (const [pattern, kind] of [[settings.sheets.inhouse, 'inhouse'], [settings.sheets.zero, 'zero']]) {
+      const s2 = await sheetFor(wb, pattern, iso); if (!s2) continue;
+      for (const slot of TL.findSlots(s2)) {
+        const r = TL.findSlotRow(s2, slot, iso); if (!r) continue;
+        const I = s2.value(slot.inCol + r), O = s2.value(slot.outCol + r);
+        if (I == null && O == null) continue;
+        if (typeof I === 'string' && /^(sat|sun)$/i.test(I.trim())) continue;
+        out.slots.push({ slot: slot.name, kind, inMin: toMin(I), outMin: toMin(O), statusText: typeof I === 'string' ? I : '' });
+      }
+    }
+    return out;
+  };
+  const statusFromText = t => /annual|holiday|\bal\b/i.test(t) ? 'annual' : /sick/i.test(t) ? 'sick-paid' : /absent/i.test(t) ? 'absent' : null;
+  /* Merge: people already written in the workbook but not scanned are kept (ticked) with their times;
+     forgotten check-outs already fixed in the workbook are reused; differences are flagged. */
+  TL.mergeExisting = function (settings, lines, ex) {
+    const N = TL.normName; let kept = 0, reused = 0, diff = 0;
+    const apply = (L, e) => {
+      const st = e.statusText ? statusFromText(e.statusText) : null;
+      if (L.missing) {
+        L.include = true; L.missing = false; L.fromWb = true; kept++;
+        if (st) L.status = st; else { L.inMin = e.inMin; L.outMin = e.outMin; if (e.inMin != null) L.start = Math.min(L.start ?? e.inMin, e.inMin); }
+        L.flags = L.flags.filter(f => f.code !== 'missing');
+        L.flags.push({ code: 'kept', text: 'Kept from workbook (entered earlier, no scan today)' });
+        if (e.remark && !L.remark) L.remark = e.remark.replace(/^Added manually \(no scan\);?\s*/, '');
+        return;
+      }
+      if (L.needsOut && e.outMin != null) { L.outMin = e.outMin; L.edited.out = true; L.flags.push({ code: 'kept', text: 'Check-out ' + TL.toHM(e.outMin) + ' taken from workbook (fixed earlier)' }); reused++; return; }
+      const r = TL.evalLine(settings, L); const sa = r.profile.showActual;
+      const cin = sa ? L.inMin : r.paidIn, cout = sa ? L.outMin : r.paidOut;
+      const wbIn = e.inMin, wbOut = e.outMin;
+      if (st && L.status !== st) { L.wbStatus = st; L.flags.push({ code: 'differs', text: 'Workbook says ' + e.statusText }); diff++; return; }
+      if ((wbOut != null && cout != null && wbOut !== cout && wbOut !== L.outMin) || (wbIn != null && cin != null && wbIn !== cin)) {
+        L.wbTimes = { inMin: wbIn, outMin: wbOut }; diff++;
+        L.flags.push({ code: 'differs', text: `Workbook already says ${TL.toHM(wbIn)}–${TL.toHM(wbOut)} (scan gives ${TL.toHM(cin)}–${TL.toHM(cout)})` });
+      }
+    };
+    for (const e of ex.daily) {
+      const role = e.role.toLowerCase();
+      const L = lines.find(l => (l.group === 'Air' || l.group === 'Insight' || l.group === 'COR') && N(l.display) === N(e.name) && (l.group === 'COR' ? !role || role === 'cor' : l.group.toLowerCase() === role || !role))
+        || lines.find(l => N(l.display) === N(e.name) && l.group !== 'Ignore');
+      if (L) { apply(L, e); continue; }
+      const g = /air/i.test(e.role) ? 'Air' : /insight/i.test(e.role) ? 'Insight' : 'COR';
+      const p = { name: e.name, cat: g === 'COR' ? 'staff' : g, display: e.name, group: g, profile: g === 'COR' ? 'cor' : 'agency', start: TL.toHM(e.inMin) || settings.defaultStart, end: g === 'COR' ? TL.toHM(e.outMin) : '', source: e.source, role: e.role, agencyRole: 'Warehouse', slot: '', active: true };
+      const nl = TL.lineFrom(settings, p, null, ''); nl.isNew = true; nl.include = true; nl.fromWb = true; kept++;
+      nl.inMin = e.inMin; nl.outMin = e.outMin; const st = statusFromText(e.statusText || ''); if (st) nl.status = st;
+      nl.flags.push({ code: 'kept', text: 'Kept from workbook — not in staff list (will be added)' }); lines.push(nl);
+    }
+    for (const e of ex.slots) {
+      const L = lines.find(l => l.slot && N(l.slot) === N(e.slot) && ((e.kind === 'inhouse' && l.group === 'In-house') || (e.kind === 'zero' && (l.group === '0-hour' || l.group === 'COR'))));
+      if (!L || L.group === 'COR') continue;
+      apply(L, e);
+    }
+    TL.sortLines(lines);
+    return { kept, reused, diff };
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Weekly people per agency group (names + daily hours only) */
+(function (G) {
+  const TL = G.TL;
+  TL.weekAgencyPeople = async function (wb, settings, mondayIso) {
+    const pat = settings.sheets.daily;
+    const find = iso => { const want = pat.replace('{YYYY}', iso.slice(0, 4)).trim().toLowerCase(); return wb.findSheetName(x => x.trim().toLowerCase() === want) || wb.findSheetName(x => x.trim().toLowerCase().startsWith(want)); };
+    const name = find(mondayIso) || find(TL.addDays(mondayIso, 6)); if (!name) throw new Error('Daily Record sheet not found for that week.');
+    const sh = await wb.sheet(name); const people = TL.readWeek(sh, TL.findDailyBlocks(sh), mondayIso);
+    const byNorm = new Map(); for (const p of settings.roster) { if (!byNorm.has(TL.normName(p.display))) byNorm.set(TL.normName(p.display), p); if (!byNorm.has(TL.normName(p.name))) byNorm.set(TL.normName(p.name), p); }
+    const out = {}; for (const g of ['Air', 'Insight']) out[g] = [];
+    for (const p of people.values()) {
+      const g = ['Air', 'Insight'].find(x => x.toLowerCase() === p.role.toLowerCase()); if (!g) continue;
+      const ros = byNorm.get(TL.normName(p.name));
+      const days = [0, 1, 2, 3, 4, 5, 6].map(d => p.days[TL.addDays(mondayIso, d)] || 0);
+      out[g].push({ name: p.name, days, total: days.reduce((a, b) => a + b, 0), section: ros ? ros.agencyRole : '', ros });
+    }
+    for (const g in out) out[g].sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+<script>window.TL_DEFAULTS={
+ "version": 1,
+ "defaultStart": "07:30",
+ "leaveHours": 8,
+ "categoryRules": {
+  "air": "Air",
+  "insight": "Insight",
+  "noble": "Ignore",
+  "staff": "Ask"
+ },
+ "sheets": {
+  "daily": "Daily Record {YYYY}",
+  "inhouse": "AKA JASHAN",
+  "zero": "0 hour {YYYY}"
+ },
+ "groupRates": {
+  "Air": null,
+  "Insight": null
+ },
+ "agency": {
+  "otMode": "none",
+  "otWeekly": 40,
+  "otDaily": 8,
+  "groups": [
+   "Air",
+   "Insight"
+  ],
+  "writeRateInDaily": true,
+  "rateSource": "rates"
+ },
+ "profiles": [
+  {
+   "id": "agency",
+   "name": "Agency warehouse \u2013 match current sheet",
+   "clampStart": true,
+   "graceMin": 0,
+   "inRound": "none",
+   "capEnd": false,
+   "outRound": "none",
+   "durRound": "down15",
+   "breakAfterH": 4,
+   "breakH": 0.5,
+   "otAfterH": 0,
+   "showActual": false,
+   "note": "Count from later of scheduled start / check-in. Total time rounded down to 15 min. 30 min unpaid break if over 4 h."
+  },
+  {
+   "id": "agency15",
+   "name": "Agency warehouse \u2013 15-min clock rounding",
+   "clampStart": true,
+   "graceMin": 0,
+   "inRound": "up15",
+   "capEnd": false,
+   "outRound": "down15",
+   "durRound": "down15",
+   "breakAfterH": 4,
+   "breakH": 0.5,
+   "otAfterH": 0,
+   "showActual": false,
+   "note": "Late arrival rounded UP to next quarter (e.g. 08:06 \u2192 08:15), check-out rounded DOWN (17:05 \u2192 17:00). 30 min break if over 4 h."
+  },
+  {
+   "id": "cor",
+   "name": "COR fixed shift (Tylos contract)",
+   "clampStart": true,
+   "graceMin": 0,
+   "inRound": "none",
+   "capEnd": true,
+   "outRound": "none",
+   "durRound": "down15",
+   "breakAfterH": 0,
+   "breakH": 0,
+   "otAfterH": 0,
+   "showActual": false,
+   "note": "Paid within the scheduled shift only (no early / late extra). No break deducted."
+  },
+  {
+   "id": "inhouse",
+   "name": "In-house 40 h/week (OT after 8 h/day)",
+   "clampStart": true,
+   "graceMin": 0,
+   "inRound": "none",
+   "capEnd": false,
+   "outRound": "none",
+   "durRound": "down15",
+   "breakAfterH": 0,
+   "breakH": 0,
+   "otAfterH": 8,
+   "showActual": false,
+   "note": "Total time rounded down to 15 min, no break. Sheet Hour column = hours \u2212 8 (overtime)."
+  },
+  {
+   "id": "inhouseLate",
+   "name": "In-house late shift (out to nearest 15 min)",
+   "clampStart": true,
+   "graceMin": 0,
+   "inRound": "none",
+   "capEnd": false,
+   "outRound": "nearest15",
+   "durRound": "down15",
+   "breakAfterH": 0,
+   "breakH": 0,
+   "otAfterH": 8,
+   "showActual": false,
+   "note": "As in-house, but check-out rounded to nearest quarter (19:53 \u2192 20:00)."
+  },
+  {
+   "id": "zero",
+   "name": "Office / 0-hour (nearest 15 min)",
+   "clampStart": false,
+   "graceMin": 0,
+   "inRound": "nearest15",
+   "capEnd": false,
+   "outRound": "nearest15",
+   "durRound": "none",
+   "breakAfterH": 0,
+   "breakH": 0,
+   "otAfterH": 0,
+   "showActual": true,
+   "note": "Actual times written; in and out each rounded to nearest quarter for hours. No lunch deducted."
+  }
+ ],
+ "roster": [],
+ "rates": []
+};
+</script>
+<script>/* Tylos Labour — UI */
+(function () {
+  'use strict';
+  const TL = window.TL;
+  const DEFAULT_PW_HASH = '2f2b7e88442fbc58a3995ff4d32e69615bac6e180c14583ec403ac5594e5dff3';
+  const LS_KEY = 'tylosLabour.settings.v1';
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const fmtH = h => (h == null || isNaN(h)) ? '–' : (Math.round(h * 100) / 100).toFixed(2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1');
+  const GROUPS = ['Air', 'Insight', 'COR', 'In-house', '0-hour', 'Ignore'];
+  const GROUP_HELP = { 'Air': 'AIR agency → Daily Record + AIR timesheet', 'Insight': 'Insight agency → Daily Record + Insight timesheet', 'COR': 'Tylos contract → Daily Record (+ 0 hour sheet column)', 'In-house': 'Own column on the JASHAN / AKA sheet (40 h/week)', '0-hour': 'Own column on the 0 hour sheet', 'Ignore': 'Not counted (visitors, office, other agencies)' };
+
+  /* ---------------- storage ---------------- */
+  function loadSettings() {
+    let s = null; try { s = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { }
+    const d = JSON.parse(JSON.stringify(window.TL_DEFAULTS));
+    if (!s) { s = d; s.pwHash = DEFAULT_PW_HASH; }
+    for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k];
+    for (const k of Object.keys(d.agency)) if (s.agency[k] === undefined) s.agency[k] = d.agency[k];
+    if (!s.pwHash) s.pwHash = DEFAULT_PW_HASH;
+    return s;
+  }
+  function saveSettings() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); flash('Saved'); } catch (e) { toast('Could not save settings in this browser: ' + e.message, 'err'); } }
+  const idb = (() => {
+    let dbp = null;
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('tylosLabour', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction('files', mode); const st = t.objectStore('files'); const q = fn(st); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
+    return { get: k => tx('readonly', st => st.get(k)), set: (k, v) => tx('readwrite', st => st.put(v, k)), del: k => tx('readwrite', st => st.delete(k)) };
+  })();
+  async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  function b64ToBytes(b) { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
+  function download(bytes, name, type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+    const url = URL.createObjectURL(new Blob([bytes], { type })); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
+  }
+  function toast(msg, kind = 'ok', ms = 4200) { const t = document.createElement('div'); t.className = 'toast ' + kind; t.innerHTML = msg; $('#toasts').appendChild(t); setTimeout(() => t.classList.add('out'), ms); setTimeout(() => t.remove(), ms + 400); }
+  let flashT; function flash(m) { const el = $('#saved'); if (!el) return; el.textContent = m; el.classList.add('on'); clearTimeout(flashT); flashT = setTimeout(() => el.classList.remove('on'), 1200); }
+  const readFile = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsArrayBuffer(f); });
+  const readText = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); });
+
+  /* ---------------- state ---------------- */
+  let S = loadSettings();
+  const yesterday = () => { const d = new Date(Date.now() - 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const st = { tab: 'output', setup: 'staff', date: yesterday(), src: null, srcName: '', srcDates: [], wb: null, wbName: '', wbFrom: '', wbSaved: null, lines: null, filter: 'active', log: [], week: null, staffQ: '', staffG: 'all', rateQ: '', generated: null };
+
+  /* ---------------- login ---------------- */
+  async function boot() {
+    if (sessionStorage.getItem('tylosLabour.unlocked') === S.pwHash) return start();
+    $('#app').innerHTML = `<div class="login"><form id="loginF" class="card login-card">
+      <div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Time sheets &amp; agency payroll</small></div></div>
+      <label class="fld"><span>Password</span><input id="pw" type="password" autocomplete="current-password" autofocus></label>
+      <button class="btn primary wide">Unlock</button><p class="muted small" id="loginMsg"></p></form></div>`;
+    $('#loginF').onsubmit = async e => {
+      e.preventDefault(); const h = await sha256($('#pw').value);
+      if (h === S.pwHash) { sessionStorage.setItem('tylosLabour.unlocked', h); start(); } else { $('#loginMsg').textContent = 'Wrong password.'; $('#pw').select(); }
+    };
+  }
+  async function start() {
+    try { const w = await idb.get('latestWorkbook'); if (w) { st.wbSaved = w; } } catch (e) { }
+    shell(); render();
+  }
+  function shell() {
+    $('#app').innerHTML = `<header class="top"><div class="brand"><span class="logo">T</span><div><b>Tylos Labour</b><small>Time sheets &amp; agency payroll</small></div></div>
+      <nav class="tabs"><button data-tab="setup">${ICON.gear}<span>Setup</span></button><button data-tab="output">${ICON.sheet}<span>Daily output</span></button><button data-tab="agency">${ICON.week}<span>Weekly agency</span></button></nav>
+      <div class="top-r"><span id="saved" class="saved"></span><button class="btn ghost sm" id="lockB">${ICON.lock} Lock</button></div></header>
+      <main id="main"></main><div id="toasts"></div>`;
+    $$('.tabs button').forEach(b => b.onclick = () => { st.tab = b.dataset.tab; render(); });
+    $('#lockB').onclick = () => { sessionStorage.removeItem('tylosLabour.unlocked'); location.reload(); };
+  }
+  function render() {
+    $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === st.tab));
+    const m = $('#main');
+    if (st.tab === 'setup') renderSetup(m); else if (st.tab === 'agency') renderAgency(m); else renderOutput(m);
+  }
+
+  const ICON = {
+    gear: '<svg viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg>',
+    sheet: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+    week: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+    lock: '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+    up: '<svg viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>',
+    down: '<svg viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>',
+    warn: '<svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>',
+    plus: '<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+    trash: '<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+    check: '<svg viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',
+  };
+
+  /* ================= OUTPUT ================= */
+  function bytesToB64(u) { let bin = ''; for (let i = 0; i < u.length; i += 0x8000) bin += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(bin); }
+  async function applySettingsFile(j) {
+    const tpls = j.agencyTemplates || {}; if (j.agencyTemplate) tpls.Insight = tpls.Insight || j.agencyTemplate;
+    delete j.agencyTemplates; delete j.agencyTemplate;
+    if (!j.pwHash) j.pwHash = S.pwHash;
+    S = j; saveSettings();
+    for (const g of Object.keys(tpls)) if (tpls[g] && tpls[g].b64) await idb.set(tplKey(g), { name: tpls[g].name, savedAt: Date.now(), bytes: b64ToBytes(tpls[g].b64) });
+  }
+  function firstRunBanner() {
+    if (S.roster.length) return '';
+    return `<div class="alert warn first">${ICON.warn}<div><b>First time on this computer?</b> Import the <b>Tylos starter settings</b> file (staff list, rates and the Air / Insight timesheet templates) so the site knows your people. <label class="btn sm">${ICON.up} Import starter settings<input type="file" id="starterI" accept=".json" hidden></label></div></div>`;
+  }
+  function bindStarter() {
+    const i = $('#starterI'); if (!i) return;
+    i.onchange = async () => { const f = i.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos Labour settings file.'); await applySettingsFile(j); toast(`Starter settings imported: ${S.roster.length} staff, ${S.rates.length} rates.`); render(); } catch (e) { toast(esc(e.message), 'err'); } };
+  }
+  function renderOutput(m) {
+    const saved = st.wbSaved;
+    const wbLine = st.wb ? `<b>${esc(st.wbName)}</b> <span class="pill ok">uploaded now</span>` : saved ? `<b>${esc(saved.name)}</b> <span class="pill">saved copy · ${new Date(saved.savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}</span>` : '<span class="muted">No saved copy yet — please upload the latest workbook.</span>';
+    m.innerHTML = firstRunBanner() + `
+    <section class="steps">
+      <div class="card step"><div class="step-h"><span class="n">1</span><div><b>Work date</b><small>Required</small></div></div>
+        <label class="fld"><span>Date of check-in / check-out</span><input type="date" id="dateI" value="${st.date}"></label>
+        <div class="quick">${[-1, -2, -3].map(d => { const iso = TL.addDays(new Date().toISOString().slice(0, 10), d); return `<button class="chip" data-d="${iso}">${new Date(iso + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' })}</button>`; }).join('')}</div>
+      </div>
+      <div class="card step"><div class="step-h"><span class="n">2</span><div><b>Site check-in file</b><small>Required · CSV export</small></div></div>
+        <label class="drop" id="srcDrop"><input type="file" id="srcI" accept=".csv,text/csv">${ICON.up}<span>${st.src ? `<b>${esc(st.srcName)}</b><br><small>${st.src.length} records · dates ${esc(st.srcDates.map(d => TL.fmtDMY(d)).join(', '))}</small>` : 'Drop the site export here or <u>browse</u>'}</span></label>
+      </div>
+      <div class="card step"><div class="step-h"><span class="n">3</span><div><b>Labour time sheet &amp; task record</b><small>Optional · uses the saved copy if not uploaded</small></div></div>
+        <label class="drop slim" id="wbDrop"><input type="file" id="wbI" accept=".xlsx">${ICON.up}<span>${st.wb ? 'Replace upload' : 'Upload latest .xlsx (optional)'}</span></label>
+        <p class="small wbline">${wbLine}</p>
+      </div>
+    </section>
+    <section id="confirm"></section>
+    <section id="gen"></section>
+    <section id="logBox"></section>`;
+    bindStarter();
+    $('#dateI').onchange = e => { st.date = e.target.value; if (st.date) rebuildLines(); };
+    $$('.quick .chip').forEach(b => b.onclick = () => { st.date = b.dataset.d; $('#dateI').value = st.date; rebuildLines(); });
+    bindDrop('#srcDrop', '#srcI', async f => {
+      try { const rows = TL.parseCSV(await readText(f)); if (!rows.length || !('checkin_time' in rows[0])) throw new Error('This does not look like the site export (no checkin_time column).');
+        st.src = rows; st.srcName = f.name; st.srcDates = [...new Set(rows.map(r => (r.checkin_time || '').slice(0, 10)).filter(Boolean))].sort();
+        if (!st.srcDates.includes(st.date) && st.srcDates.length) { st.date = st.srcDates[st.srcDates.length - 1]; toast(`File has no records for the chosen date — switched to ${TL.fmtDMY(st.date)}. Change it in step 1 if needed.`, 'warn'); }
+        renderOutput(m); rebuildLines();
+      } catch (e) { toast(esc(e.message), 'err'); }
+    });
+    bindDrop('#wbDrop', '#wbI', async f => {
+      try { const buf = new Uint8Array(await readFile(f)); await TL.Workbook.open(buf); st.wb = buf; st.wbName = f.name; renderOutput(m); await rebuildLines(); toast('Workbook loaded. It will be used for this update.'); }
+      catch (e) { toast('Could not open workbook: ' + esc(e.message), 'err'); }
+    });
+    renderConfirm(); renderLog();
+  }
+  function bindDrop(zoneSel, inputSel, onFile) {
+    const z = $(zoneSel), i = $(inputSel);
+    i.onchange = () => i.files[0] && onFile(i.files[0]);
+    z.ondragover = e => { e.preventDefault(); z.classList.add('over'); }; z.ondragleave = () => z.classList.remove('over');
+    z.ondrop = e => { e.preventDefault(); z.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) onFile(f); };
+  }
+  let wbCache = { bytes: null, wb: null };
+  async function openCurrentWb() { const b = await currentWorkbookBytes(); if (!b) return null; if (wbCache.bytes !== b) wbCache = { bytes: b, wb: await TL.Workbook.open(b) }; return wbCache.wb; }
+  async function rebuildLines() {
+    if (!st.src || !st.date) { st.lines = null; renderConfirm(); return; }
+    const lines = TL.plan(S, st.src, st.date); st.merge = null;
+    try { const wb = await openCurrentWb(); if (wb) { const ex = await TL.readExisting(wb, S, st.date); st.capacity = ex.capacity; if (ex.daily.length || ex.slots.length) st.merge = Object.assign(TL.mergeExisting(S, lines, ex), { existing: ex.daily.length + ex.slots.length }); } }
+    catch (e) { console.warn(e); toast('Could not read the workbook for this date: ' + esc(e.message), 'warn'); }
+    st.lines = lines; st.generated = null; renderConfirm();
+  }
+
+  function lineCalc(L) { return TL.evalLine(S, L); }
+  function renderConfirm() {
+    const box = $('#confirm'); if (!box) return;
+    if (!st.lines) { box.innerHTML = `<div class="card empty">${ICON.sheet}<p>Choose the date and add the site file — everyone who checked in will appear here for you to confirm start times before the files are produced.</p></div>`; $('#gen').innerHTML = ''; return; }
+    const L = st.lines;
+    const counts = {}; for (const l of L) { if (l.include) counts[l.group] = (counts[l.group] || 0) + 1; }
+    const hrs = {}; for (const l of L) if (l.include) { const r = lineCalc(l); hrs[l.group] = (hrs[l.group] || 0) + r.hours; }
+    const attn = l => l.include && (l.flags.some(f => !['dup', 'kept'].includes(f.code)) || l.group === 'New');
+    const nFlag = L.filter(attn).length;
+    const nMissing = L.filter(l => l.missing).length;
+    const filters = [['active', 'Included', L.filter(l => l.include).length], ['attention', 'Needs attention', nFlag], ['missing', 'Not in file', nMissing], ['ignored', 'Not counted', L.filter(l => !l.include && !l.missing).length], ['all', 'All', L.length]];
+    const vis = L.map((l, i) => [l, i]).filter(([l]) => st.filter === 'all' || (st.filter === 'active' && l.include) || (st.filter === 'missing' && l.missing) || (st.filter === 'ignored' && !l.include && !l.missing) || (st.filter === 'attention' && attn(l)));
+    const wd = new Date(st.date + 'T12:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    box.innerHTML = `<div class="card">
+      <div class="card-h"><div><h2>4 · Confirm times — ${esc(wd)}</h2><p class="muted small">Start time decides when pay begins (early arrivals are not paid unless the rule allows). Change any time; hours update instantly.</p></div>
+        <div class="totals">${Object.keys(counts).sort((a, b) => (TL.GROUP_ORDER[a] ?? 7) - (TL.GROUP_ORDER[b] ?? 7)).map(g => `<span class="tot g-${g.replace(/\W/g, '')}"><b>${counts[g]}</b> ${esc(g)} · ${fmtH(hrs[g])} h</span>`).join('')}</div></div>
+      ${st.merge ? `<div class="alert info">${ICON.sheet}<div>The workbook already has <b>${st.merge.existing}</b> entr${st.merge.existing === 1 ? 'y' : 'ies'} for this date. ${st.merge.kept ? `<b>${st.merge.kept}</b> person(s) not in the site file were kept with their entered times. ` : ''}${st.merge.reused ? `<b>${st.merge.reused}</b> forgotten check-out(s) already fixed were reused. ` : ''}${st.merge.diff ? `<b>${st.merge.diff}</b> differ from the scan — see the orange notes and choose per person, or <button class="chip sm" id="useAllWb">use workbook times for all</button>.` : ''} Producing the file replaces this date's entries with the list below.</div></div>` : ''}
+      ${st.capacity != null && L.filter(l => l.include && ['Air', 'Insight', 'COR'].includes(l.group)).length > st.capacity ? `<div class="alert err">${ICON.warn}<div>The Daily Record has room for <b>${st.capacity}</b> people on this date but <b>${L.filter(l => l.include && ['Air', 'Insight', 'COR'].includes(l.group)).length}</b> are ticked. Insert rows for this day in the workbook (above its total row), upload it, and try again.</div></div>` : ''}
+      <div class="toolbar">
+        <div class="seg">${filters.map(([k, t, n]) => `<button data-f="${k}" class="${st.filter === k ? 'on' : ''}">${t} <i>${n}</i></button>`).join('')}</div>
+        <div class="bulk"><span class="muted small">Selected rows:</span><input type="time" id="bulkT" value="07:30" list="startTimes"><button class="btn sm" id="bulkStart">Set start</button><button class="btn sm ghost" id="bulkEnd">Set finish</button>
+        ${['06:00', '07:30', '08:00', '09:00'].map(t => `<button class="chip sm" data-bt="${t}">${t}</button>`).join('')}
+        <button class="btn sm ghost" id="saveDefaults" title="Remember the start times shown as each person's default">Save starts as defaults</button></div>
+      </div>
+      <div class="tbl-wrap"><table class="grid confirm"><thead><tr>
+        <th><input type="checkbox" id="selAll" title="Select all visible"></th><th>Count</th><th>Name</th><th>Group</th><th>Scanned<br><small>in → out</small></th><th>Start</th><th>Check-in</th><th>Check-out</th><th>Finish<br><small>(cap)</small></th><th>Paid</th><th class="r">Break</th><th class="r">Hours</th><th>Status</th><th>Rule</th><th>Notes</th></tr></thead>
+        <tbody>${vis.map(([l, i]) => rowHtml(l, i)).join('') || `<tr><td colspan="15" class="muted c">Nothing in this view.</td></tr>`}</tbody></table></div>
+      <div class="addp"><select id="addSel"><option value="">+ Add someone not in the file…</option>${S.roster.filter(p => p.active && p.group !== 'Ignore').filter(p => !L.some(l => l.key === TL.personKey(p.name, p.cat) && (l.include || l.missing))).map(p => `<option value="${esc(TL.personKey(p.name, p.cat))}">${esc(p.display)} (${esc(p.group)})</option>`).join('')}<option value="__new">New person…</option></select></div>
+    </div>
+    <datalist id="startTimes"><option value="06:00"><option value="07:00"><option value="07:30"><option value="08:00"><option value="09:00"><option value="12:00"></datalist>`;
+    $$('.seg button', box).forEach(b => b.onclick = () => { st.filter = b.dataset.f; renderConfirm(); });
+    $('#selAll').onchange = e => $$('tbody .sel', box).forEach(c => c.checked = e.target.checked);
+    $$('[data-bt]', box).forEach(b => b.onclick = () => { $('#bulkT').value = b.dataset.bt; });
+    const bulk = (field) => { const t = TL.hm($('#bulkT').value); const ids = $$('tbody .sel:checked', box).map(c => +c.closest('tr').dataset.i); if (!ids.length) return toast('Tick the rows to change first (left column).', 'warn'); ids.forEach(i => { st.lines[i][field] = t; if (st.lines[i].missing && field === 'start') st.lines[i].inMin = t; }); renderConfirm(); };
+    $('#bulkStart').onclick = () => bulk('start'); $('#bulkEnd').onclick = () => bulk('end');
+    $('#saveDefaults').onclick = () => { let n = 0; for (const l of st.lines) { if (!l.include) continue; const p = rosterFind(l); if (p && TL.toHM(l.start) !== p.start) { p.start = TL.toHM(l.start); n++; } } saveSettings(); toast(n ? `Saved ${n} default start time(s).` : 'Defaults already match.'); };
+    $('#addSel').onchange = e => { const v = e.target.value; if (!v) return; if (v === '__new') { addNewPerson(); return; } const l = st.lines.find(x => x.key === v); if (l) { l.include = true; } else { const p = S.roster.find(p => TL.personKey(p.name, p.cat) === v); const nl = TL.lineFrom(S, p, null, st.date); nl.missing = true; nl.include = true; nl.flags.push({ code: 'missing', text: 'Added by hand (no scan)' }); st.lines.push(nl); TL.sortLines(st.lines); } st.filter = 'active'; renderConfirm(); };
+    $$('tbody tr[data-i]', box).forEach(tr => bindRow(tr));
+    const ua = $('#useAllWb'); if (ua) ua.onclick = () => { let n = 0; for (const l of st.lines) if (l.wbTimes || l.wbStatus) { useWb(l); n++; } toast(`Workbook times used for ${n} person(s).`); renderConfirm(); };
+    renderGen();
+  }
+  function rosterFind(l) { return S.roster.find(p => TL.personKey(p.name, p.cat) === l.key); }
+  function rowHtml(l, i) {
+    const r = lineCalc(l); const p = r.profile;
+    const flags = l.flags.filter(f => !(f.code === 'missing' && l.include && l.inMin != null));
+    if (l.status === 'worked' && l.rawIn && l.inMin != null && l.start != null) {
+      const d = l.start - l.inMin;
+      if (p.clampStart && d >= 20) flags.unshift({ code: 'early', text: `Arrived ${TL.toHM(l.inMin)} — ${d} min before start (not paid unless start changed)` });
+      else if (d <= -10) flags.unshift({ code: 'late', text: `Late ${-d} min` });
+    }
+    const bad = l.include && (l.group === 'New' || (l.status === 'worked' && (l.inMin == null || l.outMin == null || l.outMin <= l.inMin)));
+    const warn = l.include && flags.some(f => ['auto', 'short', 'noout', 'new'].includes(f.code));
+    const timeIn = (name, v, ph = '') => `<input type="time" class="t" data-k="${name}" value="${v != null ? TL.toHM(v) : ''}" ${ph}>`;
+    const leave = l.status !== 'worked';
+    return `<tr data-i="${i}" class="${l.include ? '' : 'off'} ${bad ? 'bad' : warn ? 'warn' : ''}">
+      <td><input type="checkbox" class="sel"></td>
+      <td><label class="sw"><input type="checkbox" data-k="include" ${l.include ? 'checked' : ''}><i></i></label></td>
+      <td class="nm"><b>${esc(l.display)}</b>${l.display !== l.name ? `<small>${esc(l.name)}</small>` : ''}${l.note ? `<small class="muted">${esc(l.note)}</small>` : ''}</td>
+      <td><select data-k="group" class="g g-${l.group.replace(/\W/g, '')}">${[...GROUPS, ...(l.group === 'New' ? ['New'] : [])].map(g => `<option ${g === l.group ? 'selected' : ''}>${g}</option>`).join('')}</select></td>
+      <td class="raw">${l.rawIn ? esc(l.rawIn.slice(0, 5)) + ' → ' + esc(l.rawOut ? l.rawOut.slice(0, 5) : '—') : '<span class="muted">no scan</span>'}</td>
+      <td>${timeIn('start', l.start, 'list="startTimes"')}</td>
+      <td>${leave ? '' : timeIn('inMin', l.inMin)}</td>
+      <td>${leave ? '' : timeIn('outMin', l.outMin)}</td>
+      <td>${p.capEnd ? timeIn('end', l.end) : `<span class="muted small">${l.end != null ? '' : ''}–</span>`}</td>
+      <td class="paid">${leave ? esc(TL.STATUS[l.status]) : r.paidIn != null ? TL.toHM(r.paidIn) + '–' + TL.toHM(r.paidOut) : '<span class="muted">–</span>'}</td>
+      <td class="r">${r.breakH ? fmtH(r.breakH) : ''}</td>
+      <td class="r hrs">${fmtH(r.hours)}${p.otAfterH && r.hours > p.otAfterH ? `<small>OT ${fmtH(r.hours - p.otAfterH)}</small>` : ''}</td>
+      <td><select data-k="status">${Object.entries(TL.STATUS).map(([k, t]) => `<option value="${k}" ${k === l.status ? 'selected' : ''}>${t}</option>`).join('')}</select></td>
+      <td><select data-k="profile" class="prof" title="${esc(p.note || '')}">${S.profiles.map(q => `<option value="${q.id}" ${q.id === l.profile ? 'selected' : ''}>${esc(q.name)}</option>`).join('')}</select></td>
+      <td class="fl">${flags.map(f => `<span class="flag f-${f.code}">${f.code === 'dup' || f.code === 'kept' ? '' : ICON.warn}${esc(f.text)}${f.code === 'differs' && (l.wbTimes || l.wbStatus) ? ` <button class="chip sm" data-usewb>Use workbook times</button>` : ''}</span>`).join('')}<input class="rem" data-k="remark" placeholder="remark…" value="${esc(l.remark)}"></td></tr>`;
+  }
+  function bindRow(tr) {
+    const i = +tr.dataset.i; const l = st.lines[i];
+    const uw = tr.querySelector('[data-usewb]'); if (uw) uw.onclick = () => { useWb(l); renderConfirm(); };
+    tr.querySelectorAll('[data-k]').forEach(el => el.onchange = () => {
+      const k = el.dataset.k;
+      if (k === 'include') l.include = el.checked;
+      else if (['start', 'inMin', 'outMin', 'end'].includes(k)) { l[k] = TL.hm(el.value); if (k === 'inMin') l.edited.in = true; if (k === 'outMin') l.edited.out = true; }
+      else if (k === 'group') { l.group = el.value; const def = { 'COR': 'cor', 'In-house': 'inhouse', '0-hour': 'zero', 'Air': 'agency', 'Insight': 'agency' }[l.group]; if (def && l.isNew) l.profile = def; if ((l.group === 'Air' || l.group === 'Insight')) l.role = l.group; l.include = l.group !== 'Ignore'; if (l.isNew) { l.flags = l.flags.filter(f => f.code !== 'new'); } }
+      else if (k === 'remark') { l.remark = el.value; return; }
+      else l[k] = el.value;
+      const keepScroll = $('.tbl-wrap').scrollLeft; renderConfirm(); $('.tbl-wrap').scrollLeft = keepScroll;
+    });
+  }
+  function useWb(l) {
+    if (l.wbStatus) { l.status = l.wbStatus; l.wbStatus = null; }
+    const w = l.wbTimes;
+    if (w) {
+      const sa = TL.profileOf(S, l.profile).showActual;
+      if (w.inMin != null) { if (!sa && l.inMin != null && w.inMin > l.inMin) l.start = w.inMin; else { l.inMin = w.inMin; l.start = Math.min(l.start ?? w.inMin, w.inMin); l.edited.in = true; } }
+      if (w.outMin != null) { l.outMin = w.outMin; l.edited.out = true; }
+    }
+    l.flags = l.flags.filter(f => f.code !== 'differs'); l.wbTimes = null;
+  }
+  function addNewPerson() {
+    const name = prompt('Full name (as it should appear in the workbook):'); if (!name) return renderConfirm();
+    const group = (prompt('Group — type one of: ' + GROUPS.join(', '), 'Air') || '').trim(); const g = GROUPS.find(x => x.toLowerCase() === group.toLowerCase()) || 'Air';
+    const p = { name, cat: g === 'Air' || g === 'Insight' ? g : 'staff', display: name, group: g, profile: { 'COR': 'cor', 'In-house': 'inhouse', '0-hour': 'zero' }[g] || 'agency', start: S.defaultStart, end: '', source: '', role: g === 'Air' || g === 'Insight' ? g : '', agencyRole: 'Warehouse', slot: '', active: true };
+    S.roster.push(p); saveSettings();
+    const nl = TL.lineFrom(S, p, null, st.date); nl.missing = true; nl.include = true; nl.flags.push({ code: 'missing', text: 'Added by hand (no scan)' }); st.lines.push(nl); TL.sortLines(st.lines); st.filter = 'active'; renderConfirm();
+  }
+
+  function renderGen() {
+    const g = $('#gen'); if (!g) return;
+    const probs = TL.problems(S, st.lines || []);
+    const haveWb = st.wb || st.wbSaved;
+    g.innerHTML = `<div class="card gen">
+      <div><h2>5 · Produce files</h2>
+      ${probs.length ? `<div class="alert warn">${ICON.warn}<div><b>${probs.length} item(s) to check</b><ul>${probs.slice(0, 8).map(p => `<li>${esc(p)}</li>`).join('')}${probs.length > 8 ? `<li>… and ${probs.length - 8} more</li>` : ''}</ul></div></div>` : `<p class="ok-line">${ICON.check} All included rows have complete times.</p>`}
+      ${!haveWb ? `<div class="alert err">${ICON.warn}<div>Upload the Labour time sheet &amp; task record in step 3 (no saved copy in this browser yet).</div></div>` : ''}</div>
+      <div class="gen-btns"><button class="btn primary" id="genWb" ${haveWb ? '' : 'disabled'}>${ICON.down} Update Labour time sheet &amp; task record</button>
+      <button class="btn" id="goAgency" title="On demand — usually Monday morning for last week">${ICON.week} Agency timesheets (on demand) →</button></div></div>`;
+    $('#genWb').onclick = () => generateWorkbook(probs);
+    $('#goAgency').onclick = () => { st.tab = 'agency'; st.week = TL.mondayOf(st.date); render(); };
+  }
+  async function currentWorkbookBytes() { if (st.wb) return st.wb; if (st.wbSaved) return st.wbSaved.bytes; return null; }
+  async function generateWorkbook(probs) {
+    if (probs.length && !confirm(`${probs.length} item(s) still need checking:\n\n• ${probs.slice(0, 10).join('\n• ')}\n\nRows with missing times are written with a "TIME MISSING" remark and no hours. Continue?`)) return;
+    const btn = $('#genWb'); btn.disabled = true; btn.innerHTML = 'Working…';
+    try {
+      const bytes = await currentWorkbookBytes(); const wb = await TL.Workbook.open(bytes);
+      const res = await TL.applyDay(wb, S, st.date, st.lines);
+      // remember new people / group choices in the staff list
+      let added = 0;
+      for (const l of st.lines) {
+        if (!l.isNew || l.group === 'New') continue;
+        if (!S.roster.some(p => TL.personKey(p.name, p.cat) === l.key)) { S.roster.push({ name: l.name, cat: l.cat, display: l.display, group: l.group, profile: l.profile, start: TL.toHM(l.start), end: TL.toHM(l.end), source: l.source, role: l.role, agencyRole: l.agencyRole, slot: l.slot, active: true }); added++; }
+      }
+      if (added) saveSettings();
+      const out = await wb.save();
+      const name = (st.wbName || (st.wbSaved && st.wbSaved.name) || 'Labour time sheet and task record.xlsx').replace(/\.xlsx$/i, '') .replace(/\s*\(updated [^)]*\)$/, '') + '.xlsx';
+      await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate: st.date });
+      st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null };
+      download(out, name);
+      st.log.unshift({ at: new Date(), date: st.date, lines: res.log, warnings: res.warnings, added });
+      toast(`${ICON.check} Workbook updated for ${TL.fmtDMY(st.date)} and saved as the latest copy.`);
+      renderOutput($('#main')); await rebuildLines();
+    } catch (e) { console.error(e); toast('Could not update: ' + esc(e.message), 'err', 9000); btn.disabled = false; btn.innerHTML = 'Update Labour time sheet & task record'; }
+  }
+  function renderLog() {
+    const b = $('#logBox'); if (!b || !st.log.length) return;
+    b.innerHTML = `<div class="card"><h2>Run log</h2>${st.log.map(e => `<div class="logent"><b>${TL.fmtDMY(e.date)}</b> <span class="muted small">${e.at.toLocaleTimeString('en-GB')}</span>
+      <ul>${e.lines.map(x => `<li>${esc(x)}</li>`).join('')}${e.warnings.map(x => `<li class="w">${esc(x)}</li>`).join('')}${e.added ? `<li>${e.added} new person(s) added to the staff list.</li>` : ''}</ul></div>`).join('')}</div>`;
+  }
+
+  /* ================= AGENCY ================= */
+  const AG = ['Air', 'Insight'];
+  const tplKey = g => 'agencyTemplate:' + g;
+  async function getTemplate(g) { return (await idb.get(tplKey(g))) || (g === 'Insight' ? await idb.get('agencyTemplate') : null); }
+  const yymmdd = iso => iso.slice(2, 4) + '.' + iso.slice(5, 7) + '.' + iso.slice(8, 10);
+  const agencyFileName = (g, mon) => g === 'Air' ? `Air_Timesheet_TYLOS_WC_${yymmdd(mon)}-${yymmdd(TL.addDays(mon, 6))}.xlsx` : `${g}_Timesheet_${TL.fmtDMY(mon, '.')}-${TL.fmtDMY(TL.addDays(mon, 6), '.')}_warehouse_time_sheet.xlsx`;
+  async function renderAgency(m) {
+    const mon = st.week || TL.mondayOf(TL.addDays(new Date().toISOString().slice(0, 10), -7));
+    st.week = mon;
+    const haveWb = st.wb || st.wbSaved;
+    m.innerHTML = firstRunBanner() + `<div class="card"><div class="card-h"><div><h2>Weekly agency timesheets <span class="pill">on demand</span></h2><p class="muted small">Every Monday morning: choose last week, check, download. Only <b>names (column B)</b> and <b>daily hours (C–I)</b> are filled, plus the week dates — rates, totals and signatures stay exactly as in each agency's own template. Hours come from the Daily Record (after break) in the ${st.wb ? 'uploaded' : 'saved'} workbook.</p></div></div>
+      <div class="row gap"><label class="fld"><span>Week commencing (Monday)</span><input type="date" id="wkI" value="${mon}"></label>
+      <div class="quick">${[1, 2, 3].map(n => { const d = TL.mondayOf(TL.addDays(new Date().toISOString().slice(0, 10), -7 * n)); return `<button class="chip ${d === mon ? 'on' : ''}" data-w="${d}">${n === 1 ? 'Last week · ' : ''}w/c ${TL.fmtDMY(d)}</button>`; }).join('')}</div>
+      <span class="muted small">${new Date(mon + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} – ${new Date(TL.addDays(mon, 6) + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
+      ${haveWb ? '' : '<div class="alert err">Upload the workbook on the Daily output tab first.</div>'}
+      <div id="agPrev"><p class="muted">Loading…</p></div></div>`;
+    $('#wkI').onchange = e => { if (e.target.value) { st.week = TL.mondayOf(e.target.value); renderAgency(m); } };
+    $$('[data-w]').forEach(b => b.onclick = () => { st.week = b.dataset.w; renderAgency(m); });
+    bindStarter();
+    if (!haveWb) { $('#agPrev').innerHTML = ''; return; }
+    try {
+      const wb = await openCurrentWb();
+      const data = await TL.weekAgencyPeople(wb, S, mon);
+      const days = [0, 1, 2, 3, 4, 5, 6].map(d => TL.addDays(mon, d));
+      const blocks = [];
+      for (const g of AG) {
+        const tpl = await getTemplate(g); let secs = [];
+        if (tpl) { try { secs = await TL.agencySectionLabels(tpl.bytes); } catch (e) { secs = []; } }
+        const list = data[g]; const tot = list.reduce((a, p) => a + p.total, 0);
+        const secOf = p => secs.find(x => x.toUpperCase() === String(p.section || '').toUpperCase()) || secs[0] || '';
+        list.forEach(p => p.section = secOf(p));
+        blocks.push(`<div class="agency"><div class="card-h"><h3>${esc(g)} <span class="muted small">${list.length} people · ${fmtH(tot)} h</span></h3>
+          ${tpl ? `<button class="btn primary sm" data-dl="${g}" ${list.length ? '' : 'disabled'}>${ICON.down} Download ${esc(g)} timesheet</button>` : `<span class="alert err sm">No ${g} template — add it in Setup → Agency timesheets</span>`}</div>
+          <div class="tbl-wrap"><table class="grid"><thead><tr><th>Name (col B)</th><th>Section on timesheet</th>${days.map(d => `<th class="r">${new Date(d + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short' })}<br><small>${TL.fmtDMY(d).slice(0, 5)}</small></th>`).join('')}<th class="r">Total</th></tr></thead>
+          <tbody>${list.map((p, i) => `<tr><td>${esc(p.name)}</td><td><select data-sec="${g}:${i}" ${secs.length ? '' : 'disabled'}>${secs.map(x => `<option ${x === p.section ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></td>${p.days.map(h => `<td class="r">${h ? fmtH(h) : ''}</td>`).join('')}<td class="r"><b>${fmtH(p.total)}</b></td></tr>`).join('') || `<tr><td colspan="10" class="muted c">No ${esc(g)} hours in the Daily Record for this week.</td></tr>`}</tbody></table></div></div>`);
+      }
+      $('#agPrev').innerHTML = blocks.join('') + `<p class="small muted">Not right? Fix the day on the Daily output tab (or in the workbook), then come back. The section you choose is remembered for each person.</p>`;
+      $$('[data-sec]').forEach(el => el.onchange = () => {
+        const [g, i] = el.dataset.sec.split(':'); const p = data[g][+i]; p.section = el.value;
+        const r = p.ros || S.roster.find(x => TL.normName(x.display) === TL.normName(p.name));
+        if (r) { r.agencyRole = el.value; saveSettings(); }
+      });
+      $$('[data-dl]').forEach(b => b.onclick = async () => {
+        const g = b.dataset.dl; b.disabled = true;
+        try {
+          const tpl = await getTemplate(g);
+          const res = await TL.fillAgency(tpl.bytes, mon, data[g].map(p => ({ name: p.name, days: p.days, section: p.section })));
+          download(res.bytes, agencyFileName(g, mon));
+          toast(`${esc(g)} timesheet downloaded${res.added ? ` — ${res.added} extra row(s) added to fit everyone` : ''}.`);
+        } catch (e) { console.error(e); toast('Could not build timesheet: ' + esc(e.message), 'err'); }
+        b.disabled = false;
+      });
+    } catch (e) { $('#agPrev').innerHTML = `<div class="alert err">${esc(e.message)}</div>`; }
+  }
+
+  /* ================= SETUP ================= */
+  const SECTIONS = [['staff', 'Staff & start times'], ['rules', 'Pay rules'], ['rates', 'Pay rates'], ['agency', 'Agency timesheets'], ['workbook', 'Workbook & sheets'], ['security', 'Password & backup']];
+  function renderSetup(m) {
+    m.innerHTML = firstRunBanner() + `<div class="setup"><aside class="side">${SECTIONS.map(([k, t]) => `<button data-s="${k}" class="${st.setup === k ? 'on' : ''}">${t}</button>`).join('')}</aside><div class="pane" id="pane"></div></div>`;
+    bindStarter();
+    $$('.side button').forEach(b => b.onclick = () => { st.setup = b.dataset.s; renderSetup(m); });
+    const p = $('#pane');
+    ({ staff: setupStaff, rules: setupRules, rates: setupRates, agency: setupAgency, workbook: setupWorkbook, security: setupSecurity })[st.setup](p);
+  }
+  function setupStaff(p) {
+    const q = TL.normName(st.staffQ); const list = S.roster.map((r, i) => [r, i]).filter(([r]) => (!q || TL.normName(r.display + ' ' + r.name).includes(q)) && (st.staffG === 'all' || r.group === st.staffG));
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Staff &amp; start times</h2><p class="muted small">People found in imported site files are added here automatically. Matching uses name + category, so the two Gurpreet Singhs (Air / staff) stay separate.</p></div>
+      <button class="btn sm" id="addStaff">${ICON.plus} Add person</button></div>
+      <div class="toolbar"><input class="search" id="stQ" placeholder="Search name…" value="${esc(st.staffQ)}"><div class="seg">${['all', ...GROUPS].map(g => `<button data-g="${g}" class="${st.staffG === g ? 'on' : ''}">${g === 'all' ? 'All' : g} <i>${g === 'all' ? S.roster.length : S.roster.filter(r => r.group === g).length}</i></button>`).join('')}</div></div>
+      <div class="tbl-wrap"><table class="grid edit"><thead><tr><th>Active</th><th>Name in site file</th><th>Category</th><th>Name in workbook</th><th>Group</th><th>Pay rule</th><th>Default start</th><th>Finish (cap)</th><th>Source (col N)</th><th>Timesheet section</th><th>Sheet column</th><th></th></tr></thead><tbody>
+      ${list.map(([r, i]) => `<tr data-i="${i}"><td><label class="sw"><input type="checkbox" data-k="active" ${r.active ? 'checked' : ''}><i></i></label></td>
+        <td><input data-k="name" value="${esc(r.name)}"></td><td><input data-k="cat" value="${esc(r.cat)}" class="xs" title="Air / Insight / Noble / staff — as in the site file"></td>
+        <td><input data-k="display" value="${esc(r.display)}"></td>
+        <td><select data-k="group" class="g g-${r.group.replace(/\W/g, '')}" title="${esc(GROUP_HELP[r.group] || '')}">${GROUPS.map(g => `<option ${g === r.group ? 'selected' : ''}>${g}</option>`).join('')}</select></td>
+        <td><select data-k="profile">${S.profiles.map(q => `<option value="${q.id}" ${q.id === r.profile ? 'selected' : ''}>${esc(q.name)}</option>`).join('')}</select></td>
+        <td><input type="time" data-k="start" value="${esc(r.start)}" list="startTimes"></td><td><input type="time" data-k="end" value="${esc(r.end)}"></td>
+        <td><input data-k="source" value="${esc(r.source)}" class="sm" placeholder="e.g. Fulfilment"></td>
+        <td><input data-k="agencyRole" value="${esc(r.agencyRole || '')}" class="sm" placeholder="first section" title="Section label on the agency timesheet, e.g. WAREHOUSE 12.71 or FLT 13.00. Blank = first section." ${r.group === 'Air' || r.group === 'Insight' ? '' : 'disabled'}></td>
+        <td><input data-k="slot" value="${esc(r.slot)}" class="sm" placeholder="${r.group === 'In-house' || r.group === '0-hour' || r.group === 'COR' ? 'column name' : '—'}" title="Header name on the JASHAN / 0 hour sheet"></td>
+        <td><button class="icon" data-del="${i}" title="Delete">${ICON.trash}</button></td></tr>`).join('')}</tbody></table></div>
+      <datalist id="startTimes"><option value="06:00"><option value="07:30"><option value="08:00"><option value="09:00"><option value="12:00"></datalist>
+      <div class="legend">${GROUPS.map(g => `<span><b class="g-${g.replace(/\W/g, '')} dot"></b>${g}: ${GROUP_HELP[g]}</span>`).join('')}</div></div>`;
+    $('#stQ').oninput = e => { st.staffQ = e.target.value; const pos = e.target.selectionStart; setupStaff(p); const i = $('#stQ'); i.focus(); i.setSelectionRange(pos, pos); };
+    $$('[data-g]', p).forEach(b => b.onclick = () => { st.staffG = b.dataset.g; setupStaff(p); });
+    $$('tbody [data-k]', p).forEach(el => el.onchange = () => { const r = S.roster[+el.closest('tr').dataset.i]; const k = el.dataset.k; r[k] = el.type === 'checkbox' ? el.checked : el.value; if (k === 'group') { if (r.group === 'Air' || r.group === 'Insight') r.role = r.group; setupStaff(p); } saveSettings(); });
+    $$('[data-del]', p).forEach(b => b.onclick = () => { const r = S.roster[+b.dataset.del]; if (confirm(`Delete ${r.display} from the staff list?`)) { S.roster.splice(+b.dataset.del, 1); saveSettings(); setupStaff(p); } });
+    $('#addStaff').onclick = () => { S.roster.unshift({ name: 'New person', cat: 'Air', display: 'New person', group: 'Air', profile: 'agency', start: S.defaultStart, end: '', source: '', role: 'Air', agencyRole: 'Warehouse', slot: '', active: true }); st.staffQ = ''; st.staffG = 'all'; saveSettings(); setupStaff(p); $('tbody input[data-k="name"]', p).select(); };
+  }
+  const ROUND_OPTS = [['none', 'No rounding'], ['down15', 'Down to 15 min'], ['up15', 'Up to 15 min'], ['nearest15', 'Nearest 15 min']];
+  function setupRules(p) {
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Pay rules</h2><p class="muted small">A pay rule says how scanned times become paid hours. Each person uses one rule (Staff list), and you can switch it per day in the confirm step. Payroll unit is 15 minutes.</p></div><button class="btn sm" id="addRule">${ICON.plus} New rule</button></div>
+      <div class="rules">${S.profiles.map((r, i) => ruleCard(r, i)).join('')}</div></div>`;
+    $$('.rule', p).forEach(card => {
+      const i = +card.dataset.i; const r = S.profiles[i];
+      $$('[data-k]', card).forEach(el => el.onchange = () => { const k = el.dataset.k; r[k] = el.type === 'checkbox' ? el.checked : (el.type === 'number' ? +el.value : el.value); saveSettings(); testRule(card, r); });
+      $$('.tester input', card).forEach(el => el.oninput = () => testRule(card, r));
+      testRule(card, r);
+      const dup = $('[data-dup]', card); dup.onclick = () => { const c = JSON.parse(JSON.stringify(r)); c.id = 'r' + Date.now().toString(36); c.name = r.name + ' (copy)'; S.profiles.splice(i + 1, 0, c); saveSettings(); setupRules(p); };
+      const del = $('[data-rdel]', card); del.onclick = () => { const used = S.roster.filter(x => x.profile === r.id).length; if (S.profiles.length < 2) return; if (!confirm(`Delete rule "${r.name}"?${used ? `\n${used} person(s) use it and will switch to "${S.profiles.find(x => x !== r).name}".` : ''}`)) return; const fb = S.profiles.find(x => x !== r).id; S.roster.forEach(x => { if (x.profile === r.id) x.profile = fb; }); S.profiles.splice(i, 1); saveSettings(); setupRules(p); };
+    });
+    $('#addRule').onclick = () => { S.profiles.push({ id: 'r' + Date.now().toString(36), name: 'New rule', clampStart: true, graceMin: 0, inRound: 'none', capEnd: false, outRound: 'none', durRound: 'down15', breakAfterH: 4, breakH: 0.5, otAfterH: 0, showActual: false, note: '' }); saveSettings(); setupRules(p); };
+  }
+  function ruleCard(r, i) {
+    const sel = (k, opts) => `<select data-k="${k}">${opts.map(([v, t]) => `<option value="${v}" ${r[k] === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
+    return `<div class="rule card sub" data-i="${i}"><div class="rule-h"><input data-k="name" class="title" value="${esc(r.name)}"><div><button class="icon" data-dup title="Duplicate">⧉</button><button class="icon" data-rdel title="Delete">${ICON.trash}</button></div></div>
+      <div class="rgrid">
+        <fieldset><legend>Arrival</legend>
+          <label class="ck"><input type="checkbox" data-k="clampStart" ${r.clampStart ? 'checked' : ''}> Don't pay before the scheduled start (early arrival not paid)</label>
+          <label>Grace minutes <input type="number" min="0" max="59" data-k="graceMin" value="${r.graceMin}" class="xs"> <small class="muted">late by up to this many minutes = on time</small></label>
+          <label>Late arrival time ${sel('inRound', ROUND_OPTS)}</label></fieldset>
+        <fieldset><legend>Departure</legend>
+          <label class="ck"><input type="checkbox" data-k="capEnd" ${r.capEnd ? 'checked' : ''}> Don't pay after the scheduled finish</label>
+          <label>Check-out time ${sel('outRound', ROUND_OPTS)}</label></fieldset>
+        <fieldset><legend>Hours</legend>
+          <label>Total time worked ${sel('durRound', ROUND_OPTS)}</label>
+          <label>Unpaid break <input type="number" step="0.25" min="0" data-k="breakH" value="${r.breakH}" class="xs"> h if shift over <input type="number" step="0.5" min="0" data-k="breakAfterH" value="${r.breakAfterH}" class="xs"> h</label>
+          <label>Overtime after <input type="number" step="0.5" min="0" data-k="otAfterH" value="${r.otAfterH}" class="xs"> h/day <small class="muted">(0 = none; in-house sheet "Hour" column)</small></label>
+          <label class="ck"><input type="checkbox" data-k="showActual" ${r.showActual ? 'checked' : ''}> Write actual scanned times (not rounded) in the sheet</label></fieldset>
+      </div>
+      <label class="note">Note <input data-k="note" value="${esc(r.note || '')}"></label>
+      <div class="tester"><b>Try it</b> start <input type="time" data-t="start" value="08:00"> finish <input type="time" data-t="end" value="17:00"> scanned in <input type="time" data-t="in" value="08:06"> out <input type="time" data-t="out" value="17:05"> <span class="res"></span></div></div>`;
+  }
+  function testRule(card, r) {
+    const g = k => TL.hm($(`[data-t="${k}"]`, card).value);
+    const res = TL.compute({ inMin: g('in'), outMin: g('out'), start: g('start'), end: g('end'), status: 'worked' }, r);
+    $('.res', card).innerHTML = res.paidIn == null ? '–' : `→ paid <b>${TL.toHM(res.paidIn)}–${TL.toHM(res.paidOut)}</b>${res.breakH ? `, break ${fmtH(res.breakH)} h` : ''} = <b class="big">${fmtH(res.hours)} h</b>${r.otAfterH && res.hours > r.otAfterH ? ` (OT ${fmtH(res.hours - r.otAfterH)} h)` : ''}`;
+  }
+  function setupRates(p) {
+    const q = TL.normName(st.rateQ); const list = S.rates.map((r, i) => [r, i]).filter(([r]) => !q || TL.normName(r.name).includes(q));
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Pay rates</h2><p class="muted small">Per person: normal hourly rate and overtime hourly rate. Used for Daily Record column T (U = hours × rate) and the agency timesheets. Matched on "Name in workbook" or the site name.</p></div>
+      <div class="btns"><button class="btn sm ghost" id="rtTpl">${ICON.down} Download template</button><label class="btn sm ghost">${ICON.up} Upload rates<input type="file" id="rtUp" accept=".csv,.txt" hidden></label><button class="btn sm" id="rtAdd">${ICON.plus} Add</button></div></div>
+      <div class="row gap"><input class="search" id="rtQ" placeholder="Search…" value="${esc(st.rateQ)}"><span class="muted small">${S.rates.length} rates</span>
+        <label class="small ck"><input type="checkbox" id="wrD" ${S.agency.writeRateInDaily ? 'checked' : ''}> Write rate into Daily Record column T (U = R × T)</label>
+        <span class="small">If someone has no rate: Air <input type="number" step="0.01" class="xs" data-gr="Air" value="${S.groupRates.Air ?? ''}"> Insight <input type="number" step="0.01" class="xs" data-gr="Insight" value="${S.groupRates.Insight ?? ''}"></span></div>
+      <div class="tbl-wrap"><table class="grid edit"><thead><tr><th>Name</th><th class="r">Normal £/h</th><th class="r">Overtime £/h</th><th></th></tr></thead><tbody>
+      ${list.map(([r, i]) => `<tr data-i="${i}"><td><input data-k="name" value="${esc(r.name)}"></td><td><input type="number" step="0.01" data-k="normal" value="${r.normal ?? ''}" class="num"></td><td><input type="number" step="0.01" data-k="ot" value="${r.ot ?? ''}" class="num"></td><td><button class="icon" data-del="${i}">${ICON.trash}</button></td></tr>`).join('')}</tbody></table></div></div>`;
+    $('#rtQ').oninput = e => { st.rateQ = e.target.value; const pos = e.target.selectionStart; setupRates(p); const i = $('#rtQ'); i.focus(); i.setSelectionRange(pos, pos); };
+    $('#wrD').onchange = e => { S.agency.writeRateInDaily = e.target.checked; saveSettings(); };
+    $$('[data-gr]', p).forEach(el => el.onchange = () => { S.groupRates[el.dataset.gr] = el.value === '' ? null : +el.value; saveSettings(); });
+    $$('tbody [data-k]', p).forEach(el => el.onchange = () => { const r = S.rates[+el.closest('tr').dataset.i]; r[el.dataset.k] = el.type === 'number' ? (el.value === '' ? null : +el.value) : el.value; saveSettings(); });
+    $$('[data-del]', p).forEach(b => b.onclick = () => { S.rates.splice(+b.dataset.del, 1); saveSettings(); setupRates(p); });
+    $('#rtAdd').onclick = () => { S.rates.unshift({ name: '', normal: null, ot: null }); st.rateQ = ''; saveSettings(); setupRates(p); $('tbody input', p).focus(); };
+    $('#rtTpl').onclick = () => { const rows = [['Name', 'Normal rate', 'OT rate'], ...S.rates.map(r => [r.name, r.normal ?? '', r.ot ?? ''])]; download(new TextEncoder().encode('﻿' + rows.map(r => r.map(v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v).join(',')).join('\r\n')), 'Tylos pay rates.csv', 'text/csv'); };
+    $('#rtUp').onchange = async e => {
+      const f = e.target.files[0]; if (!f) return;
+      try {
+        const text = await readText(f); const rows = TL.parseCSV(text);
+        const k = Object.keys(rows[0] || {}); const kn = k.find(x => /name/.test(x)), kr = k.find(x => /normal|standard|rate/.test(x) && !/ot|over/.test(x)), ko = k.find(x => /ot|over/.test(x));
+        if (!kn || !kr) throw new Error('Need columns: Name, Normal rate, OT rate.');
+        const replace = confirm(`Found ${rows.length} rates.\n\nOK = replace the whole list\nCancel = merge (update matching names, add new ones)`);
+        const num = v => { const n = parseFloat(String(v).replace(/[£,\s]/g, '')); return isNaN(n) ? null : n; };
+        const incoming = rows.filter(r => r[kn]).map(r => ({ name: r[kn].trim(), normal: num(r[kr]), ot: ko ? num(r[ko]) : num(r[kr]) }));
+        if (replace) S.rates = incoming; else for (const r of incoming) { const ex = S.rates.find(x => TL.normName(x.name) === TL.normName(r.name)); if (ex) Object.assign(ex, r); else S.rates.push(r); }
+        saveSettings(); setupRates(p); toast(`${incoming.length} rates ${replace ? 'loaded' : 'merged'}.`);
+      } catch (err) { toast(esc(err.message), 'err'); }
+    };
+  }
+  function setupAgency(p) {
+    p.innerHTML = `<div class="card"><h2>Agency timesheets</h2>
+      <p class="small muted">Each agency has its own template. The site fills only column B (names) and C–I (Mon–Sun hours) plus the week dates; everything else (rates, formulas, signatures) is kept as in the template. If a section is full, rows are inserted and its totals extended.</p>
+      ${AG.map(g => `<fieldset class="box"><legend>${g} template</legend><p class="small" id="ti-${g}">Checking…</p>
+        <label class="btn sm ghost">${ICON.up} Upload ${g} template<input type="file" data-up="${g}" accept=".xlsx" hidden></label> <button class="btn sm ghost" data-dlt="${g}">${ICON.down} Download current</button></fieldset>`).join('')}
+      <p class="small muted">Which section each person goes in (e.g. WAREHOUSE 12.71 or FLT 13.00) is chosen on the Weekly agency tab and remembered.</p></div>`;
+    for (const g of AG) {
+      getTemplate(g).then(async t => {
+        let secs = []; if (t) { try { secs = await TL.agencySectionLabels(t.bytes); } catch (e) { } }
+        $('#ti-' + g).innerHTML = t ? `<b>${esc(t.name)}</b> (saved ${new Date(t.savedAt).toLocaleDateString('en-GB')}) · sections: ${secs.map(x => `<span class="pill">${esc(x)}</span>`).join(' ') || '<span style="color:var(--err)">layout not recognised</span>'}` : '<span style="color:var(--err)">No template yet — upload it, or import the starter settings file.</span>';
+      });
+    }
+    $$('[data-up]', p).forEach(el => el.onchange = async () => {
+      const g = el.dataset.up; const f = el.files[0]; if (!f) return;
+      try { const b = new Uint8Array(await readFile(f)); const secs = await TL.agencySectionLabels(b); await idb.set(tplKey(g), { name: f.name, savedAt: Date.now(), bytes: b }); toast(`${g} template saved (${secs.length} sections).`); setupAgency(p); }
+      catch (err) { toast('Template not usable: ' + esc(err.message), 'err'); }
+    });
+    $$('[data-dlt]', p).forEach(el => el.onclick = async () => { const t = await getTemplate(el.dataset.dlt); if (!t) return toast('No template saved yet.', 'warn'); download(t.bytes, t.name); });
+  }
+  function setupWorkbook(p) {
+    const sv = st.wbSaved;
+    p.innerHTML = `<div class="card"><h2>Workbook &amp; sheets</h2>
+      <fieldset class="box"><legend>Saved workbook (this browser)</legend>
+        <p class="small">${sv ? `<b>${esc(sv.name)}</b> — saved ${new Date(sv.savedAt).toLocaleString('en-GB')}${sv.lastDate ? `, last day written ${TL.fmtDMY(sv.lastDate)}` : ''}` : 'None yet.'}</p>
+        <p class="small muted">Each update is stored here so the next day continues from it. The copy lives only in this browser on this computer — if Cheryl and Winnie both use the site, always upload the newest workbook (or keep one person on duty).</p>
+        ${sv ? `<button class="btn sm ghost" id="wbDl">${ICON.down} Download saved copy</button> <button class="btn sm ghost" id="wbClr">Forget saved copy</button>` : ''}</fieldset>
+      <fieldset class="box"><legend>Sheet names</legend><p class="small muted">{YYYY} is replaced by the year of the work date (e.g. "Daily Record 2027" next year).</p>
+        <label class="fld inline"><span>Daily record</span><input data-sh="daily" value="${esc(S.sheets.daily)}"></label>
+        <label class="fld inline"><span>In-house (JASHAN / AKA)</span><input data-sh="inhouse" value="${esc(S.sheets.inhouse)}"></label>
+        <label class="fld inline"><span>0 hour sheet</span><input data-sh="zero" value="${esc(S.sheets.zero)}"></label></fieldset>
+      <fieldset class="box"><legend>Defaults</legend>
+        <label class="fld inline"><span>Default start time for new people</span><input type="time" id="defS" value="${esc(S.defaultStart)}"></label>
+        <label class="fld inline"><span>Hours paid for Annual Leave / paid sick day</span><input type="number" step="0.25" id="lvH" value="${S.leaveHours}" class="xs"></label>
+        <p class="small"><b>New people in the site file</b> (by category):</p>
+        ${Object.entries(S.categoryRules).map(([c, g]) => `<label class="fld inline"><span>${esc(c)}</span><select data-cr="${esc(c)}">${[...GROUPS, 'Ask'].map(x => `<option ${x === g ? 'selected' : ''}>${x}</option>`).join('')}</select></label>`).join('')}
+      </fieldset></div>`;
+    $$('[data-sh]', p).forEach(el => el.onchange = () => { S.sheets[el.dataset.sh] = el.value; saveSettings(); });
+    $('#defS').onchange = e => { S.defaultStart = e.target.value; saveSettings(); };
+    $('#lvH').onchange = e => { S.leaveHours = +e.target.value; saveSettings(); };
+    $$('[data-cr]', p).forEach(el => el.onchange = () => { S.categoryRules[el.dataset.cr] = el.value; saveSettings(); });
+    if (sv) { $('#wbDl').onclick = () => download(sv.bytes, sv.name); $('#wbClr').onclick = async () => { if (!confirm('Forget the saved workbook in this browser?')) return; await idb.del('latestWorkbook'); st.wbSaved = null; setupWorkbook(p); }; }
+  }
+  function setupSecurity(p) {
+    p.innerHTML = `<div class="card"><h2>Password &amp; backup</h2>
+      <form class="box" id="pwF"><legend>Change password</legend>
+        <label class="fld inline"><span>Current</span><input type="password" id="pw0" autocomplete="current-password"></label>
+        <label class="fld inline"><span>New</span><input type="password" id="pw1" autocomplete="new-password"></label>
+        <label class="fld inline"><span>Repeat new</span><input type="password" id="pw2" autocomplete="new-password"></label>
+        <button class="btn sm">Change password</button>
+        <p class="small muted">The password is stored (as a hash) in this browser only. Each computer starts with the default until changed there — or import a settings file. This is a simple lock; payroll data never leaves the computer.</p></form>
+      <fieldset class="box"><legend>Settings backup / share</legend><p class="small muted">Export staff list, rules, rates and options to a file — import it on Cheryl's or Winnie's computer so everyone works the same way.</p>
+        <button class="btn sm ghost" id="exS">${ICON.down} Export settings</button> <label class="btn sm ghost">${ICON.up} Import settings<input type="file" id="imS" accept=".json" hidden></label>
+        <button class="btn sm ghost danger" id="rsS">Reset everything to defaults</button></fieldset></div>`;
+    $('#pwF').onsubmit = async e => {
+      e.preventDefault(); if (await sha256($('#pw0').value) !== S.pwHash) return toast('Current password is wrong.', 'err');
+      if ($('#pw1').value.length < 6) return toast('Use at least 6 characters.', 'err'); if ($('#pw1').value !== $('#pw2').value) return toast('New passwords do not match.', 'err');
+      S.pwHash = await sha256($('#pw1').value); saveSettings(); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Password changed.'); setupSecurity(p);
+    };
+    $('#exS').onclick = async () => { const c = JSON.parse(JSON.stringify(S)); c.agencyTemplates = {}; for (const g of AG) { const t = await getTemplate(g); if (t) c.agencyTemplates[g] = { name: t.name, b64: bytesToB64(t.bytes) }; } download(new TextEncoder().encode(JSON.stringify(c, null, 1)), `tylos-labour-settings-${new Date().toISOString().slice(0, 10)}.json`, 'application/json'); };
+    $('#imS').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos Labour settings file.'); if (!confirm('Replace this browser’s staff list, rules, rates and options with the file?' + (j.pwHash ? '\n(The password from the file will also be used.)' : ''))) return; await applySettingsFile(j); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Settings imported.'); render(); } catch (err) { toast(esc(err.message), 'err'); } };
+    $('#rsS').onclick = () => { if (!confirm('Reset staff, rules, rates, options and password to the original defaults?')) return; localStorage.removeItem(LS_KEY); S = loadSettings(); saveSettings(); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Reset done.'); render(); };
+  }
+
+  window.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+</body>
+</html>
