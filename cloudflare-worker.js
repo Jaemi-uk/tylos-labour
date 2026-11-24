@@ -4,7 +4,7 @@
 
 const DEFAULT_PW_HASH = '2f2b7e88442fbc58a3995ff4d32e69615bac6e180c14583ec403ac5594e5dff3'; // *Tylos2026
 const ALLOW_PASSWORD_CHANGE = false; // set to true to allow changing the shared password from the site
-const ALLOWED_ORIGINS = ['https://tylos-labour.jaemi.uk', 'https://jaemi.uk', 'https://www.jaemi.uk', 'http://127.0.0.1:8765'];
+const ALLOWED_ORIGINS = ['https://tylos-labour.jaemi.uk', 'https://jaemi.uk', 'https://www.jaemi.uk'];
 
 async function sha256(t) {
   const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
