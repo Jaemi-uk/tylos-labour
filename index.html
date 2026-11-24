@@ -78,6 +78,7 @@ html,body{overflow-x:hidden}
 .daytabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 -1px 0}.daytabs button{position:relative;display:flex;flex-direction:column;align-items:flex-start;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:#eef2f5;padding:7px 14px;font:inherit;cursor:pointer;color:#3c4a58}.daytabs button.on{background:#fff;color:var(--ink);box-shadow:0 -2px 0 var(--teal) inset}.daytabs small{color:var(--muted);font-size:11.5px}.daytabs .badge{position:absolute;top:-6px;right:-6px;background:var(--warn);color:#fff;font-style:normal;font-size:11px;border-radius:10px;padding:0 6px}
 .row.tight{gap:10px}.row.tight .fld{flex:1}.row.tight input[type=date]{width:100%}
 .startcell{min-width:150px}.startcell .chip{display:block;margin:4px 0 0;width:max-content}.sfrom{display:block;width:max-content;margin:4px 0 0;font-size:11.5px;color:#1d5fbf;background:#eaf2fd;border-radius:10px;padding:1px 4px 1px 8px}.sfrom.now{color:var(--ok);background:var(--okbg)}.sfrom .x{border:0;background:none;cursor:pointer;color:inherit;font-size:13px;padding:0 3px}
+th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:15px}
 </style>
 </head>
 <body>
@@ -1745,7 +1746,7 @@ html,body{overflow-x:hidden}
       <nav class="tabs"><button data-tab="setup">${ICON.gear}<span>Setup</span></button><button data-tab="output">${ICON.sheet}<span>Daily output</span></button><button data-tab="agency">${ICON.week}<span>Weekly agency</span></button></nav>
       <div class="top-r"><span id="saved" class="saved"></span><span class="mode ${cloud.on ? 'on' : ''}" title="${cloud.on ? 'Staff list, rates, templates, password and the latest workbook are shared with everyone' : 'Data is kept on this computer only'}">${cloud.on ? '● Shared' : '○ This computer only'}</span><span class="who">${esc(cloud.who)}</span><button class="btn ghost sm" id="lockB">${ICON.lock} Lock</button></div></header>
       <main id="main"></main><div id="saveBar" class="savebar hidden"></div><div id="toasts"></div>`;
-    $$('.tabs button').forEach(b => b.onclick = async () => { if (st.tab === 'setup' && b.dataset.tab !== 'setup' && !(await leaveSetupOk())) return; st.tab = b.dataset.tab; render(); });
+    $$('.tabs button').forEach(b => b.onclick = async () => { if (st.tab === 'setup' && b.dataset.tab !== 'setup' && !(await leaveSetupOk())) return; if (b.dataset.tab === 'agency' && st.tab !== 'agency') { st.week = null; st.agFrom = null; } st.tab = b.dataset.tab; render(); });
     $('#lockB').onclick = async () => { if (st.tab === 'setup' && !(await leaveSetupOk())) return; sessionStorage.removeItem('tylosLabour.unlocked'); sessionStorage.removeItem('tylosLabour.key'); location.reload(); };
   }
   function render() {
@@ -1990,7 +1991,7 @@ html,body{overflow-x:hidden}
       <button class="btn" id="goAgency" title="On demand — usually Monday morning for last week">${ICON.week} Agency timesheets (on demand) →</button></div></div>`;
     $('#dlFull').onclick = async () => { if (cloud.on) await ensureLatestWorkbook(true); const w = st.wbSaved; if (w) download(w.bytes, w.name); };
     $('#genWb').onclick = () => generateWorkbook(probs);
-    $('#goAgency').onclick = () => { st.tab = 'agency'; st.week = TL.mondayOf(st.date); render(); };
+    $('#goAgency').onclick = () => { st.tab = 'agency'; st.week = TL.mondayOf(st.from || st.date); st.agFrom = null; render(); };
   }
   async function currentWorkbookBytes() { if (st.wb) return st.wb; if (st.wbSaved) return st.wbSaved.bytes; return null; }
   async function generateWorkbook(probs) {
@@ -2051,48 +2052,64 @@ html,body{overflow-x:hidden}
   const yymmdd = iso => iso.slice(2, 4) + '.' + iso.slice(5, 7) + '.' + iso.slice(8, 10);
   const agencyFileName = (g, mon) => g === 'Air' ? `Air_Timesheet_TYLOS_WC_${yymmdd(mon)}-${yymmdd(TL.addDays(mon, 6))}.xlsx` : `${String(TL.groupCode(S, g) || g).replace(/[^\w.-]+/g, '_')}_Timesheet_${TL.fmtDMY(mon, '.')}-${TL.fmtDMY(TL.addDays(mon, 6), '.')}_warehouse_time_sheet.xlsx`;
   async function renderAgency(m) {
-    const mon = st.week || TL.mondayOf(TL.addDays(new Date().toISOString().slice(0, 10), -7));
-    st.week = mon;
+    const t = todayIso(); const suggested = TL.mondayOf(TL.addDays(t, -7));
+    if (!st.agFrom) { st.agFrom = st.week || suggested; st.agTo = TL.addDays(st.agFrom, 6); }
+    const from = st.agFrom, to = st.agTo;
+    const sp = x => new Date(x + 'T12:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    const quick = [{ l: '★ Suggested · last week', f: suggested, t: TL.addDays(suggested, 6) }, { l: 'This week so far', f: TL.mondayOf(t), t: TL.addDays(t, -1) < TL.mondayOf(t) ? TL.mondayOf(t) : TL.addDays(t, -1) }, { l: '2 weeks ago', f: TL.addDays(suggested, -7), t: TL.addDays(suggested, -1) }, { l: 'Last 2 weeks', f: TL.addDays(suggested, -7), t: TL.addDays(suggested, 6) }];
+    const weeks = []; for (let w = TL.mondayOf(from); w <= to && weeks.length < 6; w = TL.addDays(w, 7)) weeks.push(w);
     const haveWb = st.wb || st.wbSaved;
-    m.innerHTML = firstRunBanner() + `<div class="card"><div class="card-h"><div><h2>Weekly agency timesheets <span class="pill">on demand</span></h2><p class="muted small">Every Monday morning: choose last week, check, download. Only <b>names (column B)</b> and <b>daily hours (C–I)</b> are filled, plus the week dates — rates, totals and signatures stay exactly as in each agency's own template. Hours come from the Daily Record (after break) in the ${st.wb ? 'uploaded' : 'saved'} workbook.</p></div></div>
-      <div class="row gap"><label class="fld"><span>Week commencing (Monday)</span><input type="date" id="wkI" value="${mon}"></label>
-      <div class="quick">${[1, 2, 3].map(n => { const d = TL.mondayOf(TL.addDays(new Date().toISOString().slice(0, 10), -7 * n)); return `<button class="chip ${d === mon ? 'on' : ''}" data-w="${d}">${n === 1 ? 'Last week · ' : ''}w/c ${TL.fmtDMY(d)}</button>`; }).join('')}</div>
-      <span class="muted small">${new Date(mon + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })} – ${new Date(TL.addDays(mon, 6) + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
+    m.innerHTML = firstRunBanner() + `<div class="card"><div class="card-h"><div><h2>Weekly agency timesheets <span class="pill">on demand</span></h2><p class="muted small">Usually on Monday for last week — or pick any period. Each agency timesheet holds one Monday–Sunday week, so days outside the period stay blank and a period over several weeks gives one timesheet per week. Only <b>names (column B)</b> and <b>daily hours (C–I)</b> are filled, plus the week dates — rates, totals and signatures stay exactly as in each agency's own template. Hours come from the Daily Record (after break) in the ${st.wb ? 'uploaded' : 'saved'} workbook.</p></div></div>
+      <div class="row gap tight" style="max-width:520px"><label class="fld"><span>From</span><input type="date" id="agF" value="${from}"></label><label class="fld"><span>To</span><input type="date" id="agT" value="${to}"></label></div>
+      <div class="quick">${quick.map(q => `<button class="chip ${q.f === from && q.t === to ? 'on' : ''}" data-af="${q.f}" data-at="${q.t}">${q.l} · ${sp(q.f)}–${sp(q.t)}</button>`).join('')}</div>
+      <p class="small muted" style="margin:6px 0 0">${weeks.length} timesheet week${weeks.length > 1 ? 's' : ''}: ${weeks.map(w => `w/c ${TL.fmtDMY(w)}`).join(', ')}${from !== suggested || to !== TL.addDays(suggested, 6) ? ` · <a href="#" id="agSug">back to suggested (last week)</a>` : ''}</p>
       ${haveWb ? '' : '<div class="alert err">Upload the workbook on the Daily output tab first.</div>'}
       <div id="agPrev"><p class="muted">Loading…</p></div></div>`;
-    $('#wkI').onchange = e => { if (e.target.value) { st.week = TL.mondayOf(e.target.value); renderAgency(m); } };
-    $$('[data-w]').forEach(b => b.onclick = () => { st.week = b.dataset.w; renderAgency(m); });
+    const setP = (f, tt) => { if (!f) return; if (!tt || tt < f) tt = f; if (TL.isoToSerial(tt) - TL.isoToSerial(f) > 41) { tt = TL.addDays(f, 41); toast('Up to 6 weeks at a time.', 'warn'); } st.agFrom = f; st.agTo = tt; renderAgency(m); };
+    $('#agF').onchange = e => setP(e.target.value, st.agTo >= e.target.value ? st.agTo : TL.addDays(e.target.value, 6));
+    $('#agT').onchange = e => setP(st.agFrom, e.target.value);
+    $$('[data-af]').forEach(b => b.onclick = () => setP(b.dataset.af, b.dataset.at));
+    const sg = $('#agSug'); if (sg) sg.onclick = e => { e.preventDefault(); setP(suggested, TL.addDays(suggested, 6)); };
     bindStarter();
     if (!haveWb && !cloud.on) { $('#agPrev').innerHTML = ''; return; }
     try {
       if (cloud.on) await ensureLatestWorkbook();
       const wb = await openCurrentWb(); if (!wb) { $('#agPrev').innerHTML = ''; return; }
-      const data = await TL.weekAgencyPeople(wb, S, mon);
-      const days = [0, 1, 2, 3, 4, 5, 6].map(d => TL.addDays(mon, d));
-      const blocks = [];
-      for (const g of AGS()) {
-        const tpl = await getTemplate(g); let secs = [];
-        if (tpl) { try { secs = await TL.agencySectionLabels(tpl.bytes); } catch (e) { secs = []; } }
-        const list = data[g]; const tot = list.reduce((a, p) => a + p.total, 0);
-        const secOf = p => secs.find(x => x.toUpperCase() === String(p.section || '').toUpperCase()) || secs[0] || '';
-        list.forEach(p => p.section = secOf(p));
-        blocks.push(`<div class="agency"><div class="card-h"><h3>${esc(GL(g))} <span class="muted small">${list.length} people · ${fmtH(tot)} h</span></h3>
-          ${tpl ? `<button class="btn primary sm" data-dl="${g}" ${list.length ? '' : 'disabled'}>${ICON.down} Download ${esc(GL(g))} timesheet</button>` : `<span class="alert err sm">No ${esc(GL(g))} template — add it in Setup → Agency timesheets</span>`}</div>
-          <div class="tbl-wrap"><table class="grid"><thead><tr><th>Name (col B)</th><th>Section on timesheet</th>${days.map(d => `<th class="r">${new Date(d + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short' })}<br><small>${TL.fmtDMY(d).slice(0, 5)}</small></th>`).join('')}<th class="r">Total</th></tr></thead>
-          <tbody>${list.map((p, i) => `<tr><td>${esc(p.name)}</td><td><select data-sec="${g}:${i}" ${secs.length ? '' : 'disabled'}>${secs.map(x => `<option ${x === p.section ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></td>${p.days.map(h => `<td class="r">${h ? fmtH(h) : ''}</td>`).join('')}<td class="r"><b>${fmtH(p.total)}</b></td></tr>`).join('') || `<tr><td colspan="10" class="muted c">No ${esc(GL(g))} hours in the Daily Record for this week.</td></tr>`}</tbody></table></div></div>`);
+      const secCache = {}; const all = {}; const blocks = [];
+      for (const mon of weeks) {
+        let data; try { data = await TL.weekAgencyPeople(wb, S, mon); } catch (e) { blocks.push(`<div class="alert err">w/c ${TL.fmtDMY(mon)}: ${esc(e.message)}</div>`); continue; }
+        const days = [0, 1, 2, 3, 4, 5, 6].map(d => TL.addDays(mon, d)); const inP = days.map(d => d >= from && d <= to); const partial = inP.includes(false);
+        all[mon] = { data, partial, days, inP };
+        if (weeks.length > 1) blocks.push(`<h3 class="wkh">Week commencing ${TL.fmtDMY(mon)}${partial ? ` <span class="pill">part week · ${sp(days[inP.indexOf(true)])}–${sp(days[inP.lastIndexOf(true)])}</span>` : ''}</h3>`);
+        for (const g of AGS()) {
+          const tpl = await getTemplate(g);
+          if (!(g in secCache)) { secCache[g] = []; if (tpl) { try { secCache[g] = await TL.agencySectionLabels(tpl.bytes); } catch (e) { } } }
+          const secs = secCache[g];
+          const list = (data[g] || []).map(p => { const dd = p.days.map((h, k) => inP[k] ? h : 0); return Object.assign(p, { days: dd, total: dd.reduce((a, b) => a + (+b || 0), 0) }); }).filter(p => p.total > 0);
+          data[g] = list;
+          const tot = list.reduce((a, p) => a + p.total, 0);
+          const secOf = p => secs.find(x => x.toUpperCase() === String(p.section || '').toUpperCase()) || secs[0] || '';
+          list.forEach(p => p.section = secOf(p));
+          blocks.push(`<div class="agency"><div class="card-h"><h3>${esc(GL(g))} <span class="muted small">${weeks.length > 1 ? 'w/c ' + TL.fmtDMY(mon) + ' · ' : ''}${list.length} people · ${fmtH(tot)} h</span></h3>
+          ${tpl ? `<button class="btn primary sm" data-dl="${g}|${mon}" ${list.length ? '' : 'disabled'}>${ICON.down} Download ${esc(GL(g))} timesheet${weeks.length > 1 ? ' · w/c ' + TL.fmtDMY(mon) : ''}</button>` : `<span class="alert err sm">No ${esc(GL(g))} template — add it in Setup → Agency timesheets</span>`}</div>
+          <div class="tbl-wrap"><table class="grid"><thead><tr><th>Name (col B)</th><th>Section on timesheet</th>${days.map((d, k) => `<th class="r ${inP[k] ? '' : 'off'}">${new Date(d + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short' })}<br><small>${TL.fmtDMY(d).slice(0, 5)}</small></th>`).join('')}<th class="r">Total</th></tr></thead>
+          <tbody>${list.map((p, i) => `<tr><td>${esc(p.name)}</td><td><select data-sec="${g}|${mon}|${i}" ${secs.length ? '' : 'disabled'}>${secs.map(x => `<option ${x === p.section ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></td>${p.days.map((h, k) => `<td class="r ${inP[k] ? '' : 'off'}">${h ? fmtH(h) : ''}</td>`).join('')}<td class="r"><b>${fmtH(p.total)}</b></td></tr>`).join('') || `<tr><td colspan="10" class="muted c">No ${esc(GL(g))} hours in the Daily Record for ${partial ? 'these days' : 'this week'}.</td></tr>`}</tbody></table></div></div>`);
+        }
       }
       $('#agPrev').innerHTML = blocks.join('') + `<p class="small muted">Not right? Fix the day on the Daily output tab (or in the workbook), then come back. The section you choose is remembered for each person.</p>`;
       $$('[data-sec]').forEach(el => el.onchange = () => {
-        const [g, i] = el.dataset.sec.split(':'); const p = data[g][+i]; p.section = el.value;
+        const [g, mon, i] = el.dataset.sec.split('|'); const p = all[mon].data[g][+i]; p.section = el.value;
         const r = p.ros || S.roster.find(x => TL.normName(x.display) === TL.normName(p.name));
         if (r) { r.agencyRole = el.value; commitSettings('Weekly agency', true); }
       });
       $$('[data-dl]').forEach(b => b.onclick = async () => {
-        const g = b.dataset.dl; b.disabled = true;
+        const [g, mon] = b.dataset.dl.split('|'); const W = all[mon]; b.disabled = true;
         try {
           const tpl = await getTemplate(g);
-          const res = await TL.fillAgency(tpl.bytes, mon, data[g].map(p => ({ name: p.name, days: p.days, section: p.section })));
-          download(res.bytes, agencyFileName(g, mon)); logEvent('Weekly agency', `${GL(g)} timesheet downloaded for w/c ${TL.fmtDMY(mon)} (${data[g].length} people)`); commitSettings('Weekly agency', true);
+          const res = await TL.fillAgency(tpl.bytes, mon, W.data[g].map(p => ({ name: p.name, days: p.days, section: p.section })));
+          let fn = agencyFileName(g, mon);
+          if (W.partial) { const a = W.days[W.inP.indexOf(true)], z = W.days[W.inP.lastIndexOf(true)]; fn = fn.replace(/\.xlsx$/, ` (part ${TL.fmtDMY(a, '.').slice(0, 5)}-${TL.fmtDMY(z, '.').slice(0, 5)}).xlsx`); }
+          download(res.bytes, fn); logEvent('Weekly agency', `${GL(g)} timesheet downloaded for w/c ${TL.fmtDMY(mon)}${W.partial ? ' (part week)' : ''} (${W.data[g].length} people)`); commitSettings('Weekly agency', true);
           toast(`${esc(GL(g))} timesheet downloaded${res.added ? ` — ${res.added} extra row(s) added to fit everyone` : ''}.`);
         } catch (e) { console.error(e); toast('Could not build timesheet: ' + esc(e.message), 'err'); }
         b.disabled = false;
