@@ -22,7 +22,7 @@ h2{font-size:17px;margin:0 0 4px}h3{font-size:15px;margin:0}small{font-size:12px
 .tabs{display:flex;gap:6px;flex:1}.tabs button{display:flex;align-items:center;gap:8px;padding:9px 16px;border:0;border-radius:9px;background:transparent;color:#c9d6e2;font:inherit;font-weight:600;cursor:pointer}
 .tabs button:hover{background:rgba(255,255,255,.08);color:#fff}.tabs button.on{background:#fff;color:var(--navy)}
 .top-r{display:flex;align-items:center;gap:10px}.mode{font-size:12px;color:#c9d6e2;border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 10px}.mode.on{color:#57d3c3;border-color:#57d3c3}.who{font-size:12px;color:#c9d6e2}.saved{opacity:0;transition:.3s;color:var(--teal2);font-size:12px}.saved.on{opacity:1}
-main{max-width:1500px;margin:0 auto;padding:20px 22px 60px}
+main{max-width:1680px;margin:0 auto;padding:18px 18px 80px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
 .card.sub{box-shadow:none;background:#fbfcfd}.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}
 .steps{display:grid;grid-template-columns:1fr 1.25fr 1.25fr;gap:16px}.step{margin:0 0 16px}.step-h{display:flex;gap:10px;align-items:center;margin-bottom:12px}.step-h small{display:block;color:var(--muted)}
@@ -47,7 +47,7 @@ table.grid td{padding:5px 8px;border-bottom:1px solid #eef1f4;vertical-align:mid
 .confirm tr.off td{opacity:.5}.confirm tr.off td:nth-child(2){opacity:1}.confirm tr.warn td{background:#fffaf0}.confirm tr.bad td{background:#fff3f2}
 .nm b{display:block;white-space:nowrap}.nm small{display:block;color:var(--muted)}.raw{font-variant-numeric:tabular-nums;white-space:nowrap;color:#3c4a58}.paid{white-space:nowrap;font-variant-numeric:tabular-nums}
 .hrs{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}.hrs small{display:block;font-weight:500;color:var(--warn);font-size:11px}
-.fl{min-width:300px}table.confirm{min-width:1480px}.confirm select[data-k=status]{width:118px}.confirm select[data-k=group]{width:104px}.flag{display:flex;gap:4px;align-items:flex-start;font-size:11.5px;color:var(--warn);margin-bottom:2px}.flag svg{width:13px;height:13px;flex:none;margin-top:2px}.flag.f-early,.flag.f-late{color:#5d6b7a}.flag.f-dup,.flag.f-kept{color:var(--muted)}.flag.f-kept{color:#1d5fbf}.flag .chip{margin-left:4px;color:var(--teal);border-color:var(--teal)}.flag.f-new,.flag.f-short,.flag.f-auto{color:var(--err)}
+.fl{min-width:240px}table.confirm{min-width:1480px}.confirm select[data-k=status]{width:118px}.confirm select[data-k=group]{width:104px}.flag{display:flex;gap:4px;align-items:flex-start;font-size:11.5px;color:var(--warn);margin-bottom:2px}.flag svg{width:13px;height:13px;flex:none;margin-top:2px}.flag.f-early,.flag.f-late{color:#5d6b7a}.flag.f-dup,.flag.f-kept{color:var(--muted)}.flag.f-kept{color:#1d5fbf}.flag .chip{margin-left:4px;color:var(--teal);border-color:var(--teal)}.flag.f-new,.flag.f-short,.flag.f-auto{color:var(--err)}
 .rem{width:100%;font-size:12px;padding:3px 6px;border-color:#e3e8ed}
 .sw{position:relative;display:inline-block;width:36px;height:20px}.sw input{opacity:0;width:0;height:0}.sw i{position:absolute;inset:0;background:#cdd5dd;border-radius:20px;transition:.15s;cursor:pointer}.sw i:before{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}.sw input:checked+i{background:var(--teal)}.sw input:checked+i:before{transform:translateX(16px)}
 select.g{font-weight:600;border-left:4px solid var(--g0)}
@@ -61,11 +61,11 @@ select.g{font-weight:600;border-left:4px solid var(--g0)}
 .logent{border-top:1px solid var(--line);padding:8px 0}.logent ul{margin:4px 0;padding-left:18px;font-size:12.5px}.logent li.w{color:var(--warn)}
 .agency{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}.agency .card-h{margin-bottom:8px;align-items:center}
 .row{display:flex;align-items:flex-end;flex-wrap:wrap}.gap{gap:14px}
-.setup{display:grid;grid-template-columns:220px 1fr;gap:16px;align-items:start}.side{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:8px}
+.setup{display:grid;grid-template-columns:200px minmax(0,1fr);gap:16px;align-items:start}.pane,.steps>*{min-width:0}.side{position:sticky;top:76px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:8px}
 .side button{text-align:left;border:0;background:transparent;padding:9px 12px;border-radius:7px;font:inherit;cursor:pointer;color:#3c4a58}.side button:hover{background:#f1f4f7}.side button.on{background:#e6f4f2;color:var(--teal);font-weight:700}
 table.edit input{border-color:transparent;background:transparent;width:100%;min-width:90px}table.edit input:hover{border-color:#dfe5ea}table.edit input:focus{background:#fff;border-color:var(--teal)}table.edit input[type=time]{min-width:96px}table.edit input.xs{min-width:70px}table.edit select{max-width:180px}table.edit input[data-k=name],table.edit input[data-k=display]{min-width:170px}
 .btns{display:flex;gap:6px;flex-wrap:wrap}
-.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(560px,1fr));gap:14px}.rule{margin:0}.rule-h{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}.rule-h .title{font-weight:700;font-size:15px;flex:1;border-color:transparent;background:transparent}.rule-h .title:hover{border-color:#dfe5ea}
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:14px}.rule{margin:0}.rule-h{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px}.rule-h .title{font-weight:700;font-size:15px;flex:1;border-color:transparent;background:transparent}.rule-h .title:hover{border-color:#dfe5ea}
 .rgrid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px}fieldset{border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:0}legend{font-weight:700;font-size:12px;color:var(--teal);padding:0 4px;text-transform:uppercase;letter-spacing:.4px}
 .rgrid label{display:block;font-size:12.5px;margin:5px 0}.rgrid select{font-size:12.5px;padding:3px 5px}.ck{display:flex!important;gap:7px;align-items:flex-start}.ck input{margin-top:3px}
 .note{display:flex;gap:8px;align-items:center;margin:8px 0;font-size:12.5px;color:var(--muted)}.note input{flex:1;font-size:12.5px}
@@ -74,6 +74,10 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 .login{min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 600px at 20% 10%,#16416a 0,#0f2a44 55%,#0a1d30 100%)}.login-card{width:360px;padding:28px}.login-card .brand{margin-bottom:18px}
 #toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:50}.toast{background:var(--navy);color:#fff;padding:10px 14px;border-radius:9px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px;font-size:13px;transition:.35s}.toast.warn{background:#7a4b00}.toast.err{background:var(--err)}.toast.out{opacity:0;transform:translateY(8px)}.toast svg{stroke:var(--teal2)}
 @media (max-width:1100px){.steps{grid-template-columns:1fr}.setup{grid-template-columns:1fr}.side{position:static;flex-direction:row;flex-wrap:wrap}.rgrid{grid-template-columns:1fr}.rules{grid-template-columns:1fr}.tabs span{display:none}}
+html,body{overflow-x:hidden}
+.daytabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 -1px 0}.daytabs button{position:relative;display:flex;flex-direction:column;align-items:flex-start;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:#eef2f5;padding:7px 14px;font:inherit;cursor:pointer;color:#3c4a58}.daytabs button.on{background:#fff;color:var(--ink);box-shadow:0 -2px 0 var(--teal) inset}.daytabs small{color:var(--muted);font-size:11.5px}.daytabs .badge{position:absolute;top:-6px;right:-6px;background:var(--warn);color:#fff;font-style:normal;font-size:11px;border-radius:10px;padding:0 6px}
+.row.tight{gap:10px}.row.tight .fld{flex:1}.row.tight input[type=date]{width:100%}
+.startcell{min-width:150px}.startcell .chip{display:block;margin:4px 0 0;width:max-content}.sfrom{display:block;width:max-content;margin:4px 0 0;font-size:11.5px;color:#1d5fbf;background:#eaf2fd;border-radius:10px;padding:1px 4px 1px 8px}.sfrom.now{color:var(--ok);background:var(--okbg)}.sfrom .x{border:0;background:none;cursor:pointer;color:inherit;font-size:13px;padding:0 3px}
 </style>
 </head>
 <body>
@@ -823,6 +827,103 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   };
   G.TL = TL;
 })(typeof window !== 'undefined' ? window : globalThis);
+
+/* ---------- Extract: a small workbook with only the header + chosen dates ---------- */
+(function (G) {
+  const TL = G.TL;
+  const REF = /(^|[^A-Za-z0-9_$.])(\$?)([A-Z]{1,3})(\$?)(\d{1,7})(?![A-Za-z0-9_(])/g;
+  /* rowMap: oldRow -> newRow ; groupOf: oldRow -> group id (refs must stay inside the cell's own group) */
+  function remapFormula(f, rowMap, groupOf, cellRow) {
+    if (f.indexOf('!') >= 0) return null; // refers to another sheet -> keep value
+    let ok = true; const g0 = groupOf.get(cellRow);
+    const out = f.split('"').map((seg, i) => i % 2 ? seg : seg.replace(REF, (m, pre, dc, col, dr, row) => {
+      const r = +row; if (!rowMap.has(r) || groupOf.get(r) !== g0) { ok = false; return m; }
+      return pre + dc + col + dr + rowMap.get(r);
+    })).join('"');
+    return ok ? out : null;
+  }
+  const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const unesc = s => String(s).replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+  /* groups: array of arrays of old row numbers (each array contiguous, in order) */
+  function extractSheetXml(sh, groups) {
+    sh.unshareAll();
+    const rowMap = new Map(), groupOf = new Map(); let n = 0;
+    groups.forEach((rows, gi) => rows.forEach(r => { if (!rowMap.has(r)) { rowMap.set(r, ++n); groupOf.set(r, gi); } }));
+    let maxCol = 1; let body = '';
+    for (const [oldR, newR] of [...rowMap.entries()].sort((a, b) => a[1] - b[1])) {
+      const R = sh.rows.get(oldR);
+      let attrs = R ? R.attrs.replace(/\br="\d+"/, `r="${newR}"`).replace(/\s+hidden="[^"]*"/, '').replace(/\s+spans="[^"]*"/, '') : ` r="${newR}"`;
+      let inner = '';
+      if (R) {
+        const cells = [...sh._cells(R).entries()].sort((a, b) => TL.colToNum(a[0]) - TL.colToNum(b[0]));
+        for (const [col, c] of cells) {
+          maxCol = Math.max(maxCol, TL.colToNum(col));
+          let a = c.attrs.replace(/\br="[A-Z]+\d+"/, `r="${col}${newR}"`); let x = c.inner;
+          const fm = /<f>([\s\S]*?)<\/f>/.exec(x);
+          if (fm) {
+            const nf = remapFormula(unesc(fm[1]), rowMap, groupOf, oldR);
+            if (nf != null) x = x.replace(fm[0], '<f>' + esc(nf) + '</f>');
+            else { x = x.replace(fm[0], ''); if (!/<v>/.test(x)) { x = ''; a = a.replace(/\s+t="[^"]*"/, ''); } }
+          }
+          inner += x ? `<c${a}>${x}</c>` : `<c${a}/>`;
+        }
+      }
+      body += inner ? `<row${attrs}>${inner}</row>` : `<row${attrs}/>`;
+    }
+    // head: dimension, views
+    let head = sh.head.replace(/<dimension ref="[^"]*"\/>/, `<dimension ref="A1:${TL.numToCol(maxCol)}${Math.max(n, 1)}"/>`)
+      .replace(/topLeftCell="[^"]*"/g, 'topLeftCell="A2"').replace(/<selection\b[^>]*\/>/g, m => m.replace(/activeCell="[^"]*"/, 'activeCell="A2"').replace(/sqref="[^"]*"/, 'sqref="A2"'));
+    // tail: keep merges that fall inside one group; drop filters, tables, drawings, comments, validations, links, printer refs
+    let tail = sh.tail;
+    const merges = []; tail.replace(/<mergeCell ref="([^"]+)"\/>/g, (m, ref) => {
+      const [a, b] = ref.split(':'); const ra = +/\d+/.exec(a)[0], rb = +/\d+/.exec(b || a)[0];
+      if (rowMap.has(ra) && rowMap.has(rb) && groupOf.get(ra) === groupOf.get(rb)) merges.push(`<mergeCell ref="${a.replace(/\d+/, rowMap.get(ra))}:${(b || a).replace(/\d+/, rowMap.get(rb))}"/>`);
+      return m;
+    });
+    tail = tail.replace(/<autoFilter\b[^>]*\/>/, '').replace(/<autoFilter\b[\s\S]*?<\/autoFilter>/, '').replace(/<mergeCells\b[^>]*>[\s\S]*?<\/mergeCells>/, merges.length ? `<mergeCells count="${merges.length}">${merges.join('')}</mergeCells>` : '')
+      .replace(/<conditionalFormatting\b[\s\S]*?<\/conditionalFormatting>/g, '').replace(/<dataValidations\b[\s\S]*?<\/dataValidations>/g, '').replace(/<hyperlinks\b[\s\S]*?<\/hyperlinks>/g, '')
+      .replace(/<drawing\b[^>]*\/>/g, '').replace(/<legacyDrawing\b[^>]*\/>/g, '').replace(/<legacyDrawingHF\b[^>]*\/>/g, '').replace(/<picture\b[^>]*\/>/g, '').replace(/<tableParts\b[^>]*\/>/g, '').replace(/<tableParts\b[\s\S]*?<\/tableParts>/g, '')
+      .replace(/<extLst>[\s\S]*?<\/extLst>/g, '').replace(/\s+r:id="[^"]*"/g, '').replace(/<rowBreaks\b[\s\S]*?<\/rowBreaks>/g, '');
+    head = head.replace(/<sheetPr\b[^>]*\/>|<sheetPr\b[\s\S]*?<\/sheetPr>/, m => m.replace(/<tabColor[^>]*\/>/, ''));
+    return { xml: head + body + tail, rows: n };
+  }
+  /* wb: Workbook opened from the UPDATED full workbook. spec: [{sheet:name, groups:[[rows]...]}] */
+  TL.buildExtract = async function (wb, spec) {
+    const z = new TL.Zip();
+    const sheets = [];
+    for (const s of spec) {
+      const sh = await wb.sheet(s.sheet); if (!sh || !s.groups.length) continue;
+      const { xml } = extractSheetXml(sh, s.groups);
+      sheets.push({ name: s.sheet, xml });
+    }
+    if (!sheets.length) throw new Error('Nothing to put in the file for the chosen dates.');
+    const ct = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>',
+      '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>',
+      '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'];
+    const rels = ['<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'];
+    let wbx = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView activeTab="0"/></bookViews><sheets>';
+    sheets.forEach((s, i) => {
+      z.setText(`xl/worksheets/sheet${i + 1}.xml`, s.xml);
+      ct.push(`<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`);
+      rels.push(`<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`);
+      wbx += `<sheet name="${esc(s.name).replace(/"/g, '&quot;')}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`;
+    });
+    let k = sheets.length;
+    if (wb.stylesDirty) wb.stylesXml = wb.stylesXml.replace(/<cellXfs\b[^>]*>[\s\S]*?<\/cellXfs>/, `<cellXfs count="${wb.xfs.length}">${wb.xfs.join('')}</cellXfs>`);
+    z.setText('xl/styles.xml', wb.stylesXml); rels.push(`<Relationship Id="rId${++k}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>`);
+    const theme = await wb.zip.text('xl/theme/theme1.xml');
+    if (theme) { z.setText('xl/theme/theme1.xml', theme); ct.push('<Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>'); rels.push(`<Relationship Id="rId${++k}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>`); }
+    const sst = await wb.zip.text('xl/sharedStrings.xml');
+    if (sst) { z.setText('xl/sharedStrings.xml', sst); ct.push('<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>'); rels.push(`<Relationship Id="rId${++k}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>`); }
+    wbx += '</sheets><calcPr fullCalcOnLoad="1"/></workbook>';
+    z.setText('xl/workbook.xml', wbx);
+    z.setText('xl/_rels/workbook.xml.rels', rels.join('') + '</Relationships>');
+    z.setText('[Content_Types].xml', ct.join('') + '</Types>');
+    z.setText('_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>');
+    z.order = ['[Content_Types].xml', '_rels/.rels', 'xl/workbook.xml', 'xl/_rels/workbook.xml.rels', ...z.order.filter(x => !['[Content_Types].xml', '_rels/.rels', 'xl/workbook.xml', 'xl/_rels/workbook.xml.rels'].includes(x))];
+    return z.write();
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
 </script>
 <script>/* Planner: source rows + settings → confirm lines → workbook writes. Shared by UI and tests. */
 (function (G) {
@@ -907,7 +1008,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     const plan = iso ? TL.plannedStart(settings, p, iso) : null;
     const L = {
       key: TL.personKey(p.name, p.cat), pid: p.id || '', name: p.name, cat: p.cat, display: p.display || p.name, group: p.group, profile: p.profile,
-      start: TL.hm((plan && plan.time) || p.start || settings.defaultStart), end: TL.hm(p.end), source: p.source || '', role: p.role || (kind === 'agency' ? TL.groupCode(settings, p.group) : ''), agencyRole: p.agencyRole || '', slot: p.slot || '',
+      start: TL.hm((plan && plan.time) || TL.defaultStartFor(p, iso) || settings.defaultStart), end: TL.hm(p.end), source: p.source || '', role: p.role || (kind === 'agency' ? TL.groupCode(settings, p.group) : ''), agencyRole: p.agencyRole || '', slot: p.slot || '',
       rawIn: rec ? rec.rawIn : '', rawOut: rec ? rec.rawOut : '', inMin: rec ? rec.inMin : null, outMin: rec ? rec.outMin : null,
       flags: rec ? rec.flags.slice() : [], note: rec ? rec.note || '' : '', status: 'worked', include: kind !== 'ignore' && kind !== 'new', remark: '', edited: {}
     };
@@ -1104,6 +1205,42 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       out[g.id].push({ name: p.name, days, total: days.reduce((a, b) => a + b, 0), section: ros ? ros.agencyRole : '', ros });
     }
     for (const g in out) out[g].sort((a, b) => a.name.localeCompare(b.name));
+    return out;
+  };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* Default start with "effective from" dates, and the extract spec for chosen dates */
+(function (G) {
+  const TL = G.TL;
+  TL.defaultStartFor = function (p, iso) {
+    let s = p.start || '';
+    if (iso && Array.isArray(p.startFrom)) for (const e of p.startFrom.slice().sort((a, b) => a.from.localeCompare(b.from))) if (e.from <= iso && e.start) s = e.start;
+    return s;
+  };
+  async function sheetFor(wb, pattern, iso) {
+    const want = pattern.replace('{YYYY}', iso.slice(0, 4)).trim().toLowerCase();
+    return wb.findSheetName(x => x.trim().toLowerCase() === want) || wb.findSheetName(x => x.trim().toLowerCase().startsWith(want));
+  }
+  TL.extractSpec = async function (wb, settings, dates) {
+    const spec = new Map(); const add = (name, rows) => { if (!spec.has(name)) spec.set(name, [[1]]); spec.get(name).push(rows); };
+    for (const iso of dates.slice().sort()) {
+      const dn = await sheetFor(wb, settings.sheets.daily, iso);
+      if (dn) { const sh = await wb.sheet(dn); const blocks = TL.findDailyBlocks(sh); const b = blocks.get(iso); if (b) { const end = b.total || b.last; const rows = []; for (let r = b.r0; r <= end; r++) rows.push(r); add(dn, rows); } }
+      for (const pat of [settings.sheets.inhouse, settings.sheets.zero]) {
+        const n = await sheetFor(wb, pat, iso); if (!n) continue; const sh = await wb.sheet(n);
+        const slots = TL.findSlots(sh); if (!slots.length) continue;
+        const r = TL.findSlotRow(sh, slots[slots.length - 1], iso) || TL.findSlotRow(sh, slots[0], iso); if (r) add(n, [r]);
+      }
+    }
+    // person-column sheets: one group for all chosen dates (rows are consecutive days) so formulas stay valid
+    const out = [];
+    for (const [name, groups] of spec) {
+      const isDaily = TL.groups && name.toLowerCase().startsWith(settings.sheets.daily.replace('{YYYY}', '').trim().toLowerCase());
+      if (isDaily) out.push({ sheet: name, groups });
+      else out.push({ sheet: name, groups: [groups[0], groups.slice(1).flat().sort((a, b) => a - b)] });
+    }
+    // Daily Record first
+    out.sort((a, b) => (a.groups.length > 2 ? -1 : 0) - (b.groups.length > 2 ? -1 : 0));
     return out;
   };
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -1398,8 +1535,8 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 
   /* ---------------- describe changes for the change log ---------------- */
   const FIELD = { name: 'site name', cat: 'category', display: 'workbook name', group: 'group', profile: 'pay rule', start: 'start', end: 'finish', source: 'source', role: 'role', agencyRole: 'timesheet section', slot: 'sheet column', active: 'active', normal: 'normal rate', ot: 'OT rate',
-    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', snapEndMin: 'finish tolerance (min)', note: 'note' };
-  const show = (k, v) => k === 'group' ? GL(v) : k === 'profile' ? ((S.profiles.find(x => x.id === v) || {}).name || v) : (v === '' || v == null ? '(blank)' : typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v));
+    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', snapEndMin: 'finish tolerance (min)', startFrom: 'start changes', note: 'note' };
+  const show = (k, v) => Array.isArray(v) ? (v.map(x => x && x.from ? `${x.start} from ${TL.fmtDMY(x.from)}` : JSON.stringify(x)).join(', ') || '(none)') : k === 'group' ? GL(v) : k === 'profile' ? ((S.profiles.find(x => x.id === v) || {}).name || v) : (v === '' || v == null ? '(blank)' : typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v));
   function diffList(a, b, idKey, label, nameOf) {
     const out = []; const A = new Map((a || []).map(x => [x[idKey], x])), B = new Map((b || []).map(x => [x[idKey], x]));
     const grp = x => x.group ? ` (${GL(x.group)})` : '';
@@ -1655,9 +1792,9 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     const wbLine = st.wb ? `<b>${esc(st.wbName)}</b> <span class="pill ok">uploaded now</span>` : saved ? `<b>${esc(saved.name)}</b> <span class="pill ${cloud.on ? 'ok' : ''}">${cloud.on ? 'shared copy' : 'saved copy'} · ${new Date(saved.savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}${saved.by ? ' · ' + esc(saved.by) : ''}${saved.lastDate ? ' · last day ' + TL.fmtDMY(saved.lastDate) : ''}</span>` : '<span class="muted">No saved copy yet — please upload the latest workbook.</span>';
     m.innerHTML = firstRunBanner() + `
     <section class="steps">
-      <div class="card step"><div class="step-h"><span class="n">1</span><div><b>Work date</b><small>Required</small></div></div>
-        <label class="fld"><span>Date of check-in / check-out</span><input type="date" id="dateI" value="${st.date}"></label>
-        <div class="quick">${[-1, -2, -3].map(d => { const iso = TL.addDays(new Date().toISOString().slice(0, 10), d); return `<button class="chip" data-d="${iso}">${new Date(iso + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' })}</button>`; }).join('')}</div>
+      <div class="card step"><div class="step-h"><span class="n">1</span><div><b>Work dates</b><small>Required · one day or several</small></div></div>
+        <div class="row gap tight"><label class="fld"><span>From</span><input type="date" id="fromI" value="${st.from || st.date}"></label><label class="fld"><span>To</span><input type="date" id="toI" value="${st.to || st.date}"></label></div>
+        <div class="quick">${quickRanges().map(q => `<button class="chip ${q.from === (st.from || st.date) && q.to === (st.to || st.date) ? 'on' : ''}" data-f="${q.from}" data-t="${q.to}">${q.label}</button>`).join('')}</div>
       </div>
       <div class="card step"><div class="step-h"><span class="n">2</span><div><b>Site check-in file</b><small>Required · CSV export</small></div></div>
         <label class="drop" id="srcDrop"><input type="file" id="srcI" accept=".csv,text/csv">${ICON.up}<span>${st.src ? `<b>${esc(st.srcName)}</b><br><small>${st.src.length} records · dates ${esc(st.srcDates.map(d => TL.fmtDMY(d)).join(', '))}</small>` : 'Drop the site export here or <u>browse</u>'}</span></label>
@@ -1671,12 +1808,14 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     <section id="gen"></section>
     <section id="logBox"></section>`;
     bindStarter();
-    $('#dateI').onchange = e => { st.date = e.target.value; if (st.date) rebuildLines(); };
-    $$('.quick .chip').forEach(b => b.onclick = () => { st.date = b.dataset.d; $('#dateI').value = st.date; rebuildLines(); });
+    const setRange = (f, t) => { if (!f) return; if (!t || t < f) t = f; if (TL.isoToSerial(t) - TL.isoToSerial(f) > 30) { t = TL.addDays(f, 30); toast('Up to 31 days at a time.', 'warn'); } st.from = f; st.to = t; renderOutput(m); rebuildLines(); };
+    $('#fromI').onchange = e => setRange(e.target.value, (st.to && st.to >= e.target.value) ? st.to : e.target.value);
+    $('#toI').onchange = e => setRange(st.from || st.date, e.target.value);
+    $$('.quick .chip[data-f]').forEach(b => b.onclick = () => setRange(b.dataset.f, b.dataset.t));
     bindDrop('#srcDrop', '#srcI', async f => {
       try { const rows = TL.parseCSV(await readText(f)); if (!rows.length || !('checkin_time' in rows[0])) throw new Error('This does not look like the site export (no checkin_time column).');
         st.src = rows; st.srcName = f.name; st.srcDates = [...new Set(rows.map(r => (r.checkin_time || '').slice(0, 10)).filter(Boolean))].sort();
-        if (!st.srcDates.includes(st.date) && st.srcDates.length) { st.date = st.srcDates[st.srcDates.length - 1]; toast(`File has no records for the chosen date — switched to ${TL.fmtDMY(st.date)}. Change it in step 1 if needed.`, 'warn'); }
+        const sel = rangeDates(); if (st.srcDates.length && !sel.some(d => st.srcDates.includes(d))) { st.from = st.srcDates[0]; st.to = st.srcDates[st.srcDates.length - 1]; if (TL.isoToSerial(st.to) - TL.isoToSerial(st.from) > 30) st.from = TL.addDays(st.to, -30); toast(`The file has no records for the chosen dates — switched to ${TL.fmtDMY(st.from)}${st.to !== st.from ? ' – ' + TL.fmtDMY(st.to) : ''}. Change it in step 1 if needed.`, 'warn'); }
         renderOutput(m); rebuildLines();
       } catch (e) { toast(esc(e.message), 'err'); }
     });
@@ -1706,13 +1845,28 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     z.ondrop = e => { e.preventDefault(); z.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) onFile(f); };
   }
   async function openCurrentWb() { const b = await currentWorkbookBytes(); if (!b) return null; if (wbCache.bytes !== b) wbCache = { bytes: b, wb: await TL.Workbook.open(b) }; return wbCache.wb; }
+  const todayIso = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  function quickRanges() {
+    const t = todayIso(); const wd = TL.weekday(t); const lastSun = TL.addDays(t, -(wd === 0 ? 7 : wd));
+    const y = TL.addDays(t, -1);
+    return [{ label: 'Yesterday', from: y, to: y }, { label: 'Fri–Sun', from: TL.addDays(lastSun, -2), to: lastSun }, { label: 'Last week (Mon–Sun)', from: TL.addDays(lastSun, -6), to: lastSun }, { label: 'Today', from: t, to: t }];
+  }
+  function rangeDates() { const f = st.from || st.date, t = st.to || f; const out = []; for (let d = f; d <= t && out.length < 31; d = TL.addDays(d, 1)) out.push(d); return out; }
+  const dayLabel = (iso, long) => new Date(iso + 'T12:00').toLocaleDateString('en-GB', long ? { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' } : { weekday: 'short', day: '2-digit', month: '2-digit' });
+  function setActiveDay(iso) { const d = st.days && st.days[iso]; if (!d) return; st.date = iso; st.lines = d.lines; st.merge = d.merge; st.capacity = d.capacity; }
   async function rebuildLines() {
-    if (!st.src || !st.date) { st.lines = null; renderConfirm(); return; }
+    const dates = rangeDates();
+    if (!st.src || !dates.length) { st.lines = null; st.days = null; renderConfirm(); return; }
     if (cloud.on) await ensureLatestWorkbook();
-    const lines = TL.plan(S, st.src, st.date); st.merge = null;
-    try { const wb = await openCurrentWb(); if (wb) { const ex = await TL.readExisting(wb, S, st.date); st.capacity = ex.capacity; if (ex.daily.length || ex.slots.length) st.merge = Object.assign(TL.mergeExisting(S, lines, ex), { existing: ex.daily.length + ex.slots.length }); } }
-    catch (e) { console.warn(e); toast('Could not read the workbook for this date: ' + esc(e.message), 'warn'); }
-    st.lines = lines; st.generated = null; renderConfirm();
+    let wb = null; try { wb = await openCurrentWb(); } catch (e) { console.warn(e); toast('Could not read the workbook: ' + esc(e.message), 'warn'); }
+    st.days = {};
+    for (const iso of dates) {
+      const lines = TL.plan(S, st.src, iso); let merge = null, capacity = null;
+      if (wb) { try { const ex = await TL.readExisting(wb, S, iso); capacity = ex.capacity; if (ex.daily.length || ex.slots.length) merge = Object.assign(TL.mergeExisting(S, lines, ex), { existing: ex.daily.length + ex.slots.length }); } catch (e) { console.warn(e); } }
+      st.days[iso] = { lines, merge, capacity, scans: lines.filter(l => l.rawIn).length };
+    }
+    const keep = st.date && st.days[st.date] ? st.date : (dates.find(d => st.days[d].scans) || dates[0]);
+    setActiveDay(keep); st.generated = null; renderConfirm();
   }
 
   function lineCalc(L) { return TL.evalLine(S, L); }
@@ -1728,7 +1882,9 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     const filters = [['active', 'Included', L.filter(l => l.include).length], ['attention', 'Needs attention', nFlag], ['missing', 'Not in file', nMissing], ['ignored', 'Not counted', L.filter(l => !l.include && !l.missing).length], ['all', 'All', L.length]];
     const vis = L.map((l, i) => [l, i]).filter(([l]) => st.filter === 'all' || (st.filter === 'active' && l.include) || (st.filter === 'missing' && l.missing) || (st.filter === 'ignored' && !l.include && !l.missing) || (st.filter === 'attention' && attn(l)));
     const wd = new Date(st.date + 'T12:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    box.innerHTML = `<div class="card">
+    const dates = Object.keys(st.days || {});
+    const dayTabs = dates.length > 1 ? `<div class="daytabs">${dates.map(d => { const dd = st.days[d]; const inc = dd.lines.filter(l => l.include).length; const pr = TL.problems(S, dd.lines).length; return `<button data-day="${d}" class="${d === st.date ? 'on' : ''}"><b>${esc(dayLabel(d))}</b><small>${inc} people${dd.scans ? '' : ' · no scans'}</small>${pr ? `<i class="badge">${pr}</i>` : ''}</button>`; }).join('')}</div>` : '';
+    box.innerHTML = dayTabs + `<div class="card">
       <div class="card-h"><div><h2>4 · Confirm times — ${esc(wd)}</h2><p class="muted small">Start time decides when pay begins (early arrivals are not paid unless the rule allows). Change any time; hours update instantly.</p></div>
         <div class="totals">${Object.keys(counts).sort((a, b) => TL.groupRank(S, a) - TL.groupRank(S, b)).map(g => `<span class="tot" style="border-left-color:${gColor(g)}"><b>${counts[g]}</b> ${esc(GL(g))} · ${fmtH(hrs[g])} h</span>`).join('')}</div></div>
       ${st.merge ? `<div class="alert info">${ICON.sheet}<div>The workbook already has <b>${st.merge.existing}</b> entr${st.merge.existing === 1 ? 'y' : 'ies'} for this date. ${st.merge.kept ? `<b>${st.merge.kept}</b> person(s) not in the site file were kept with their entered times. ` : ''}${st.merge.reused ? `<b>${st.merge.reused}</b> forgotten check-out(s) already fixed were reused. ` : ''}${st.merge.diff ? `<b>${st.merge.diff}</b> differ from the scan — see the orange notes and choose per person, or <button class="chip sm" id="useAllWb">use workbook times for all</button>.` : ''} Producing the file replaces this date's entries with the list below.</div></div>` : ''}
@@ -1746,6 +1902,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     </div>
     <datalist id="startTimes"><option value="06:00"><option value="07:00"><option value="07:30"><option value="08:00"><option value="09:00"><option value="12:00"></datalist>`;
     $$('.seg button', box).forEach(b => b.onclick = () => { st.filter = b.dataset.f; renderConfirm(); });
+    $$('[data-day]', box).forEach(b => b.onclick = () => { setActiveDay(b.dataset.day); renderConfirm(); });
     $('#selAll').onchange = e => $$('tbody .sel', box).forEach(c => c.checked = e.target.checked);
     $$('[data-bt]', box).forEach(b => b.onclick = () => { $('#bulkT').value = b.dataset.bt; });
     const bulk = (field) => { const t = TL.hm($('#bulkT').value); const ids = $$('tbody .sel:checked', box).map(c => +c.closest('tr').dataset.i); if (!ids.length) return toast('Tick the rows to change first (left column).', 'warn'); ids.forEach(i => { st.lines[i][field] = t; if (st.lines[i].missing && field === 'start') st.lines[i].inMin = t; }); renderConfirm(); };
@@ -1821,14 +1978,17 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 
   function renderGen() {
     const g = $('#gen'); if (!g) return;
-    const probs = TL.problems(S, st.lines || []);
+    const dates = Object.keys(st.days || {});
+    const probs = dates.length ? dates.flatMap(d => TL.problems(S, st.days[d].lines).map(x => (dates.length > 1 ? dayLabel(d) + ' — ' : '') + x)) : TL.problems(S, st.lines || []);
     const haveWb = st.wb || st.wbSaved;
     g.innerHTML = `<div class="card gen">
       <div><h2>5 · Produce files</h2>
       ${probs.length ? `<div class="alert warn">${ICON.warn}<div><b>${probs.length} item(s) to check</b><ul>${probs.slice(0, 8).map(p => `<li>${esc(p)}</li>`).join('')}${probs.length > 8 ? `<li>… and ${probs.length - 8} more</li>` : ''}</ul></div></div>` : `<p class="ok-line">${ICON.check} All included rows have complete times.</p>`}
       ${!haveWb ? `<div class="alert err">${ICON.warn}<div>Upload the Labour time sheet &amp; task record in step 3 (no saved copy in this browser yet).</div></div>` : ''}</div>
-      <div class="gen-btns"><button class="btn primary" id="genWb" ${haveWb ? '' : 'disabled'}>${ICON.down} Update Labour time sheet &amp; task record</button>
+      <div class="gen-btns"><button class="btn primary" id="genWb" ${haveWb ? '' : 'disabled'} title="Writes the chosen day(s) into the master workbook${cloud.on ? ' (shared)' : ''} and downloads a file with just those days">${ICON.down} Update &amp; download ${dates.length > 1 ? dates.length + ' days' : 'this day'}</button>
+      <button class="btn ghost" id="dlFull" ${haveWb ? '' : 'disabled'} title="The whole master workbook, all dates">${ICON.down} Full workbook</button>
       <button class="btn" id="goAgency" title="On demand — usually Monday morning for last week">${ICON.week} Agency timesheets (on demand) →</button></div></div>`;
+    $('#dlFull').onclick = async () => { if (cloud.on) await ensureLatestWorkbook(true); const w = st.wbSaved; if (w) download(w.bytes, w.name); };
     $('#genWb').onclick = () => generateWorkbook(probs);
     $('#goAgency').onclick = () => { st.tab = 'agency'; st.week = TL.mondayOf(st.date); render(); };
   }
@@ -1838,39 +1998,49 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     const btn = $('#genWb'); btn.disabled = true; btn.innerHTML = 'Working…';
     try {
       if (cloud.on) await ensureLatestWorkbook(true);
+      const dates = Object.keys(st.days || {}).length ? Object.keys(st.days).sort() : [st.date];
+      const linesOf = d => (st.days && st.days[d]) ? st.days[d].lines : st.lines;
+      const lastDate = dates[dates.length - 1];
       let out, res, meta = null, base = st.wb ? { bytes: st.wb, name: st.wbName, version: 'force' } : st.wbSaved;
       for (let attempt = 0; attempt < 3; attempt++) {
         const wb = await TL.Workbook.open(base.bytes);
-        res = await TL.applyDay(wb, S, st.date, st.lines);
+        res = { log: [], warnings: [] };
+        for (const d of dates) { const r1 = await TL.applyDay(wb, S, d, linesOf(d)); res.log.push(...r1.log); res.warnings.push(...r1.warnings); }
         out = await wb.save();
         if (!cloud.on) break;
-        const r = await cloud.req('/workbook', { method: 'PUT', body: out, headers: { 'X-Base-Version': String(base.version ?? 'force'), 'X-Name': encodeURIComponent(base.name || 'Labour time sheet and task record.xlsx'), 'X-Last-Date': st.date } });
-        if (r.status === 409) { toast('Someone else saved the workbook a moment ago — adding your day to their newer copy…', 'warn'); await ensureLatestWorkbook(true); base = st.wbSaved; continue; }
+        const r = await cloud.req('/workbook', { method: 'PUT', body: out, headers: { 'X-Base-Version': String(base.version ?? 'force'), 'X-Name': encodeURIComponent(base.name || 'Labour time sheet and task record.xlsx'), 'X-Last-Date': lastDate } });
+        if (r.status === 409) { toast('Someone else saved the workbook a moment ago — adding your day(s) to their newer copy…', 'warn'); await ensureLatestWorkbook(true); base = st.wbSaved; continue; }
         if (!r.ok) throw new Error('the shared copy could not be saved (HTTP ' + r.status + '). Nothing was shared; try again.');
         meta = await r.json(); break;
       }
       if (cloud.on && !meta) throw new Error('the workbook kept changing while saving. Please try again.');
       let added = 0;
-      for (const l of st.lines) {
+      for (const l of dates.flatMap(linesOf)) {
         if (!l.isNew || l.group === 'New') continue;
         if (!S.roster.some(p => TL.personKey(p.name, p.cat) === l.key)) { S.roster.push({ name: l.name, cat: l.cat, display: l.display, group: l.group, profile: l.profile, start: TL.toHM(l.start), end: TL.toHM(l.end), source: l.source, role: l.role, agencyRole: l.agencyRole, slot: l.slot, active: true }); added++; }
       }
       if (added) ensureIds(S);
-      logEvent('Daily output', `Workbook updated for ${TL.fmtDMY(st.date)}: ${st.lines.filter(l => l.include && TL.isDaily(S, l.group)).length} in Daily Record${added ? `, ${added} new person(s) added to Staff` : ''}`);
+      for (const d of dates) logEvent('Daily output', `Workbook updated for ${TL.fmtDMY(d)}: ${linesOf(d).filter(l => l.include && TL.isDaily(S, l.group)).length} in Daily Record`);
+      if (added) logEvent('Daily output', `${added} new person(s) added to Staff`);
       const name = (base.name || 'Labour time sheet and task record.xlsx').replace(/\.xlsx$/i, '') + '.xlsx';
-      await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate: st.date, version: meta ? meta.version : null, by: cloud.who });
+      await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate, version: meta ? meta.version : null, by: cloud.who });
       st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null };
       if (cloud.on) await fetchState().catch(() => { });
       await commitSettings('Daily output', true);
-      download(out, name);
-      st.log.unshift({ at: new Date(), date: st.date, lines: res.log, warnings: res.warnings, added });
-      toast(`${ICON.check} Workbook updated for ${TL.fmtDMY(st.date)}${cloud.on ? ' and shared with everyone' : ' and saved as the latest copy'}.`);
+      // the download: header + only the chosen days
+      try {
+        const xwb = await TL.Workbook.open(out); const spec = await TL.extractSpec(xwb, S, dates); const xbytes = await TL.buildExtract(xwb, spec);
+        const label = dates.length > 1 ? `${TL.fmtDMY(dates[0], '.')}-${TL.fmtDMY(lastDate, '.')}` : TL.fmtDMY(dates[0], '.');
+        download(xbytes, `Labour time sheet and task record ${label}.xlsx`);
+      } catch (e) { console.error(e); toast('Could not make the short file (' + esc(e.message) + ') — downloading the full workbook instead.', 'warn', 8000); download(out, name); }
+      st.log.unshift({ at: new Date(), date: dates.length > 1 ? dates[0] + '…' + lastDate : dates[0], lines: res.log, warnings: res.warnings, added });
+      toast(`${ICON.check} Workbook updated for ${dates.length > 1 ? dates.length + ' days (' + TL.fmtDMY(dates[0]) + ' – ' + TL.fmtDMY(lastDate) + ')' : TL.fmtDMY(dates[0])}${cloud.on ? ' and shared with everyone' : ' and saved as the latest copy'}.`);
       renderOutput($('#main')); await rebuildLines();
     } catch (e) { console.error(e); toast('Could not update: ' + esc(e.message), 'err', 9000); btn.disabled = false; btn.innerHTML = 'Update Labour time sheet & task record'; }
   }
   function renderLog() {
     const b = $('#logBox'); if (!b || !st.log.length) return;
-    b.innerHTML = `<div class="card"><h2>Run log</h2>${st.log.map(e => `<div class="logent"><b>${TL.fmtDMY(e.date)}</b> <span class="muted small">${e.at.toLocaleTimeString('en-GB')}</span>
+    b.innerHTML = `<div class="card"><h2>Run log</h2>${st.log.map(e => `<div class="logent"><b>${String(e.date).split('…').map(x => TL.fmtDMY(x)).join(' – ')}</b> <span class="muted small">${e.at.toLocaleTimeString('en-GB')}</span>
       <ul>${e.lines.map(x => `<li>${esc(x)}</li>`).join('')}${e.warnings.map(x => `<li class="w">${esc(x)}</li>`).join('')}${e.added ? `<li>${e.added} new person(s) added to the staff list.</li>` : ''}</ul></div>`).join('')}</div>`;
   }
 
@@ -1950,7 +2120,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
         <td><input data-k="display" value="${esc(r.display)}"></td>
         <td><select data-k="group" class="g" style="border-left-color:${gColor(r.group)}" title="${esc((TL.KINDS[KIND(r.group)] || {}).help || '')}">${groupOptions(r.group)}</select></td>
         <td><select data-k="profile">${S.profiles.map(q => `<option value="${q.id}" ${q.id === r.profile ? 'selected' : ''}>${esc(q.name)}</option>`).join('')}</select></td>
-        <td><input type="time" data-k="start" value="${esc(r.start)}" list="startTimes"></td><td><input type="time" data-k="end" value="${esc(r.end)}"></td>
+        <td class="startcell"><input type="time" data-k="start" value="${esc(r.start)}" list="startTimes"><button class="chip sm" data-sfrom="${i}" title="Change the default start from a chosen date">from date…</button>${(r.startFrom || []).slice().sort((a, b) => a.from.localeCompare(b.from)).map((e, k) => `<span class="sfrom ${e.from <= todayIso() ? 'now' : ''}">${esc(e.start)} from ${TL.fmtDMY(e.from)} <button class="x" data-sdel="${i}:${e.from}" title="Remove">×</button></span>`).join('')}</td><td><input type="time" data-k="end" value="${esc(r.end)}"></td>
         <td><input data-k="source" value="${esc(r.source)}" class="sm" placeholder="e.g. Fulfilment"></td>
         <td><input data-k="agencyRole" value="${esc(r.agencyRole || '')}" class="sm" placeholder="first section" title="Section label on the agency timesheet, e.g. WAREHOUSE 12.71 or FLT 13.00. Blank = first section." ${KIND(r.group) === 'agency' ? '' : 'disabled'}></td>
         <td><input data-k="slot" value="${esc(r.slot)}" class="sm" placeholder="${['inhouse', 'zero', 'cor'].includes(KIND(r.group)) ? 'column name' : '—'}" title="Header name on the JASHAN / 0 hour sheet"></td>
@@ -1960,6 +2130,15 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     $('#stQ').oninput = e => { st.staffQ = e.target.value; const pos = e.target.selectionStart; setupStaff(p); const i = $('#stQ'); i.focus(); i.setSelectionRange(pos, pos); };
     $$('[data-g]', p).forEach(b => b.onclick = () => { st.staffG = b.dataset.g; setupStaff(p); });
     $$('tbody [data-k]', p).forEach(el => el.onchange = () => { const r = S.roster[+el.closest('tr').dataset.i]; const k = el.dataset.k; r[k] = el.type === 'checkbox' ? el.checked : el.value; if (k === 'group') { r.role = KIND(r.group) === 'agency' ? TL.groupCode(S, r.group) : ''; markDirty(); setupStaff(p); return; } markDirty(); });
+    $$('[data-sfrom]', p).forEach(b => b.onclick = () => {
+      const r = S.roster[+b.dataset.sfrom];
+      const d = prompt(`${r.display}: new default start — from which date? (dd/mm/yyyy)`, TL.fmtDMY(TL.addDays(todayIso(), 1)).replace(/\/(\d\d)$/, '/20$1')); if (!d) return;
+      const m = /^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/.exec(d.trim()); if (!m) return toast('Please type the date as dd/mm/yyyy.', 'warn');
+      const iso = `${m[3].length === 2 ? '20' + m[3] : m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+      const t = prompt(`${r.display}: start time from ${TL.fmtDMY(iso)} (hh:mm)`, r.start || S.defaultStart); if (!t || !/^\d{1,2}:\d{2}$/.test(t.trim())) return t && toast('Please type the time as hh:mm.', 'warn');
+      r.startFrom = (r.startFrom || []).filter(e => e.from !== iso).concat([{ from: iso, start: t.trim().padStart(5, '0') }]); markDirty(); setupStaff(p);
+    });
+    $$('[data-sdel]', p).forEach(b => b.onclick = () => { const [i, from] = b.dataset.sdel.split(':'); const r = S.roster[+i]; r.startFrom = (r.startFrom || []).filter(e => e.from !== from); if (!r.startFrom.length) delete r.startFrom; markDirty(); setupStaff(p); });
     $$('[data-del]', p).forEach(b => b.onclick = () => { const r = S.roster[+b.dataset.del]; if (confirm(`Delete ${r.display} from the staff list?`)) { S.roster.splice(+b.dataset.del, 1); markDirty(); setupStaff(p); } });
     $('#addStaff').onclick = () => { const g0 = (TL.agencyGroups(S)[0] || GROUPS_ALL()[0]); S.roster.unshift({ id: newId('p'), name: 'New person', cat: g0.kind === 'agency' ? g0.id : 'staff', display: 'New person', group: g0.id, profile: TL.defaultProfileFor(S, g0.id), start: S.defaultStart, end: '', source: '', role: g0.kind === 'agency' ? TL.groupCode(S, g0.id) : '', agencyRole: '', slot: '', active: true }); st.staffQ = ''; st.staffG = 'all'; markDirty(); setupStaff(p); $('tbody input[data-k="name"]', p).select(); };
   }
