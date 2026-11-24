@@ -79,6 +79,7 @@ html,body{overflow-x:hidden}
 .row.tight{gap:10px}.row.tight .fld{flex:1}.row.tight input[type=date]{width:100%}
 .startcell{min-width:150px}.startcell .chip{display:block;margin:4px 0 0;width:max-content}.sfrom{display:block;width:max-content;margin:4px 0 0;font-size:11.5px;color:#1d5fbf;background:#eaf2fd;border-radius:10px;padding:1px 4px 1px 8px}.sfrom.now{color:var(--ok);background:var(--okbg)}.sfrom .x{border:0;background:none;cursor:pointer;color:inherit;font-size:13px;padding:0 3px}
 th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:15px}
+a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10px;padding:2px 6px 2px 2px;margin-left:-2px}a.brand.home:hover{background:rgba(255,255,255,.08)}
 </style>
 </head>
 <body>
@@ -1749,10 +1750,11 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     shell(); render();
   }
   function shell() {
-    $('#app').innerHTML = `<header class="top"><div class="brand">${BRAND('Labour time sheets &amp; agency payroll')}</div>
+    $('#app').innerHTML = `<header class="top"><a class="brand home" href="./" id="homeLink" title="Back to the main page (Daily output)">${BRAND('Labour time sheets &amp; agency payroll')}</a>
       <nav class="tabs"><button data-tab="setup">${ICON.gear}<span>Setup</span></button><button data-tab="output">${ICON.sheet}<span>Daily output</span></button><button data-tab="agency">${ICON.week}<span>Weekly agency</span></button></nav>
       <div class="top-r"><span id="saved" class="saved"></span><span class="mode ${cloud.on ? 'on' : ''}" title="${cloud.on ? 'Staff list, rates, templates, password and the latest workbook are shared with everyone' : 'Data is kept on this computer only'}">${cloud.on ? '● Shared' : '○ This computer only'}</span><span class="who">${esc(cloud.who)}</span><button class="btn ghost sm" id="lockB">${ICON.lock} Lock</button></div></header>
       <main id="main"></main><div id="saveBar" class="savebar hidden"></div><div id="toasts"></div>`;
+    $('#homeLink').onclick = async e => { e.preventDefault(); if (st.tab === 'setup' && !(await leaveSetupOk())) return; st.tab = 'output'; render(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
     $$('.tabs button').forEach(b => b.onclick = async () => { if (st.tab === 'setup' && b.dataset.tab !== 'setup' && !(await leaveSetupOk())) return; if (b.dataset.tab === 'agency' && st.tab !== 'agency') { st.week = null; st.agFrom = null; } st.tab = b.dataset.tab; render(); });
     $('#lockB').onclick = async () => { if (st.tab === 'setup' && !(await leaveSetupOk())) return; sessionStorage.removeItem('tylosLabour.unlocked'); sessionStorage.removeItem('tylosLabour.key'); location.reload(); };
   }
