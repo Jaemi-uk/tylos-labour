@@ -1299,7 +1299,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
         <label class="drop" id="srcDrop"><input type="file" id="srcI" accept=".csv,text/csv">${ICON.up}<span>${st.src ? `<b>${esc(st.srcName)}</b><br><small>${st.src.length} records · dates ${esc(st.srcDates.map(d => TL.fmtDMY(d)).join(', '))}</small>` : 'Drop the site export here or <u>browse</u>'}</span></label>
       </div>
       <div class="card step"><div class="step-h"><span class="n">3</span><div><b>Labour time sheet &amp; task record</b><small>Optional · uses the saved copy if not uploaded</small></div></div>
-        <label class="drop slim" id="wbDrop"><input type="file" id="wbI" accept=".xlsx">${ICON.up}<span>${st.wb ? 'Replace upload' : 'Upload latest .xlsx (optional)'}</span></label>
+        <label class="drop slim" id="wbDrop"><input type="file" id="wbI" accept=".xlsx">${ICON.up}<span>${st.wbSaved ? 'Replace with a newer workbook (optional)' : 'Upload latest .xlsx'}</span></label>
         <p class="small wbline">${wbLine}</p>
       </div>
     </section>
@@ -1317,7 +1317,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       } catch (e) { toast(esc(e.message), 'err'); }
     });
     bindDrop('#wbDrop', '#wbI', async f => {
-      try { const buf = new Uint8Array(await readFile(f)); await TL.Workbook.open(buf); st.wb = buf; st.wbName = f.name; renderOutput(m); await rebuildLines(); toast('Workbook loaded. It will be used for this update.'); }
+      try { const buf = new Uint8Array(await readFile(f)); await TL.Workbook.open(buf); await idb.set('latestWorkbook', { name: f.name, savedAt: Date.now(), bytes: buf, lastDate: null }); st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null }; renderOutput(m); await rebuildLines(); toast('Workbook saved in this browser — it will be used from now on.'); }
       catch (e) { toast('Could not open workbook: ' + esc(e.message), 'err'); }
     });
     renderConfirm(); renderLog();
