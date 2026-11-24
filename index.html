@@ -1551,8 +1551,9 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     out.push(...diffList(a.roster, b.roster, 'id', 'Staff', x => x.display || x.name));
     out.push(...diffList(a.rates, b.rates, 'id', 'Rate', x => 'Rate ' + (x.name || '(no name)')));
     out.push(...diffList(a.profiles, b.profiles, 'id', 'Pay rule', x => 'Pay rule "' + x.name + '"'));
+    out.push(...diffList(a.groups, b.groups, 'id', 'Group', x => 'Group "' + (x.label || x.id) + '"'));
     const flat = (o, pre = '') => Object.entries(o || {}).flatMap(([k, v]) => v && typeof v === 'object' && !Array.isArray(v) ? flat(v, pre + k + '.') : [[pre + k, v]]);
-    const skip = new Set(['roster', 'rates', 'profiles', 'changeLog', 'pwHash', 'version']);
+    const skip = new Set(['roster', 'rates', 'profiles', 'groups', 'changeLog', 'pwHash', 'version', 'migrations']);
     const fa = new Map(flat(Object.fromEntries(Object.entries(a).filter(([k]) => !skip.has(k))))), fb = new Map(flat(Object.fromEntries(Object.entries(b).filter(([k]) => !skip.has(k)))));
     for (const k of new Set([...fa.keys(), ...fb.keys()])) if (JSON.stringify(fa.get(k)) !== JSON.stringify(fb.get(k))) out.push(`Setting ${k}: ${show('', fa.get(k))} → ${show('', fb.get(k))}`);
     return out;
@@ -1584,7 +1585,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     }
     return m;
   }
-  function mergeLogs(...lists) { const map = new Map(); for (const l of lists) for (const e of l || []) map.set(e.id, e); return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 2000); }
+  function mergeLogs(...lists) { const map = new Map(); for (const l of lists) for (const e of l || []) map.set(e.id, e); return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 5000); }
 
   /* ---------------- save model ---------------- */
   let snapshot = null;           // JSON of settings as last loaded/saved
@@ -1595,6 +1596,9 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
   function takeSnapshot() { snapshot = JSON.stringify(S); }
   function markDirty() { dirty++; localStorage.setItem(LS_KEY, JSON.stringify(S)); renderSaveBar(); }
   function logEvent(area, text) { pendingLog.push({ id: newId('l'), at: Date.now(), by: cloud.who || '', area, text }); }
+  // activity (uploads, downloads, sign-ins) is shared straight away — unless Setup has unsaved edits, then it goes with the next Save
+  let flushT = null;
+  function logActivity(area, text) { logEvent(area, text); clearTimeout(flushT); flushT = setTimeout(() => { if (!dirty && pendingLog.length) commitSettings('Activity', true); }, 1200); }
   async function commitSettings(area = 'Setup', silent = false) {
     const base = JSON.parse(snapshot || JSON.stringify(S));
     const ours = JSON.parse(JSON.stringify(S));
@@ -1681,7 +1685,8 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
 
   async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
   function b64ToBytes(b) { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
-  function download(bytes, name, type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+  function download(bytes, name, type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', nolog) {
+    if (!nolog) logActivity('Download', `Downloaded ${name}`);
     const url = URL.createObjectURL(new Blob([bytes], { type })); const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1500);
   }
   function toast(msg, kind = 'ok', ms = 4200) { const t = document.createElement('div'); t.className = 'toast ' + kind; t.innerHTML = msg; $('#toasts').appendChild(t); setTimeout(() => t.classList.add('out'), ms); setTimeout(() => t.remove(), ms + 400); }
@@ -1739,6 +1744,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     }
     ensureIds(S); fillDefaults(S); localStorage.setItem(LS_KEY, JSON.stringify(S)); takeSnapshot(); startPolling();
     await runMigrations();
+    if (!sessionStorage.getItem('tylosLabour.signedLog')) { sessionStorage.setItem('tylosLabour.signedLog', '1'); logActivity('Sign-in', `${cloud.who || 'Someone'} signed in${cloud.on ? '' : ' (this computer only)'}`); }
     shell(); render();
   }
   function shell() {
@@ -1786,7 +1792,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
   }
   function bindStarter() {
     const i = $('#starterI'); if (!i) return;
-    i.onchange = async () => { const f = i.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos settings file.'); await applySettingsFile(j); toast(`Starter settings imported: ${S.roster.length} staff, ${S.rates.length} rates.`); render(); } catch (e) { toast(esc(e.message), 'err'); } };
+    i.onchange = async () => { const f = i.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos settings file.'); logEvent('Upload', `Settings file uploaded: ${f.name}`); await applySettingsFile(j); toast(`Starter settings imported: ${S.roster.length} staff, ${S.rates.length} rates.`); render(); } catch (e) { toast(esc(e.message), 'err'); } };
   }
   function renderOutput(m) {
     const saved = st.wbSaved;
@@ -1816,6 +1822,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     bindDrop('#srcDrop', '#srcI', async f => {
       try { const rows = TL.parseCSV(await readText(f)); if (!rows.length || !('checkin_time' in rows[0])) throw new Error('This does not look like the site export (no checkin_time column).');
         st.src = rows; st.srcName = f.name; st.srcDates = [...new Set(rows.map(r => (r.checkin_time || '').slice(0, 10)).filter(Boolean))].sort();
+        logActivity('Upload', `Site check-in file uploaded: ${f.name} (${rows.length} records${st.srcDates.length ? ', ' + TL.fmtDMY(st.srcDates[0]) + (st.srcDates.length > 1 ? ' – ' + TL.fmtDMY(st.srcDates[st.srcDates.length - 1]) : '') : ''})`);
         const sel = rangeDates(); if (st.srcDates.length && !sel.some(d => st.srcDates.includes(d))) { st.from = st.srcDates[0]; st.to = st.srcDates[st.srcDates.length - 1]; if (TL.isoToSerial(st.to) - TL.isoToSerial(st.from) > 30) st.from = TL.addDays(st.to, -30); toast(`The file has no records for the chosen dates — switched to ${TL.fmtDMY(st.from)}${st.to !== st.from ? ' – ' + TL.fmtDMY(st.to) : ''}. Change it in step 1 if needed.`, 'warn'); }
         renderOutput(m); rebuildLines();
       } catch (e) { toast(esc(e.message), 'err'); }
@@ -1854,6 +1861,20 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
   }
   function rangeDates() { const f = st.from || st.date, t = st.to || f; const out = []; for (let d = f; d <= t && out.length < 31; d = TL.addDays(d, 1)) out.push(d); return out; }
   const dayLabel = (iso, long) => new Date(iso + 'T12:00').toLocaleDateString('en-GB', long ? { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' } : { weekday: 'short', day: '2-digit', month: '2-digit' });
+  const origOf = l => ({ include: !!l.include, group: l.group, status: l.status, start: l.start, end: l.end, inMin: l.inMin, outMin: l.outMin, profile: l.profile });
+  function manualEdits(lines) {
+    const t = v => v == null ? 'blank' : TL.toHM(v); const out = [];
+    for (const l of lines) {
+      const o = l._orig; if (!o) continue; const c = [];
+      if (o.include !== !!l.include) c.push(l.include ? 'counted' : 'not counted');
+      if (o.group !== l.group) c.push(`group ${GL(o.group)} → ${GL(l.group)}`);
+      if (o.status !== l.status) c.push(`status ${o.status} → ${l.status}`);
+      if (o.profile !== l.profile) c.push('pay rule changed');
+      for (const [k, lab] of [['start', 'start'], ['inMin', 'check-in'], ['outMin', 'check-out'], ['end', 'finish']]) if (o[k] !== l[k]) c.push(`${lab} ${t(o[k])} → ${t(l[k])}`);
+      if (c.length) out.push(`${l.display}: ${c.join(', ')}`);
+    }
+    return out;
+  }
   function setActiveDay(iso) { const d = st.days && st.days[iso]; if (!d) return; st.date = iso; st.lines = d.lines; st.merge = d.merge; st.capacity = d.capacity; }
   async function rebuildLines() {
     const dates = rangeDates();
@@ -1864,6 +1885,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     for (const iso of dates) {
       const lines = TL.plan(S, st.src, iso); let merge = null, capacity = null;
       if (wb) { try { const ex = await TL.readExisting(wb, S, iso); capacity = ex.capacity; if (ex.daily.length || ex.slots.length) merge = Object.assign(TL.mergeExisting(S, lines, ex), { existing: ex.daily.length + ex.slots.length }); } catch (e) { console.warn(e); } }
+      lines.forEach(l => l._orig = origOf(l));
       st.days[iso] = { lines, merge, capacity, scans: lines.filter(l => l.rawIn).length };
     }
     const keep = st.date && st.days[st.date] ? st.date : (dates.find(d => st.days[d].scans) || dates[0]);
@@ -2021,7 +2043,12 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
         if (!S.roster.some(p => TL.personKey(p.name, p.cat) === l.key)) { S.roster.push({ name: l.name, cat: l.cat, display: l.display, group: l.group, profile: l.profile, start: TL.toHM(l.start), end: TL.toHM(l.end), source: l.source, role: l.role, agencyRole: l.agencyRole, slot: l.slot, active: true }); added++; }
       }
       if (added) ensureIds(S);
-      for (const d of dates) logEvent('Daily output', `Workbook updated for ${TL.fmtDMY(d)}: ${linesOf(d).filter(l => l.include && TL.isDaily(S, l.group)).length} in Daily Record`);
+      for (const d of dates) {
+        const ed = manualEdits(linesOf(d));
+        logEvent('Daily output', `Workbook updated for ${TL.fmtDMY(d)}: ${linesOf(d).filter(l => l.include && TL.isDaily(S, l.group)).length} in Daily Record${st.srcName ? ' · site file ' + st.srcName : ''}${ed.length ? ` · ${ed.length} manual change(s)` : ''}`);
+        ed.slice(0, 40).forEach(x => logEvent('Daily output', `${TL.fmtDMY(d)} manual change — ${x}`));
+        if (ed.length > 40) logEvent('Daily output', `${TL.fmtDMY(d)} … and ${ed.length - 40} more manual change(s)`);
+      }
       if (added) logEvent('Daily output', `${added} new person(s) added to Staff`);
       const name = (base.name || 'Labour time sheet and task record.xlsx').replace(/\.xlsx$/i, '') + '.xlsx';
       await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate, version: meta ? meta.version : null, by: cloud.who });
@@ -2032,8 +2059,8 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
       try {
         const xwb = await TL.Workbook.open(out); const spec = await TL.extractSpec(xwb, S, dates); const xbytes = await TL.buildExtract(xwb, spec);
         const label = dates.length > 1 ? `${TL.fmtDMY(dates[0], '.')}-${TL.fmtDMY(lastDate, '.')}` : TL.fmtDMY(dates[0], '.');
-        download(xbytes, `Labour time sheet and task record ${label}.xlsx`);
-      } catch (e) { console.error(e); toast('Could not make the short file (' + esc(e.message) + ') — downloading the full workbook instead.', 'warn', 8000); download(out, name); }
+        download(xbytes, `Labour time sheet and task record ${label}.xlsx`, undefined, true);
+      } catch (e) { console.error(e); toast('Could not make the short file (' + esc(e.message) + ') — downloading the full workbook instead.', 'warn', 8000); download(out, name, undefined, true); }
       st.log.unshift({ at: new Date(), date: dates.length > 1 ? dates[0] + '…' + lastDate : dates[0], lines: res.log, warnings: res.warnings, added });
       toast(`${ICON.check} Workbook updated for ${dates.length > 1 ? dates.length + ' days (' + TL.fmtDMY(dates[0]) + ' – ' + TL.fmtDMY(lastDate) + ')' : TL.fmtDMY(dates[0])}${cloud.on ? ' and shared with everyone' : ' and saved as the latest copy'}.`);
       renderOutput($('#main')); await rebuildLines();
@@ -2109,7 +2136,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
           const res = await TL.fillAgency(tpl.bytes, mon, W.data[g].map(p => ({ name: p.name, days: p.days, section: p.section })));
           let fn = agencyFileName(g, mon);
           if (W.partial) { const a = W.days[W.inP.indexOf(true)], z = W.days[W.inP.lastIndexOf(true)]; fn = fn.replace(/\.xlsx$/, ` (part ${TL.fmtDMY(a, '.').slice(0, 5)}-${TL.fmtDMY(z, '.').slice(0, 5)}).xlsx`); }
-          download(res.bytes, fn); logEvent('Weekly agency', `${GL(g)} timesheet downloaded for w/c ${TL.fmtDMY(mon)}${W.partial ? ' (part week)' : ''} (${W.data[g].length} people)`); commitSettings('Weekly agency', true);
+          download(res.bytes, fn, undefined, true); logEvent('Weekly agency', `${GL(g)} timesheet downloaded for w/c ${TL.fmtDMY(mon)}${W.partial ? ' (part week)' : ''}: ${W.data[g].length} people, ${fmtH(W.data[g].reduce((a, p) => a + p.total, 0))} h — ${fn}`); commitSettings('Weekly agency', true);
           toast(`${esc(GL(g))} timesheet downloaded${res.added ? ` — ${res.added} extra row(s) added to fit everyone` : ''}.`);
         } catch (e) { console.error(e); toast('Could not build timesheet: ' + esc(e.message), 'err'); }
         b.disabled = false;
@@ -2224,6 +2251,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
         const replace = confirm(`Found ${rows.length} rates.\n\nOK = replace the whole list\nCancel = merge (update matching names, add new ones)`);
         const num = v => { const n = parseFloat(String(v).replace(/[£,\s]/g, '')); return isNaN(n) ? null : n; };
         const incoming = rows.filter(r => r[kn]).map(r => ({ name: r[kn].trim(), normal: num(r[kr]), ot: ko ? num(r[ko]) : num(r[kr]) }));
+        logEvent('Upload', `Rates file uploaded: ${f.name} (${incoming.length} rates, ${replace ? 'replaced the list' : 'merged'}) — takes effect when saved`);
         if (replace) S.rates = incoming; else for (const r of incoming) { const ex = S.rates.find(x => TL.normName(x.name) === TL.normName(r.name)); if (ex) Object.assign(ex, r); else S.rates.push(r); }
         ensureIds(S); markDirty(); setupRates(p); toast(`${incoming.length} rates ${replace ? 'loaded' : 'merged'} — press Save changes to share.`);
       } catch (err) { toast(esc(err.message), 'err'); }
@@ -2353,14 +2381,16 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
   function setupLog(p) {
     const all = (S.changeLog || []).slice().sort((a, b) => b.at - a.at);
     const q = TL.normName(st.logQ || '');
-    const list = all.filter(e => !q || TL.normName(`${e.by} ${e.area} ${e.text}`).includes(q));
+    const areas = [...new Set(all.map(e => e.area))].sort(); const fa = st.logA || 'all';
+    const list = all.filter(e => (fa === 'all' || e.area === fa) && (!q || TL.normName(`${e.by} ${e.area} ${e.text} ${new Date(e.at).toLocaleDateString('en-GB')}`).includes(q)));
     const fmt = t => new Date(t).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit' });
-    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Change log</h2><p class="muted small">Every saved change to Setup, every workbook update and every agency timesheet download — who, when, what. Shared with everyone. Keeps the latest 2,000 entries.</p></div>
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Change log</h2><p class="muted small">Every saved change to Setup, every sign-in, every file uploaded or downloaded, every workbook update (with manual time changes) and every agency timesheet — who, when, what. Shared with everyone. Keeps the latest 5,000 entries.</p></div>
       <button class="btn sm ghost" id="logCsv">${ICON.down} Download CSV</button></div>
-      <input class="search" id="logQ" placeholder="Search (name, person, date…)" value="${esc(st.logQ || '')}">
+      <div class="toolbar"><input class="search" id="logQ" placeholder="Search (name, person, date…)" value="${esc(st.logQ || '')}"><div class="seg">${['all', ...areas].map(a => `<button data-la="${esc(a)}" class="${fa === a ? 'on' : ''}">${a === 'all' ? 'All' : esc(a)} <i>${a === 'all' ? all.length : all.filter(e => e.area === a).length}</i></button>`).join('')}</div></div>
       <div class="tbl-wrap" style="margin-top:8px"><table class="grid"><thead><tr><th>When</th><th>Who</th><th>Area</th><th>What changed</th></tr></thead><tbody>
       ${list.slice(0, 500).map(e => `<tr><td style="white-space:nowrap">${fmt(e.at)}</td><td>${esc(e.by || '—')}</td><td>${esc(e.area)}</td><td>${esc(e.text)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted c">Nothing logged yet.</td></tr>'}</tbody></table></div>
       ${list.length > 500 ? `<p class="small muted">Showing the latest 500 of ${list.length}. Download the CSV for all.</p>` : ''}</div>`;
+    $$('[data-la]', p).forEach(b => b.onclick = () => { st.logA = b.dataset.la; setupLog(p); });
     $('#logQ').oninput = e => { st.logQ = e.target.value; const pos = e.target.selectionStart; setupLog(p); const i = $('#logQ'); i.focus(); i.setSelectionRange(pos, pos); };
     $('#logCsv').onclick = () => { const rows = [['When', 'Who', 'Area', 'What changed'], ...list.map(e => [fmt(e.at), e.by || '', e.area, e.text])]; download(new TextEncoder().encode('﻿' + rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n')), `Tylos labour change log ${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv'); };
   }
