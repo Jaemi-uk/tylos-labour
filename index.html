@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
+<meta name="tl-build" content="1795527457">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -80,6 +81,7 @@ html,body{overflow-x:hidden}
 .startcell{min-width:150px}.startcell .chip{display:block;margin:4px 0 0;width:max-content}.sfrom{display:block;width:max-content;margin:4px 0 0;font-size:11.5px;color:#1d5fbf;background:#eaf2fd;border-radius:10px;padding:1px 4px 1px 8px}.sfrom.now{color:var(--ok);background:var(--okbg)}.sfrom .x{border:0;background:none;cursor:pointer;color:inherit;font-size:13px;padding:0 3px}
 th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:15px}
 a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10px;padding:2px 6px 2px 2px;margin-left:-2px}a.brand.home:hover{background:rgba(255,255,255,.08)}
+.updbar{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;background:#0f2a44;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px}.updbar svg{color:#5fd3b5}
 </style>
 </head>
 <body>
@@ -1650,6 +1652,28 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
 
   /* ---------------- background refresh: see other people's saves ---------------- */
   let pollT = null;
+  /* ---------------- new version of the page: make sure every open copy updates ---------------- */
+  const BUILD = (document.querySelector('meta[name="tl-build"]') || {}).content || '';
+  let newBuild = '';
+  async function checkNewVersion() {
+    if (!BUILD || newBuild) return;
+    try {
+      const h = await fetch('./?v=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.text() : '');
+      const m = /name="tl-build" content="(\d+)"/.exec(h);
+      if (m && m[1] !== BUILD && +m[1] > +BUILD) { newBuild = m[1]; showUpdateBar(); }
+    } catch (e) { }
+  }
+  function busy() { return dirty || (st.src && st.days) || document.querySelector('input:focus, select:focus'); }
+  function showUpdateBar() {
+    if (!busy() && document.visibilityState !== 'visible') { location.reload(); return; } // nobody looking, nothing in progress: just update
+    if ($('#updBar')) return;
+    const d = document.createElement('div'); d.id = 'updBar'; d.className = 'updbar';
+    d.innerHTML = `${ICON.check}<span><b>A newer version of this page is ready.</b> ${busy() ? 'Finish or save what you are doing, then reload.' : 'Reload to use it.'}</span><button class="btn sm primary" id="updGo">Reload now</button>`;
+    document.body.appendChild(d);
+    $('#updGo').onclick = async () => { if (dirty && !(await leaveSetupOk())) return; location.reload(); };
+  }
+  document.addEventListener('visibilitychange', () => { if (newBuild && !busy() && document.visibilityState === 'hidden') location.reload(); else if (document.visibilityState === 'visible') checkNewVersion(); });
+  setInterval(checkNewVersion, 5 * 60 * 1000); setTimeout(checkNewVersion, 20000);
   function startPolling() {
     clearInterval(pollT);
     const tick = async () => {
