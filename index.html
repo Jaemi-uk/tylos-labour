@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-<meta name="tl-build" content="1795527457">
+<meta name="tl-build" content="1795536918">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -310,7 +310,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
         inner = '<f>' + escXml(spec.f) + '</f>';
         if (typeof spec.v === 'number' && isFinite(spec.v)) inner += '<v>' + fmtNum(spec.v) + '</v>';
         else if (typeof spec.v === 'string') { a += ' t="str"'; inner += '<v>' + escXml(spec.v) + '</v>'; }
-      } else if (spec.v != null) inner = '<v>' + fmtNum(spec.v) + '</v>';
+      } else if (spec.v != null) inner = '<v>' + (spec.time ? String(spec.v) : fmtNum(spec.v)) + '</v>';
       else if (spec.s != null) { a += ' t="inlineStr"'; inner = '<is><t xml:space="preserve">' + escXml(spec.s) + '</t></is>'; }
       cells.set(col, { attrs: a, inner });
       this._touch(row);
@@ -549,8 +549,10 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
   /* ---------------- Writers ---------------- */
   const minToFrac = m => m / 1440;
   const minToHHMM = m => Math.floor(m / 60) * 100 + (m % 60);
-  TL.DAILY_R = r => `INT((Q${r}-P${r})*24)+LOOKUP(MINUTE(Q${r}-P${r}),{0,15,30,45},{0,0.25,0.5,0.75})-IF((Q${r}-P${r})*24>4,0.5,0)`;
-  TL.QUARTER_F = (a, b, r) => `INT((${b}${r}-${a}${r})*24) + LOOKUP(MINUTE(${b}${r}-${a}${r}),{0,15,30,45},{0,0.25,0.5,0.75})`;
+  // Same rule as the sheet (whole hours + quarter by the minutes − 0.5 h break over 4 h), with ROUND(…,6) so Excel's
+  // floating-point error on time differences (e.g. 7.9999999999 for 09:00–17:00) can never drop an hour.
+  TL.DAILY_R = r => `INT(ROUND((Q${r}-P${r})*24,6))+LOOKUP(MINUTE(Q${r}-P${r}),{0,15,30,45},{0,0.25,0.5,0.75})-IF(ROUND((Q${r}-P${r})*24,6)>4,0.5,0)`;
+  TL.QUARTER_F = (a, b, r) => `INT(ROUND((${b}${r}-${a}${r})*24,6)) + LOOKUP(MINUTE(${b}${r}-${a}${r}),{0,15,30,45},{0,0.25,0.5,0.75})`;
 
   /* lines: [{name, source, role, paidIn, paidOut, hours, formula:boolean, remark, rate, status}] in write order */
   TL.writeDaily = function (sh, block, lines) {
@@ -570,7 +572,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
         sh.set('P' + r, L.rawIn != null ? { v: minToFrac(L.rawIn), time: true } : null, o); sh.set('Q' + r, L.rawOut != null ? { v: minToFrac(L.rawOut), time: true } : null, o); sh.set('R' + r, null, o);
       } else {
         sh.set('P' + r, { v: minToFrac(L.paidIn), time: true }, o); sh.set('Q' + r, { v: minToFrac(L.paidOut), time: true }, o);
-        sh.set('R' + r, L.formula ? { f: TL.DAILY_R(r), v: L.hours } : { v: L.hours }, o);
+        sh.set('R' + r, { v: L.hours }, o); // plain number — worked out from exact minutes, no INT formula
       }
       sh.set('S' + r, L.remark ? { s: L.remark } : null, o);
       if (L.rate != null && L.rate !== '') {
@@ -583,6 +585,31 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
     }
   };
   /* JASHAN-type slot: In/Out time, calc col = hours formula, hour col = OT formula (kept) */
+  /* Repair rows written by earlier versions of this tool: their In/Out times were saved cut to 15 digits, which
+     makes Excel's INT((Out-In)*24) lose an hour (09:00–17:00 → 6.5). Recognised by those cut-off time values
+     (times typed in Excel are stored exactly, so hand-typed rows are never touched). Each such row gets exact
+     times and its hour formula replaced by the correct plain number. */
+  TL.repairHourFormulas = function (sh) {
+    let rows = 0;
+    const HOURF = /^INT\(\(([A-Z]{1,3})(\d+)-([A-Z]{1,3})(\d+)\)\*24\)\s*\+\s*LOOKUP\(MINUTE\(\1\2-\3\4\),\{0,15,30,45\},\{0,0\.25,0\.5,0\.75\}\)\s*(-\s*IF\(\(\1\2-\3\4\)\*24(?:>|&gt;)4,0\.5,0\))?\s*$/;
+    const timeOf = ref => { const c = sh.rawCell(ref); if (!c || /\bt="/.test(c.attrs) || /<f\b/.test(c.inner)) return null; const vm = /<v>([^<]+)<\/v>/.exec(c.inner); if (!vm) return null; const v = +vm[1]; if (!(v > 0 && v < 1)) return null; const m = v * 1440, mr = Math.round(m); if (Math.abs(m - mr) > 1e-6) return null; return { c, txt: vm[1], min: mr, exact: String(mr / 1440) }; };
+    for (const r of sh.rowNumbers()) {
+      const R = sh.rows.get(r); if (!R) continue;
+      const raw = R.cells ? [...R.cells.values()].map(c => c.inner).join('') : (R.inner || ''); if (raw.indexOf('INT((') < 0) continue;
+      for (const c of sh._cells(R).values()) {
+        const fm = /^<f>([^<]*)<\/f>/.exec(c.inner); if (!fm) continue;
+        const m = HOURF.exec(fm[1].trim()); if (!m) continue;
+        const a = timeOf(m[3] + m[4]), b = timeOf(m[1] + m[2]); if (!a || !b) continue;
+        if (a.txt === a.exact && b.txt === b.exact) continue; // exact (typed in Excel) — leave as it is
+        const d = b.min - a.min; if (d <= 0) continue;
+        const h = Math.floor(d / 60) + [0, 0.25, 0.5, 0.75][Math.floor((d % 60) / 15)] - (m[5] && d > 240 ? 0.5 : 0);
+        for (const t of [a, b]) t.c.inner = t.c.inner.replace('<v>' + t.txt + '</v>', '<v>' + t.exact + '</v>');
+        c.inner = '<v>' + h + '</v>'; c.attrs = c.attrs.replace(/\s+t="[^"]*"/, '');
+        sh._touch(r); rows++;
+      }
+    }
+    return { rows };
+  };
   TL.writeSlot = function (sh, slot, row, L, kind) {
     const style = 'time'; // always real times (hh:mm), never 900-style numbers
     const t = m => ({ v: minToFrac(m), time: true });
@@ -595,7 +622,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
     if (L.paidIn == null || L.paidOut == null) { sh.set(slot.inCol + row, L.paidIn != null ? t(L.paidIn) : null); sh.set(slot.outCol + row, L.paidOut != null ? t(L.paidOut) : null); return; }
     sh.set(slot.inCol + row, t(L.paidIn)); sh.set(slot.outCol + row, t(L.paidOut));
     if (kind === 'inhouse') {
-      sh.set(slot.calcCol + row, L.formula && style === 'time' ? { f: TL.QUARTER_F(slot.inCol, slot.outCol, row), v: L.hours } : { v: L.hours });
+      sh.set(slot.calcCol + row, { v: L.hours }); // plain number, no INT formula
       const hc = sh.cell(slot.hourCol + row);
       if (hc && hc.f != null) sh.setCached(slot.hourCol + row, Math.round((L.hours - L.otAfter) * 100) / 100);
       else sh.set(slot.hourCol + row, { f: `${slot.calcCol}${row}-${L.otAfter}`, v: L.hours - L.otAfter });
@@ -1049,6 +1076,12 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
   }
 
   /* Write one day into the internal workbook. Returns {log:[], warnings:[]} */
+  /* fix rows saved by earlier versions (cut-off times → an hour lost in Excel) in this year's three sheets */
+  TL.repairWorkbook = async function (wb, settings, iso) {
+    let rows = 0;
+    for (const k of ['daily', 'inhouse', 'zero']) { const pat = settings.sheets && settings.sheets[k]; if (!pat) continue; const sh = await resolveSheet(wb, pat, iso); if (sh) rows += TL.repairHourFormulas(sh).rows; }
+    return rows;
+  };
   TL.applyDay = async function (wb, settings, iso, lines) {
     TL.useSettings(settings);
     const log = [], warnings = [];
@@ -2056,6 +2089,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
         const wb = await TL.Workbook.open(base.bytes);
         res = { log: [], warnings: [] };
         for (const d of dates) { const r1 = await TL.applyDay(wb, S, d, linesOf(d)); res.log.push(...r1.log); res.warnings.push(...r1.warnings); }
+        try { res.repaired = await TL.repairWorkbook(wb, S, lastDate); } catch (e) { console.warn('repair', e); }
         out = await wb.save();
         if (!cloud.on) break;
         const r = await cloud.req('/workbook', { method: 'PUT', body: out, headers: { 'X-Base-Version': String(base.version ?? 'force'), 'X-Name': encodeURIComponent(base.name || 'Labour time sheet and task record.xlsx'), 'X-Last-Date': lastDate } });
@@ -2070,6 +2104,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
         if (!S.roster.some(p => TL.personKey(p.name, p.cat) === l.key)) { S.roster.push({ name: l.name, cat: l.cat, display: l.display, group: l.group, profile: l.profile, start: TL.toHM(l.start), end: TL.toHM(l.end), source: l.source, role: l.role, agencyRole: l.agencyRole, slot: l.slot, active: true }); added++; }
       }
       if (added) ensureIds(S);
+      if (res.repaired) logEvent('Daily output', `Corrected ${res.repaired} earlier row(s) whose hours Excel under-counted (e.g. 09:00–17:00 showing 6.5 instead of 7.5)`);
       for (const d of dates) {
         const ed = manualEdits(linesOf(d));
         logEvent('Daily output', `Workbook updated for ${TL.fmtDMY(d)}: ${linesOf(d).filter(l => l.include && TL.isDaily(S, l.group)).length} in Daily Record${st.srcName ? ' · site file ' + st.srcName : ''}${ed.length ? ` · ${ed.length} manual change(s)` : ''}`);
