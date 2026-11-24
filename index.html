@@ -1585,7 +1585,8 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     }
     return m;
   }
-  function mergeLogs(...lists) { const map = new Map(); for (const l of lists) for (const e of l || []) if (e.area !== 'Sign-in') map.set(e.id, e); return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 5000); }
+  const LOG_START = 1795526872000; // change log reset 2026-11-24T13:27:52Z — older entries are dropped everywhere
+  function mergeLogs(...lists) { const map = new Map(); for (const l of lists) for (const e of l || []) if (e.area !== 'Sign-in' && e.at >= LOG_START) map.set(e.id, e); return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 5000); }
 
   /* ---------------- save model ---------------- */
   let snapshot = null;           // JSON of settings as last loaded/saved
@@ -1744,6 +1745,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
     }
     ensureIds(S); fillDefaults(S); localStorage.setItem(LS_KEY, JSON.stringify(S)); takeSnapshot(); startPolling();
     await runMigrations();
+    if ((S.changeLog || []).some(e => e.at < LOG_START || e.area === 'Sign-in')) { S.changeLog = mergeLogs(S.changeLog); takeSnapshot(); commitSettings('Activity', true); }
     shell(); render();
   }
   function shell() {
@@ -2378,7 +2380,7 @@ th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:
 
   /* ---------- Change log ---------- */
   function setupLog(p) {
-    const all = (S.changeLog || []).filter(e => e.area !== 'Sign-in').sort((a, b) => b.at - a.at);
+    const all = (S.changeLog || []).filter(e => e.area !== 'Sign-in' && e.at >= LOG_START).sort((a, b) => b.at - a.at);
     const q = TL.normName(st.logQ || '');
     const areas = [...new Set(all.map(e => e.area))].sort(); const fa = st.logA || 'all';
     const list = all.filter(e => (fa === 'all' || e.area === fa) && (!q || TL.normName(`${e.by} ${e.area} ${e.text} ${new Date(e.at).toLocaleDateString('en-GB')}`).includes(q)));
