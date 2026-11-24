@@ -439,6 +439,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     if (!clamped) pin = roundMin(pin, p.inRound);
     let pout = e.outMin;
     if (p.capEnd && e.end != null && pout > e.end) pout = e.end;
+    else if (e.end != null && +p.snapEndMin > 0 && pout > e.end && pout - e.end < +p.snapEndMin) pout = e.end;
     pout = roundMin(pout, p.outRound);
     if (pout < pin) pout = pin;
     const dur = pout - pin;
@@ -564,7 +565,12 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
         sh.set('R' + r, L.formula ? { f: TL.DAILY_R(r), v: L.hours } : { v: L.hours }, o);
       }
       sh.set('S' + r, L.remark ? { s: L.remark } : null, o);
-      if (L.rate != null && L.rate !== '') { sh.set('T' + r, { v: +L.rate }, o); sh.set('U' + r, { f: `R${r}*T${r}`, v: Math.round(L.hours * L.rate * 100) / 100 }, o); }
+      if (L.rate != null && L.rate !== '') {
+        sh.set('T' + r, { v: +L.rate }, o);
+        const ot = +L.ot || 0, otr = L.otRate != null && L.otRate !== '' ? +L.otRate : +L.rate;
+        if (ot > 0 && otr !== +L.rate) sh.set('U' + r, { f: `(R${r}-${ot})*T${r}+${ot}*${otr}`, v: Math.round(((L.hours - ot) * L.rate + ot * otr) * 100) / 100 }, o);
+        else sh.set('U' + r, { f: `R${r}*T${r}`, v: Math.round(L.hours * L.rate * 100) / 100 }, o);
+      }
       else { sh.set('T' + r, null, o); sh.set('U' + r, null, o); }
     }
   };
@@ -965,11 +971,13 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       const sorted = TL.sortLines(daily.slice(), settings);
       const rows = sorted.map(L => {
         const r = ev.get(L); const isAg = K(L) === 'agency';
-        let rate = null;
-        if (isAg && settings.agency.writeRateInDaily) { const rr = TL.rateFor(settings, L); rate = rr ? rr.normal : ((settings.groupRates || {})[L.group] ?? null); }
+        let rate = null, otRate = null;
+        if (settings.agency.writeRateInDaily) { const rr = TL.rateFor(settings, L); rate = rr ? rr.normal : (isAg ? ((settings.groupRates || {})[L.group] ?? null) : null); otRate = rr && rr.ot != null && rr.ot !== '' ? rr.ot : rate; }
+        const ot = L.status === 'worked' && +r.profile.otAfterH > 0 ? Math.max(0, Math.round((r.hours - r.profile.otAfterH) * 100) / 100) : 0;
         return {
+          ot, otRate,
           name: L.display, source: L.source, role: isAg ? (L.role || TL.groupCode(settings, L.group)) : (L.role || ''), paidIn: r.paidIn, paidOut: r.paidOut, hours: r.hours,
-          formula: isAg && TL.matchesDailyFormula(r.profile) && L.status === 'worked', remark: (r.paidIn == null || r.paidOut == null) && L.status === 'worked' ? ['TIME MISSING – please complete', remarkOf(L)].filter(Boolean).join('; ') : remarkOf(L), rate, status: L.status, statusLabel: TL.STATUS[L.status], rawIn: L.inMin, rawOut: L.outMin
+          formula: isAg && TL.matchesDailyFormula(r.profile) && L.status === 'worked', remark: [(r.paidIn == null || r.paidOut == null) && L.status === 'worked' ? 'TIME MISSING – please complete' : '', ot > 0 ? `OT ${ot} h` : '', remarkOf(L)].filter(Boolean).join('; '), rate, status: L.status, statusLabel: TL.STATUS[L.status], rawIn: L.inMin, rawOut: L.outMin
         };
       });
       TL.writeDaily(sh, b, rows);
@@ -1167,14 +1175,15 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
    "clampStart": true,
    "graceMin": 0,
    "inRound": "none",
-   "capEnd": true,
+   "capEnd": false,
    "outRound": "none",
    "durRound": "down15",
    "breakAfterH": 0,
    "breakH": 0,
-   "otAfterH": 0,
+   "otAfterH": 8,
    "showActual": false,
-   "note": "Paid within the scheduled shift only (no early / late extra). No break deducted."
+   "note": "Early arrival not paid. Time after the shift finish counts; hours over 8 a day are overtime. No break deducted.",
+   "snapEndMin": 15
   },
   {
    "id": "inhouse",
@@ -1217,7 +1226,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
    "durRound": "none",
    "breakAfterH": 0,
    "breakH": 0,
-   "otAfterH": 0,
+   "otAfterH": 8,
    "showActual": true,
    "note": "Actual times written; in and out each rounded to nearest quarter for hours. No lunch deducted."
   }
@@ -1389,7 +1398,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 
   /* ---------------- describe changes for the change log ---------------- */
   const FIELD = { name: 'site name', cat: 'category', display: 'workbook name', group: 'group', profile: 'pay rule', start: 'start', end: 'finish', source: 'source', role: 'role', agencyRole: 'timesheet section', slot: 'sheet column', active: 'active', normal: 'normal rate', ot: 'OT rate',
-    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', note: 'note' };
+    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', snapEndMin: 'finish tolerance (min)', note: 'note' };
   const show = (k, v) => k === 'group' ? GL(v) : k === 'profile' ? ((S.profiles.find(x => x.id === v) || {}).name || v) : (v === '' || v == null ? '(blank)' : typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v));
   function diffList(a, b, idKey, label, nameOf) {
     const out = []; const A = new Map((a || []).map(x => [x[idKey], x])), B = new Map((b || []).map(x => [x[idKey], x]));
@@ -1514,6 +1523,20 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     window.addEventListener('focus', tick);
   }
 
+  /* ---------------- one-off upgrades of shared settings ---------------- */
+  async function runMigrations() {
+    S.migrations = S.migrations || {};
+    if (!S.migrations.otForAll && S.roster.length) {
+      S.migrations.otForAll = Date.now();
+      for (const r of S.profiles) {
+        if (r.id === 'cor') { r.capEnd = false; r.snapEndMin = 15; if (!+r.otAfterH) r.otAfterH = 8; r.note = 'Early arrival not paid. Time after the shift finish counts; hours over 8 a day are overtime. No break deducted.'; r.name = 'COR fixed shift (Tylos contract)'; }
+        if (r.id === 'zero' && !+r.otAfterH) r.otAfterH = 8;
+      }
+      logEvent('Setup', 'Overtime switched on for COR and office staff (over 8 h a day); COR pay no longer stops at the scheduled finish');
+      await commitSettings('Setup', true);
+    }
+  }
+
   /* ---------------- logo ---------------- */
   const LOGO_SVG = `<svg viewBox="0 0 100 100" class="tlogo" aria-label="Tylos Logistics"><circle cx="50" cy="50" r="49.5" fill="#23265a"/><circle cx="50" cy="50" r="46.5" fill="none" stroke="#fff" stroke-width="1.3"/><text x="50" y="54" text-anchor="middle" font-family="'Segoe UI',Arial,Helvetica,sans-serif" font-size="20" font-weight="600" letter-spacing="1.2" fill="#fff">TYLOS</text><text x="73" y="65.5" text-anchor="end" font-family="'Segoe UI',Arial,Helvetica,sans-serif" font-size="7.6" font-weight="600" fill="#fff">logistics</text></svg>`;
   const BRAND = (sub) => `<span class="logo">${LOGO_SVG}</span><div><b>Tylos Logistics</b><small>${sub}</small></div>`;
@@ -1577,6 +1600,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       try { await syncDown(); } catch (e) { if (e.auth) { sessionStorage.removeItem('tylosLabour.key'); return boot(); } cloud.on = false; setTimeout(() => toast('Shared storage not reachable — working on this computer only. (' + esc(e.message) + ')', 'warn', 8000), 300); }
     }
     ensureIds(S); fillDefaults(S); localStorage.setItem(LS_KEY, JSON.stringify(S)); takeSnapshot(); startPolling();
+    await runMigrations();
     shell(); render();
   }
   function shell() {
@@ -1907,7 +1931,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   }
 
   /* ================= SETUP ================= */
-  const SECTIONS = [['staff', 'Staff & start times'], ['plan', 'Start-time plan'], ['groups', 'Groups'], ['rules', 'Pay rules'], ['rates', 'Pay rates'], ['agency', 'Agency timesheets'], ['workbook', 'Workbook & sheets'], ['log', 'Change log'], ['security', 'Backup']];
+  const SECTIONS = [['staff', 'Staff & default start'], ['plan', 'Change daily start time'], ['groups', 'Groups'], ['rules', 'Pay rules'], ['rates', 'Pay rates'], ['agency', 'Agency timesheets'], ['workbook', 'Workbook & sheets'], ['log', 'Change log'], ['security', 'Backup']];
   function renderSetup(m) {
     m.innerHTML = firstRunBanner() + `<div class="setup"><aside class="side">${SECTIONS.map(([k, t]) => `<button data-s="${k}" class="${st.setup === k ? 'on' : ''}">${t}</button>`).join('')}</aside><div class="pane" id="pane"></div></div>`;
     bindStarter();
@@ -1917,7 +1941,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   }
   function setupStaff(p) {
     const q = TL.normName(st.staffQ); const list = S.roster.map((r, i) => [r, i]).filter(([r]) => (!q || TL.normName(r.display + ' ' + r.name).includes(q)) && (st.staffG === 'all' || r.group === st.staffG));
-    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Staff &amp; start times</h2><p class="muted small">People found in imported site files are added here automatically. Matching uses name + category, so the two Gurpreet Singhs (Air / staff) stay separate.</p></div>
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Staff &amp; default start</h2><p class="muted small">People found in imported site files are added here automatically. Matching uses name + category, so the two Gurpreet Singhs (Air / staff) stay separate.</p></div>
       <button class="btn sm" id="addStaff">${ICON.plus} Add person</button></div>
       <div class="toolbar"><input class="search" id="stQ" placeholder="Search name…" value="${esc(st.staffQ)}"><div class="seg">${['all', ...GROUPS_ALL().map(g => g.id)].map(g => `<button data-g="${esc(g)}" class="${st.staffG === g ? 'on' : ''}">${g === 'all' ? 'All' : esc(GL(g))} <i>${g === 'all' ? S.roster.length : S.roster.filter(r => r.group === g).length}</i></button>`).join('')}</div></div>
       <div class="tbl-wrap"><table class="grid edit"><thead><tr><th>Active</th><th>Name in site file</th><th>Category</th><th>Name in workbook</th><th>Group</th><th>Pay rule</th><th>Default start</th><th>Finish (cap)</th><th>Source (col N)</th><th>Timesheet section</th><th>Sheet column</th><th></th></tr></thead><tbody>
@@ -1962,12 +1986,13 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
           <label>Grace minutes <input type="number" min="0" max="59" data-k="graceMin" value="${r.graceMin}" class="xs"> <small class="muted">late by up to this many minutes = on time</small></label>
           <label>Late arrival time ${sel('inRound', ROUND_OPTS)}</label></fieldset>
         <fieldset><legend>Departure</legend>
-          <label class="ck"><input type="checkbox" data-k="capEnd" ${r.capEnd ? 'checked' : ''}> Don't pay after the scheduled finish</label>
+          <label class="ck"><input type="checkbox" data-k="capEnd" ${r.capEnd ? 'checked' : ''}> Don't pay after the scheduled finish <small class="muted">(no overtime possible)</small></label>
+          <label>Leaving less than <input type="number" min="0" max="59" data-k="snapEndMin" value="${r.snapEndMin || 0}" class="xs"> min after the finish counts as the finish</label>
           <label>Check-out time ${sel('outRound', ROUND_OPTS)}</label></fieldset>
         <fieldset><legend>Hours</legend>
           <label>Total time worked ${sel('durRound', ROUND_OPTS)}</label>
           <label>Unpaid break <input type="number" step="0.25" min="0" data-k="breakH" value="${r.breakH}" class="xs"> h if shift over <input type="number" step="0.5" min="0" data-k="breakAfterH" value="${r.breakAfterH}" class="xs"> h</label>
-          <label>Overtime after <input type="number" step="0.5" min="0" data-k="otAfterH" value="${r.otAfterH}" class="xs"> h/day <small class="muted">(0 = none; in-house sheet "Hour" column)</small></label>
+          <label><b>Overtime</b> after <input type="number" step="0.5" min="0" data-k="otAfterH" value="${r.otAfterH}" class="xs"> h/day <small class="muted">(0 = no overtime). OT hours use the person's OT rate.</small></label>
           <label class="ck"><input type="checkbox" data-k="showActual" ${r.showActual ? 'checked' : ''}> Write actual scanned times (not rounded) in the sheet</label></fieldset>
       </div>
       <label class="note">Note <input data-k="note" value="${esc(r.note || '')}"></label>
@@ -2106,7 +2131,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     const people = S.roster.filter(r => r.active && KIND(r.group) !== 'ignore').sort((a, b) => TL.groupRank(S, a.group) - TL.groupRank(S, b.group) || a.display.localeCompare(b.display));
     const upcoming = Object.keys(S.startPlan).filter(d => d >= iso0).sort();
     const nice = d => new Date(d + 'T12:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
-    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Start-time plan</h2><p class="muted small">Tell the site in advance when start times change, e.g. "Air agency starts 06:00 tomorrow". On that date the confirm step uses these times automatically (you can still change them there). Leave a box empty to use the person's normal start.</p></div></div>
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Change daily start time</h2><p class="muted small">Override the default start for one day — for a whole group (e.g. "Air agency starts 06:00 tomorrow") or for individual people. On that date the confirm step uses these times automatically (you can still change any of them there on the day). Empty box = the person's default start.</p></div></div>
       <div class="row gap"><label class="fld"><span>Date</span><input type="date" id="plD" value="${st.planDate}"></label>
         <div class="quick">${[0, 1, 2].map(n => { const d = TL.addDays(iso0, n); return `<button class="chip ${d === st.planDate ? 'on' : ''}" data-pd="${d}">${n === 0 ? 'Today' : n === 1 ? 'Tomorrow' : nice(d)}</button>`; }).join('')}</div>
         ${upcoming.length ? `<span class="small muted">Planned: ${upcoming.map(d => `<a href="#" data-pd="${d}">${nice(d)}</a>`).join(' · ')}</span>` : ''}</div>
