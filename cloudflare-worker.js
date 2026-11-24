@@ -3,6 +3,7 @@
 // Auth: every request carries header "X-Tylos-Key: <password>"; checked against a SHA-256 hash in KV.
 
 const DEFAULT_PW_HASH = '2f2b7e88442fbc58a3995ff4d32e69615bac6e180c14583ec403ac5594e5dff3'; // *Tylos2026
+const ALLOW_PASSWORD_CHANGE = false; // set to true to allow changing the shared password from the site
 const ALLOWED_ORIGINS = ['https://tylos-labour.jaemi.uk', 'https://jaemi.uk', 'https://www.jaemi.uk', 'http://127.0.0.1:8765'];
 
 async function sha256(t) {
@@ -40,6 +41,7 @@ export default {
     if (path === '/login') return json(req, { ok: true, defaultPassword: stored === DEFAULT_PW_HASH });
 
     if (path === '/password' && req.method === 'POST') {
+      if (!ALLOW_PASSWORD_CHANGE) return json(req, { error: 'Password changes are switched off.' }, 403);
       const { newPassword } = await req.json();
       if (!newPassword || String(newPassword).length < 6) return json(req, { error: 'Use at least 6 characters.' }, 400);
       await env.DB.put('auth:pwHash', await sha256(String(newPassword)));
@@ -63,9 +65,11 @@ export default {
       }
     }
 
-    const tm = /^\/template\/(Air|Insight)$/.exec(path);
+    const tmm = /^\/template\/([^/]{1,60})\/meta$/.exec(path);
+    if (tmm && req.method === 'GET') { const meta = await env.DB.get('template:' + decodeURIComponent(tmm[1]) + ':meta', 'json'); return meta ? json(req, meta) : json(req, { error: 'No template.' }, 404); }
+    const tm = /^\/template\/([^/]{1,60})$/.exec(path);
     if (tm) {
-      const g = tm[1];
+      const g = decodeURIComponent(tm[1]);
       if (req.method === 'GET') {
         const [b, meta] = await Promise.all([env.DB.get('template:' + g, 'arrayBuffer'), env.DB.get('template:' + g + ':meta', 'json')]);
         if (!b) return json(req, { error: 'No template.' }, 404);
