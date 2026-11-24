@@ -1300,6 +1300,10 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 
   /* ---------------- login ---------------- */
   async function boot() {
+    if (location.protocol === 'http:' && !/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) { location.replace('https://' + location.host + location.pathname + location.search); return; }
+    if (!window.crypto || !crypto.subtle || !window.indexedDB || typeof DecompressionStream === 'undefined') {
+      $('#app').innerHTML = `<div class="login"><div class="card login-card"><div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Browser not supported</small></div></div><p>This browser can't run Tylos Labour. Please open <b>https://tylos-labour.jaemi.uk</b> in an up-to-date <b>Google Chrome</b> or <b>Microsoft Edge</b>.</p></div></div>`; return;
+    }
     if (cloud.key) {
       $('#app').innerHTML = `<div class="login"><div class="card login-card"><div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Connecting…</small></div></div></div></div>`;
       const r = await cloudLogin(cloud.key);
@@ -1314,7 +1318,11 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       <button class="btn primary wide" id="unl">Unlock</button><p class="muted small" id="loginMsg"></p></form></div>`;
     (cloud.who ? $('#pw') : $('#who')).focus();
     $('#loginF').onsubmit = async e => {
-      e.preventDefault(); const pw = $('#pw').value; const who = $('#who').value.trim();
+      e.preventDefault();
+      try { await doLogin(); } catch (err) { console.error(err); $('#unl').disabled = false; $('#loginMsg').textContent = 'Login problem: ' + (err && err.message || err) + ' — try Ctrl+F5, or send this message to the administrator.'; }
+    };
+    async function doLogin() {
+      const pw = $('#pw').value.trim(); const who = $('#who').value.trim();
       if (!who) { $('#loginMsg').textContent = 'Please enter your name (shown as "updated by").'; return $('#who').focus(); }
       cloud.who = who; localStorage.setItem('tylosLabour.who', who);
       $('#unl').disabled = true; $('#loginMsg').textContent = 'Checking…';
@@ -1324,7 +1332,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       const h = await sha256(pw);
       if (h === S.pwHash) { sessionStorage.setItem('tylosLabour.unlocked', h); localStorage.setItem('tylosLabour.localOnly', '1'); return start(); }
       $('#unl').disabled = false; $('#loginMsg').textContent = 'Wrong password (shared storage not reachable, checked on this computer).'; $('#pw').select();
-    };
+    }
   }
   async function start() {
     try { const w = await idb.get('latestWorkbook'); if (w) { st.wbSaved = w; } } catch (e) { }
