@@ -1309,7 +1309,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     } else if (sessionStorage.getItem('tylosLabour.unlocked') === S.pwHash && localStorage.getItem('tylosLabour.localOnly') === '1') return start();
     $('#app').innerHTML = `<div class="login"><form id="loginF" class="card login-card">
       <div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Time sheets &amp; agency payroll</small></div></div>
-      <label class="fld"><span>Your name</span><input id="who" autocomplete="name" placeholder="e.g. Kenny, Cheryl, Winnie" value="${esc(cloud.who)}"></label>
+      <label class="fld"><span>Your name</span><input id="who" autocomplete="name" placeholder="Your first name" value="${esc(cloud.who)}"></label>
       <label class="fld"><span>Password</span><input id="pw" type="password" autocomplete="current-password"></label>
       <button class="btn primary wide" id="unl">Unlock</button><p class="muted small" id="loginMsg"></p></form></div>`;
     (cloud.who ? $('#pw') : $('#who')).focus();
