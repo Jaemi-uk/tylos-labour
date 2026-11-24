@@ -17,7 +17,7 @@ h2{font-size:17px;margin:0 0 4px}h3{font-size:15px;margin:0}small{font-size:12px
 .brand.big .logo{width:46px;height:46px;font-size:24px}.brand.big b{font-size:20px;color:var(--ink)}.brand.big small{color:var(--muted)}
 .tabs{display:flex;gap:6px;flex:1}.tabs button{display:flex;align-items:center;gap:8px;padding:9px 16px;border:0;border-radius:9px;background:transparent;color:#c9d6e2;font:inherit;font-weight:600;cursor:pointer}
 .tabs button:hover{background:rgba(255,255,255,.08);color:#fff}.tabs button.on{background:#fff;color:var(--navy)}
-.top-r{display:flex;align-items:center;gap:10px}.saved{opacity:0;transition:.3s;color:var(--teal2);font-size:12px}.saved.on{opacity:1}
+.top-r{display:flex;align-items:center;gap:10px}.mode{font-size:12px;color:#c9d6e2;border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:3px 10px}.mode.on{color:#57d3c3;border-color:#57d3c3}.who{font-size:12px;color:#c9d6e2}.saved{opacity:0;transition:.3s;color:var(--teal2);font-size:12px}.saved.on{opacity:1}
 main{max-width:1500px;margin:0 auto;padding:20px 22px 60px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 18px;margin-bottom:16px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
 .card.sub{box-shadow:none;background:#fbfcfd}.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}
@@ -1204,13 +1204,84 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     if (!s.pwHash) s.pwHash = DEFAULT_PW_HASH;
     return s;
   }
-  function saveSettings() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); flash('Saved'); } catch (e) { toast('Could not save settings in this browser: ' + e.message, 'err'); } }
+  function saveSettings() { try { localStorage.setItem(LS_KEY, JSON.stringify(S)); flash('Saved'); } catch (e) { toast('Could not save settings in this browser: ' + e.message, 'err'); } queueSettingsPush(); }
   const idb = (() => {
     let dbp = null;
     const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('tylosLabour', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
     const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction('files', mode); const st = t.objectStore('files'); const q = fn(st); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); }); };
     return { get: k => tx('readonly', st => st.get(k)), set: (k, v) => tx('readwrite', st => st.put(v, k)), del: k => tx('readwrite', st => st.delete(k)) };
   })();
+  /* ---------------- shared storage (Cloudflare Worker) ---------------- */
+  const API_DEFAULT = 'https://tylos-labour-api.jaemi.uk';
+  const cloud = {
+    base: (localStorage.getItem('tylosLabour.api') || API_DEFAULT).replace(/\/+$/, ''),
+    key: sessionStorage.getItem('tylosLabour.key') || '',
+    who: localStorage.getItem('tylosLabour.who') || '',
+    on: false, state: null, lastErr: '',
+    async req(path, opt = {}) {
+      const h = Object.assign({ 'X-Tylos-Key': this.key }, opt.headers || {});
+      if (this.who) h['X-By'] = encodeURIComponent(this.who);
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), opt.timeout || 45000);
+      try { return await fetch(this.base + path, { method: opt.method || 'GET', headers: h, body: opt.body, cache: 'no-store', signal: ctl.signal }); }
+      finally { clearTimeout(t); }
+    }
+  };
+  async function cloudLogin(pw) {
+    const old = cloud.key; cloud.key = pw;
+    try { const r = await cloud.req('/login', { method: 'POST', timeout: 9000 }); if (r.status === 401) { cloud.key = old; return 'wrong'; } if (!r.ok) throw new Error('HTTP ' + r.status); cloud.on = true; return 'ok'; }
+    catch (e) { cloud.key = old; cloud.on = false; cloud.lastErr = e.message; return 'offline'; }
+  }
+  function settingsForCloud() { const c = JSON.parse(JSON.stringify(S)); delete c.pwHash; return JSON.stringify(c); }
+  let pushT = null;
+  function queueSettingsPush() { if (!cloud.on) return; clearTimeout(pushT); pushT = setTimeout(pushSettings, 700); }
+  async function pushSettings() {
+    try { const r = await cloud.req('/settings', { method: 'PUT', body: settingsForCloud(), headers: { 'Content-Type': 'application/json' } }); if (!r.ok) throw new Error('HTTP ' + r.status); const m = await r.json(); localStorage.setItem('tylosLabour.settingsVersion', String(m.version)); flash('Saved · shared'); }
+    catch (e) { toast('Could not share the settings change (' + esc(e.message) + '). It is saved on this computer; it will be shared with the next change.', 'warn', 7000); }
+  }
+  async function pushTemplate(g, t) {
+    if (!cloud.on) return;
+    const r = await cloud.req('/template/' + g, { method: 'PUT', body: t.bytes, headers: { 'X-Name': encodeURIComponent(t.name) } });
+    if (r.ok) { const m = await r.json(); await idb.set(tplKey(g), Object.assign({}, t, { version: m.version })); }
+  }
+  async function fetchState() { const r = await cloud.req('/state', { timeout: 15000 }); if (r.status === 401) throw Object.assign(new Error('Password changed — please log in again.'), { auth: true }); if (!r.ok) throw new Error('HTTP ' + r.status); cloud.state = await r.json(); return cloud.state; }
+  async function syncWorkbook(meta) {
+    const local = st.wbSaved;
+    if (meta && (!local || String(local.version) !== String(meta.version))) {
+      const r = await cloud.req('/workbook'); if (!r.ok) throw new Error('Could not download the shared workbook (HTTP ' + r.status + ').');
+      const bytes = new Uint8Array(await r.arrayBuffer());
+      await idb.set('latestWorkbook', { name: meta.name, savedAt: meta.version, bytes, version: meta.version, lastDate: meta.lastDate, by: meta.by });
+      st.wbSaved = await idb.get('latestWorkbook'); wbCache = { bytes: null, wb: null }; return 'downloaded';
+    }
+    if (!meta && local) {
+      const r = await cloud.req('/workbook', { method: 'PUT', body: local.bytes, headers: { 'X-Base-Version': 'force', 'X-Name': encodeURIComponent(local.name), 'X-Last-Date': local.lastDate || '' } });
+      if (r.ok) { const m = await r.json(); local.version = m.version; await idb.set('latestWorkbook', local); st.wbSaved = local; }
+      return 'uploaded';
+    }
+    return 'same';
+  }
+  async function syncDown() {
+    const state = await fetchState();
+    if (state.settings) {
+      if (String(state.settings.version) !== localStorage.getItem('tylosLabour.settingsVersion') || !S.roster.length) {
+        const r = await cloud.req('/settings'); const j = await r.json();
+        if (j && j.roster) { const ph = S.pwHash; S = j; S.pwHash = ph; fillDefaults(S); localStorage.setItem(LS_KEY, JSON.stringify(S)); localStorage.setItem('tylosLabour.settingsVersion', String(state.settings.version)); }
+      }
+    } else if (S.roster.length) await pushSettings();
+    for (const g of ['Air', 'Insight']) {
+      const rm = state.templates && state.templates[g]; const local = await idb.get('agencyTemplate:' + g);
+      if (rm && (!local || String(local.version) !== String(rm.version))) {
+        const r = await cloud.req('/template/' + g); if (r.ok) await idb.set('agencyTemplate:' + g, { name: rm.name, savedAt: rm.version, version: rm.version, bytes: new Uint8Array(await r.arrayBuffer()) });
+      } else if (!rm && local) await pushTemplate(g, local);
+    }
+    try { const w = await idb.get('latestWorkbook'); if (w) st.wbSaved = w; } catch (e) { }
+    await syncWorkbook(state.workbook);
+  }
+  async function ensureLatestWorkbook(quiet) {
+    if (!cloud.on) return 'local';
+    try { const state = await fetchState(); const res = await syncWorkbook(state.workbook); if (res === 'downloaded' && !quiet) toast(`Loaded the newest shared workbook${state.workbook.by ? ' (updated by ' + esc(state.workbook.by) + ')' : ''}.`); return res; }
+    catch (e) { if (e.auth) { sessionStorage.removeItem('tylosLabour.key'); location.reload(); } toast('Shared storage not reachable — using the copy on this computer. (' + esc(e.message) + ')', 'warn', 7000); return 'error'; }
+  }
+  function fillDefaults(s) { const d = JSON.parse(JSON.stringify(window.TL_DEFAULTS)); for (const k of Object.keys(d)) if (s[k] === undefined) s[k] = d[k]; for (const k of Object.keys(d.agency)) if (s.agency[k] === undefined) s.agency[k] = d.agency[k]; return s; }
   async function sha256(t) { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
   function b64ToBytes(b) { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u; }
   function download(bytes, name, type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
@@ -1221,6 +1292,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   const readFile = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsArrayBuffer(f); });
   const readText = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = () => rej(r.error); r.readAsText(f); });
 
+  let wbCache = { bytes: null, wb: null };
   /* ---------------- state ---------------- */
   let S = loadSettings();
   const yesterday = () => { const d = new Date(Date.now() - 86400000); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
@@ -1228,27 +1300,47 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
 
   /* ---------------- login ---------------- */
   async function boot() {
-    if (sessionStorage.getItem('tylosLabour.unlocked') === S.pwHash) return start();
+    if (cloud.key) {
+      $('#app').innerHTML = `<div class="login"><div class="card login-card"><div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Connecting…</small></div></div></div></div>`;
+      const r = await cloudLogin(cloud.key);
+      if (r === 'ok') return start();
+      if (r === 'offline' && sessionStorage.getItem('tylosLabour.unlocked') === S.pwHash) return start();
+      sessionStorage.removeItem('tylosLabour.key');
+    } else if (sessionStorage.getItem('tylosLabour.unlocked') === S.pwHash && localStorage.getItem('tylosLabour.localOnly') === '1') return start();
     $('#app').innerHTML = `<div class="login"><form id="loginF" class="card login-card">
       <div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Time sheets &amp; agency payroll</small></div></div>
-      <label class="fld"><span>Password</span><input id="pw" type="password" autocomplete="current-password" autofocus></label>
-      <button class="btn primary wide">Unlock</button><p class="muted small" id="loginMsg"></p></form></div>`;
+      <label class="fld"><span>Your name</span><input id="who" autocomplete="name" placeholder="e.g. Kenny, Cheryl, Winnie" value="${esc(cloud.who)}"></label>
+      <label class="fld"><span>Password</span><input id="pw" type="password" autocomplete="current-password"></label>
+      <button class="btn primary wide" id="unl">Unlock</button><p class="muted small" id="loginMsg"></p></form></div>`;
+    (cloud.who ? $('#pw') : $('#who')).focus();
     $('#loginF').onsubmit = async e => {
-      e.preventDefault(); const h = await sha256($('#pw').value);
-      if (h === S.pwHash) { sessionStorage.setItem('tylosLabour.unlocked', h); start(); } else { $('#loginMsg').textContent = 'Wrong password.'; $('#pw').select(); }
+      e.preventDefault(); const pw = $('#pw').value; const who = $('#who').value.trim();
+      if (!who) { $('#loginMsg').textContent = 'Please enter your name (shown as "updated by").'; return $('#who').focus(); }
+      cloud.who = who; localStorage.setItem('tylosLabour.who', who);
+      $('#unl').disabled = true; $('#loginMsg').textContent = 'Checking…';
+      const r = await cloudLogin(pw);
+      if (r === 'ok') { sessionStorage.setItem('tylosLabour.key', pw); S.pwHash = await sha256(pw); localStorage.setItem(LS_KEY, JSON.stringify(S)); localStorage.removeItem('tylosLabour.localOnly'); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); return start(); }
+      if (r === 'wrong') { $('#unl').disabled = false; $('#loginMsg').textContent = 'Wrong password.'; return $('#pw').select(); }
+      const h = await sha256(pw);
+      if (h === S.pwHash) { sessionStorage.setItem('tylosLabour.unlocked', h); localStorage.setItem('tylosLabour.localOnly', '1'); return start(); }
+      $('#unl').disabled = false; $('#loginMsg').textContent = 'Wrong password (shared storage not reachable, checked on this computer).'; $('#pw').select();
     };
   }
   async function start() {
     try { const w = await idb.get('latestWorkbook'); if (w) { st.wbSaved = w; } } catch (e) { }
+    if (cloud.on) {
+      $('#app').innerHTML = `<div class="login"><div class="card login-card"><div class="brand big"><span class="logo">T</span><div><b>Tylos Labour</b><small>Loading shared data…</small></div></div></div></div>`;
+      try { await syncDown(); } catch (e) { if (e.auth) { sessionStorage.removeItem('tylosLabour.key'); return boot(); } cloud.on = false; setTimeout(() => toast('Shared storage not reachable — working on this computer only. (' + esc(e.message) + ')', 'warn', 8000), 300); }
+    }
     shell(); render();
   }
   function shell() {
     $('#app').innerHTML = `<header class="top"><div class="brand"><span class="logo">T</span><div><b>Tylos Labour</b><small>Time sheets &amp; agency payroll</small></div></div>
       <nav class="tabs"><button data-tab="setup">${ICON.gear}<span>Setup</span></button><button data-tab="output">${ICON.sheet}<span>Daily output</span></button><button data-tab="agency">${ICON.week}<span>Weekly agency</span></button></nav>
-      <div class="top-r"><span id="saved" class="saved"></span><button class="btn ghost sm" id="lockB">${ICON.lock} Lock</button></div></header>
+      <div class="top-r"><span id="saved" class="saved"></span><span class="mode ${cloud.on ? 'on' : ''}" title="${cloud.on ? 'Staff list, rates, templates, password and the latest workbook are shared with everyone' : 'Data is kept on this computer only'}">${cloud.on ? '● Shared' : '○ This computer only'}</span><span class="who">${esc(cloud.who)}</span><button class="btn ghost sm" id="lockB">${ICON.lock} Lock</button></div></header>
       <main id="main"></main><div id="toasts"></div>`;
     $$('.tabs button').forEach(b => b.onclick = () => { st.tab = b.dataset.tab; render(); });
-    $('#lockB').onclick = () => { sessionStorage.removeItem('tylosLabour.unlocked'); location.reload(); };
+    $('#lockB').onclick = () => { sessionStorage.removeItem('tylosLabour.unlocked'); sessionStorage.removeItem('tylosLabour.key'); location.reload(); };
   }
   function render() {
     $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === st.tab));
@@ -1276,7 +1368,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     delete j.agencyTemplates; delete j.agencyTemplate;
     if (!j.pwHash) j.pwHash = S.pwHash;
     S = j; saveSettings();
-    for (const g of Object.keys(tpls)) if (tpls[g] && tpls[g].b64) await idb.set(tplKey(g), { name: tpls[g].name, savedAt: Date.now(), bytes: b64ToBytes(tpls[g].b64) });
+    for (const g of Object.keys(tpls)) if (tpls[g] && tpls[g].b64) { const t = { name: tpls[g].name, savedAt: Date.now(), bytes: b64ToBytes(tpls[g].b64) }; await idb.set(tplKey(g), t); await pushTemplate(g, t); }
   }
   function firstRunBanner() {
     if (S.roster.length) return '';
@@ -1288,7 +1380,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   }
   function renderOutput(m) {
     const saved = st.wbSaved;
-    const wbLine = st.wb ? `<b>${esc(st.wbName)}</b> <span class="pill ok">uploaded now</span>` : saved ? `<b>${esc(saved.name)}</b> <span class="pill">saved copy · ${new Date(saved.savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}</span>` : '<span class="muted">No saved copy yet — please upload the latest workbook.</span>';
+    const wbLine = st.wb ? `<b>${esc(st.wbName)}</b> <span class="pill ok">uploaded now</span>` : saved ? `<b>${esc(saved.name)}</b> <span class="pill ${cloud.on ? 'ok' : ''}">${cloud.on ? 'shared copy' : 'saved copy'} · ${new Date(saved.savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}${saved.by ? ' · ' + esc(saved.by) : ''}${saved.lastDate ? ' · last day ' + TL.fmtDMY(saved.lastDate) : ''}</span>` : '<span class="muted">No saved copy yet — please upload the latest workbook.</span>';
     m.innerHTML = firstRunBanner() + `
     <section class="steps">
       <div class="card step"><div class="step-h"><span class="n">1</span><div><b>Work date</b><small>Required</small></div></div>
@@ -1317,7 +1409,19 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       } catch (e) { toast(esc(e.message), 'err'); }
     });
     bindDrop('#wbDrop', '#wbI', async f => {
-      try { const buf = new Uint8Array(await readFile(f)); await TL.Workbook.open(buf); await idb.set('latestWorkbook', { name: f.name, savedAt: Date.now(), bytes: buf, lastDate: null }); st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null }; renderOutput(m); await rebuildLines(); toast('Workbook saved in this browser — it will be used from now on.'); }
+      try {
+        const buf = new Uint8Array(await readFile(f)); await TL.Workbook.open(buf);
+        let version = null;
+        if (cloud.on) {
+          const cur = cloud.state && cloud.state.workbook;
+          if (cur && !confirm(`Replace the SHARED workbook for everyone with "${f.name}"?\n\nCurrent shared copy: ${cur.name}, updated ${new Date(cur.version).toLocaleString('en-GB')}${cur.by ? ' by ' + cur.by : ''}${cur.lastDate ? ' (last day written ' + TL.fmtDMY(cur.lastDate) + ')' : ''}.`)) return;
+          const r = await cloud.req('/workbook', { method: 'PUT', body: buf, headers: { 'X-Base-Version': 'force', 'X-Name': encodeURIComponent(f.name) } });
+          if (!r.ok) throw new Error('could not share it (HTTP ' + r.status + ')'); version = (await r.json()).version; await fetchState().catch(() => { });
+        }
+        await idb.set('latestWorkbook', { name: f.name, savedAt: Date.now(), bytes: buf, lastDate: null, version, by: cloud.who });
+        st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null }; renderOutput(m); await rebuildLines();
+        toast(cloud.on ? 'Workbook uploaded and shared — everyone now uses this copy.' : 'Workbook saved in this browser — it will be used from now on.');
+      }
       catch (e) { toast('Could not open workbook: ' + esc(e.message), 'err'); }
     });
     renderConfirm(); renderLog();
@@ -1328,10 +1432,10 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     z.ondragover = e => { e.preventDefault(); z.classList.add('over'); }; z.ondragleave = () => z.classList.remove('over');
     z.ondrop = e => { e.preventDefault(); z.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) onFile(f); };
   }
-  let wbCache = { bytes: null, wb: null };
   async function openCurrentWb() { const b = await currentWorkbookBytes(); if (!b) return null; if (wbCache.bytes !== b) wbCache = { bytes: b, wb: await TL.Workbook.open(b) }; return wbCache.wb; }
   async function rebuildLines() {
     if (!st.src || !st.date) { st.lines = null; renderConfirm(); return; }
+    if (cloud.on) await ensureLatestWorkbook();
     const lines = TL.plan(S, st.src, st.date); st.merge = null;
     try { const wb = await openCurrentWb(); if (wb) { const ex = await TL.readExisting(wb, S, st.date); st.capacity = ex.capacity; if (ex.daily.length || ex.slots.length) st.merge = Object.assign(TL.mergeExisting(S, lines, ex), { existing: ex.daily.length + ex.slots.length }); } }
     catch (e) { console.warn(e); toast('Could not read the workbook for this date: ' + esc(e.message), 'warn'); }
@@ -1458,22 +1562,32 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     if (probs.length && !confirm(`${probs.length} item(s) still need checking:\n\n• ${probs.slice(0, 10).join('\n• ')}\n\nRows with missing times are written with a "TIME MISSING" remark and no hours. Continue?`)) return;
     const btn = $('#genWb'); btn.disabled = true; btn.innerHTML = 'Working…';
     try {
-      const bytes = await currentWorkbookBytes(); const wb = await TL.Workbook.open(bytes);
-      const res = await TL.applyDay(wb, S, st.date, st.lines);
-      // remember new people / group choices in the staff list
+      if (cloud.on) await ensureLatestWorkbook(true);
+      let out, res, meta = null, base = st.wb ? { bytes: st.wb, name: st.wbName, version: 'force' } : st.wbSaved;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const wb = await TL.Workbook.open(base.bytes);
+        res = await TL.applyDay(wb, S, st.date, st.lines);
+        out = await wb.save();
+        if (!cloud.on) break;
+        const r = await cloud.req('/workbook', { method: 'PUT', body: out, headers: { 'X-Base-Version': String(base.version ?? 'force'), 'X-Name': encodeURIComponent(base.name || 'Labour time sheet and task record.xlsx'), 'X-Last-Date': st.date } });
+        if (r.status === 409) { toast('Someone else saved the workbook a moment ago — adding your day to their newer copy…', 'warn'); await ensureLatestWorkbook(true); base = st.wbSaved; continue; }
+        if (!r.ok) throw new Error('the shared copy could not be saved (HTTP ' + r.status + '). Nothing was shared; try again.');
+        meta = await r.json(); break;
+      }
+      if (cloud.on && !meta) throw new Error('the workbook kept changing while saving. Please try again.');
       let added = 0;
       for (const l of st.lines) {
         if (!l.isNew || l.group === 'New') continue;
         if (!S.roster.some(p => TL.personKey(p.name, p.cat) === l.key)) { S.roster.push({ name: l.name, cat: l.cat, display: l.display, group: l.group, profile: l.profile, start: TL.toHM(l.start), end: TL.toHM(l.end), source: l.source, role: l.role, agencyRole: l.agencyRole, slot: l.slot, active: true }); added++; }
       }
       if (added) saveSettings();
-      const out = await wb.save();
-      const name = (st.wbName || (st.wbSaved && st.wbSaved.name) || 'Labour time sheet and task record.xlsx').replace(/\.xlsx$/i, '') .replace(/\s*\(updated [^)]*\)$/, '') + '.xlsx';
-      await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate: st.date });
+      const name = (base.name || 'Labour time sheet and task record.xlsx').replace(/\.xlsx$/i, '') + '.xlsx';
+      await idb.set('latestWorkbook', { name, savedAt: Date.now(), bytes: out, lastDate: st.date, version: meta ? meta.version : null, by: cloud.who });
       st.wbSaved = await idb.get('latestWorkbook'); st.wb = null; st.wbName = ''; wbCache = { bytes: null, wb: null };
+      if (cloud.on) await fetchState().catch(() => { });
       download(out, name);
       st.log.unshift({ at: new Date(), date: st.date, lines: res.log, warnings: res.warnings, added });
-      toast(`${ICON.check} Workbook updated for ${TL.fmtDMY(st.date)} and saved as the latest copy.`);
+      toast(`${ICON.check} Workbook updated for ${TL.fmtDMY(st.date)}${cloud.on ? ' and shared with everyone' : ' and saved as the latest copy'}.`);
       renderOutput($('#main')); await rebuildLines();
     } catch (e) { console.error(e); toast('Could not update: ' + esc(e.message), 'err', 9000); btn.disabled = false; btn.innerHTML = 'Update Labour time sheet & task record'; }
   }
@@ -1502,9 +1616,10 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     $('#wkI').onchange = e => { if (e.target.value) { st.week = TL.mondayOf(e.target.value); renderAgency(m); } };
     $$('[data-w]').forEach(b => b.onclick = () => { st.week = b.dataset.w; renderAgency(m); });
     bindStarter();
-    if (!haveWb) { $('#agPrev').innerHTML = ''; return; }
+    if (!haveWb && !cloud.on) { $('#agPrev').innerHTML = ''; return; }
     try {
-      const wb = await openCurrentWb();
+      if (cloud.on) await ensureLatestWorkbook();
+      const wb = await openCurrentWb(); if (!wb) { $('#agPrev').innerHTML = ''; return; }
       const data = await TL.weekAgencyPeople(wb, S, mon);
       const days = [0, 1, 2, 3, 4, 5, 6].map(d => TL.addDays(mon, d));
       const blocks = [];
@@ -1654,7 +1769,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     }
     $$('[data-up]', p).forEach(el => el.onchange = async () => {
       const g = el.dataset.up; const f = el.files[0]; if (!f) return;
-      try { const b = new Uint8Array(await readFile(f)); const secs = await TL.agencySectionLabels(b); await idb.set(tplKey(g), { name: f.name, savedAt: Date.now(), bytes: b }); toast(`${g} template saved (${secs.length} sections).`); setupAgency(p); }
+      try { const b = new Uint8Array(await readFile(f)); const secs = await TL.agencySectionLabels(b); const t = { name: f.name, savedAt: Date.now(), bytes: b }; await idb.set(tplKey(g), t); await pushTemplate(g, t); toast(`${g} template saved${cloud.on ? ' and shared' : ''} (${secs.length} sections).`); setupAgency(p); }
       catch (err) { toast('Template not usable: ' + esc(err.message), 'err'); }
     });
     $$('[data-dlt]', p).forEach(el => el.onclick = async () => { const t = await getTemplate(el.dataset.dlt); if (!t) return toast('No template saved yet.', 'warn'); download(t.bytes, t.name); });
@@ -1662,6 +1777,10 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   function setupWorkbook(p) {
     const sv = st.wbSaved;
     p.innerHTML = `<div class="card"><h2>Workbook &amp; sheets</h2>
+      <fieldset class="box"><legend>Shared storage</legend>
+        <p class="small">${cloud.on ? `<b style="color:var(--ok)">● Connected.</b> Staff list, rules, rates, templates, password and the latest workbook are shared with everyone.${cloud.state && cloud.state.workbook ? ` Shared workbook: <b>${esc(cloud.state.workbook.name)}</b>, updated ${new Date(cloud.state.workbook.version).toLocaleString('en-GB')}${cloud.state.workbook.by ? ' by ' + esc(cloud.state.workbook.by) : ''}.` : ''}` : `<b style="color:var(--warn)">○ Not connected</b> — working on this computer only.${cloud.lastErr ? ' (' + esc(cloud.lastErr) + ')' : ''}`}</p>
+        ${cloud.on ? `<button class="btn sm ghost" id="syncNow">Sync now</button> <button class="btn sm ghost" id="prevDl">${ICON.down} Download previous shared copy (backup)</button>` : ''}
+        <label class="fld inline"><span>Storage address</span><input id="apiI" value="${esc(cloud.base)}" style="width:320px"></label><p class="small muted">Leave as it is unless told otherwise. After changing it, Lock and log in again.</p></fieldset>
       <fieldset class="box"><legend>Saved workbook (this browser)</legend>
         <p class="small">${sv ? `<b>${esc(sv.name)}</b> — saved ${new Date(sv.savedAt).toLocaleString('en-GB')}${sv.lastDate ? `, last day written ${TL.fmtDMY(sv.lastDate)}` : ''}` : 'None yet.'}</p>
         <p class="small muted">Each update is stored here so the next day continues from it. The copy lives only in this browser on this computer — if Cheryl and Winnie both use the site, always upload the newest workbook (or keep one person on duty).</p>
@@ -1676,6 +1795,9 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
         <p class="small"><b>New people in the site file</b> (by category):</p>
         ${Object.entries(S.categoryRules).map(([c, g]) => `<label class="fld inline"><span>${esc(c)}</span><select data-cr="${esc(c)}">${[...GROUPS, 'Ask'].map(x => `<option ${x === g ? 'selected' : ''}>${x}</option>`).join('')}</select></label>`).join('')}
       </fieldset></div>`;
+    $('#apiI').onchange = e => { const v = e.target.value.trim().replace(/\/+$/, ''); if (v) localStorage.setItem('tylosLabour.api', v); else localStorage.removeItem('tylosLabour.api'); toast('Storage address saved — Lock and log in again to use it.'); };
+    const sn = $('#syncNow'); if (sn) sn.onclick = async () => { sn.disabled = true; try { await syncDown(); toast('Synced with shared storage.'); setupWorkbook(p); } catch (e) { toast(esc(e.message), 'err'); } sn.disabled = false; };
+    const pd = $('#prevDl'); if (pd) pd.onclick = async () => { const r = await cloud.req('/workbook/previous'); if (!r.ok) return toast('No previous copy yet.', 'warn'); download(new Uint8Array(await r.arrayBuffer()), 'PREVIOUS - ' + decodeURIComponent(r.headers.get('X-Name') || 'workbook.xlsx')); };
     $$('[data-sh]', p).forEach(el => el.onchange = () => { S.sheets[el.dataset.sh] = el.value; saveSettings(); });
     $('#defS').onchange = e => { S.defaultStart = e.target.value; saveSettings(); };
     $('#lvH').onchange = e => { S.leaveHours = +e.target.value; saveSettings(); };
@@ -1689,14 +1811,15 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
         <label class="fld inline"><span>New</span><input type="password" id="pw1" autocomplete="new-password"></label>
         <label class="fld inline"><span>Repeat new</span><input type="password" id="pw2" autocomplete="new-password"></label>
         <button class="btn sm">Change password</button>
-        <p class="small muted">The password is stored (as a hash) in this browser only. Each computer starts with the default until changed there — or import a settings file. This is a simple lock; payroll data never leaves the computer.</p></form>
+        <p class="small muted">${cloud.on ? 'Shared password: changing it here changes it for everyone. The check is done by the private Tylos storage service.' : 'Shared storage is not connected, so this changes the password on this computer only.'}</p></form>
       <fieldset class="box"><legend>Settings backup / share</legend><p class="small muted">Export staff list, rules, rates and options to a file — import it on Cheryl's or Winnie's computer so everyone works the same way.</p>
         <button class="btn sm ghost" id="exS">${ICON.down} Export settings</button> <label class="btn sm ghost">${ICON.up} Import settings<input type="file" id="imS" accept=".json" hidden></label>
         <button class="btn sm ghost danger" id="rsS">Reset everything to defaults</button></fieldset></div>`;
     $('#pwF').onsubmit = async e => {
       e.preventDefault(); if (await sha256($('#pw0').value) !== S.pwHash) return toast('Current password is wrong.', 'err');
       if ($('#pw1').value.length < 6) return toast('Use at least 6 characters.', 'err'); if ($('#pw1').value !== $('#pw2').value) return toast('New passwords do not match.', 'err');
-      S.pwHash = await sha256($('#pw1').value); saveSettings(); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Password changed.'); setupSecurity(p);
+      if (cloud.on) { const r = await cloud.req('/password', { method: 'POST', body: JSON.stringify({ newPassword: $('#pw1').value }), headers: { 'Content-Type': 'application/json' } }); if (!r.ok) return toast('Could not change the shared password: ' + esc((await r.json().catch(() => ({}))).error || r.status), 'err'); cloud.key = $('#pw1').value; sessionStorage.setItem('tylosLabour.key', cloud.key); }
+      S.pwHash = await sha256($('#pw1').value); localStorage.setItem(LS_KEY, JSON.stringify(S)); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast(cloud.on ? 'Password changed for everyone. Tell Cheryl and Winnie the new one.' : 'Password changed on this computer.'); setupSecurity(p);
     };
     $('#exS').onclick = async () => { const c = JSON.parse(JSON.stringify(S)); c.agencyTemplates = {}; for (const g of AG) { const t = await getTemplate(g); if (t) c.agencyTemplates[g] = { name: t.name, b64: bytesToB64(t.bytes) }; } download(new TextEncoder().encode(JSON.stringify(c, null, 1)), `tylos-labour-settings-${new Date().toISOString().slice(0, 10)}.json`, 'application/json'); };
     $('#imS').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos Labour settings file.'); if (!confirm('Replace this browser’s staff list, rules, rates and options with the file?' + (j.pwHash ? '\n(The password from the file will also be used.)' : ''))) return; await applySettingsFile(j); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Settings imported.'); render(); } catch (err) { toast(esc(err.message), 'err'); } };
