@@ -1654,7 +1654,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   }
 
   /* ================= SETUP ================= */
-  const SECTIONS = [['staff', 'Staff & start times'], ['rules', 'Pay rules'], ['rates', 'Pay rates'], ['agency', 'Agency timesheets'], ['workbook', 'Workbook & sheets'], ['security', 'Password & backup']];
+  const SECTIONS = [['staff', 'Staff & start times'], ['rules', 'Pay rules'], ['rates', 'Pay rates'], ['agency', 'Agency timesheets'], ['workbook', 'Workbook & sheets'], ['security', 'Backup']];
   function renderSetup(m) {
     m.innerHTML = firstRunBanner() + `<div class="setup"><aside class="side">${SECTIONS.map(([k, t]) => `<button data-s="${k}" class="${st.setup === k ? 'on' : ''}">${t}</button>`).join('')}</aside><div class="pane" id="pane"></div></div>`;
     bindStarter();
@@ -1805,22 +1805,11 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
     if (sv) { $('#wbDl').onclick = () => download(sv.bytes, sv.name); $('#wbClr').onclick = async () => { if (!confirm('Forget the saved workbook in this browser?')) return; await idb.del('latestWorkbook'); st.wbSaved = null; setupWorkbook(p); }; }
   }
   function setupSecurity(p) {
-    p.innerHTML = `<div class="card"><h2>Password &amp; backup</h2>
-      <form class="box" id="pwF"><legend>Change password</legend>
-        <label class="fld inline"><span>Current</span><input type="password" id="pw0" autocomplete="current-password"></label>
-        <label class="fld inline"><span>New</span><input type="password" id="pw1" autocomplete="new-password"></label>
-        <label class="fld inline"><span>Repeat new</span><input type="password" id="pw2" autocomplete="new-password"></label>
-        <button class="btn sm">Change password</button>
-        <p class="small muted">${cloud.on ? 'Shared password: changing it here changes it for everyone. The check is done by the private Tylos storage service.' : 'Shared storage is not connected, so this changes the password on this computer only.'}</p></form>
+    p.innerHTML = `<div class="card"><h2>Backup</h2>
+      <fieldset class="box"><legend>Password</legend><p class="small">One shared password for everyone. <b>Changing the password is switched off</b> for now — ask the administrator if it needs to change.</p></fieldset>
       <fieldset class="box"><legend>Settings backup / share</legend><p class="small muted">Export staff list, rules, rates and options to a file — import it on a colleague's computer so everyone works the same way.</p>
         <button class="btn sm ghost" id="exS">${ICON.down} Export settings</button> <label class="btn sm ghost">${ICON.up} Import settings<input type="file" id="imS" accept=".json" hidden></label>
         <button class="btn sm ghost danger" id="rsS">Reset everything to defaults</button></fieldset></div>`;
-    $('#pwF').onsubmit = async e => {
-      e.preventDefault(); if (await sha256($('#pw0').value) !== S.pwHash) return toast('Current password is wrong.', 'err');
-      if ($('#pw1').value.length < 6) return toast('Use at least 6 characters.', 'err'); if ($('#pw1').value !== $('#pw2').value) return toast('New passwords do not match.', 'err');
-      if (cloud.on) { const r = await cloud.req('/password', { method: 'POST', body: JSON.stringify({ newPassword: $('#pw1').value }), headers: { 'Content-Type': 'application/json' } }); if (!r.ok) return toast('Could not change the shared password: ' + esc((await r.json().catch(() => ({}))).error || r.status), 'err'); cloud.key = $('#pw1').value; sessionStorage.setItem('tylosLabour.key', cloud.key); }
-      S.pwHash = await sha256($('#pw1').value); localStorage.setItem(LS_KEY, JSON.stringify(S)); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast(cloud.on ? 'Password changed for everyone. Tell your colleagues the new one.' : 'Password changed on this computer.'); setupSecurity(p);
-    };
     $('#exS').onclick = async () => { const c = JSON.parse(JSON.stringify(S)); c.agencyTemplates = {}; for (const g of AG) { const t = await getTemplate(g); if (t) c.agencyTemplates[g] = { name: t.name, b64: bytesToB64(t.bytes) }; } download(new TextEncoder().encode(JSON.stringify(c, null, 1)), `tylos-labour-settings-${new Date().toISOString().slice(0, 10)}.json`, 'application/json'); };
     $('#imS').onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const j = JSON.parse(await readText(f)); if (!j.roster || !j.profiles) throw new Error('Not a Tylos Labour settings file.'); if (!confirm('Replace this browser’s staff list, rules, rates and options with the file?' + (j.pwHash ? '\n(The password from the file will also be used.)' : ''))) return; await applySettingsFile(j); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Settings imported.'); render(); } catch (err) { toast(esc(err.message), 'err'); } };
     $('#rsS').onclick = () => { if (!confirm('Reset staff, rules, rates, options and password to the original defaults?')) return; localStorage.removeItem(LS_KEY); S = loadSettings(); saveSettings(); sessionStorage.setItem('tylosLabour.unlocked', S.pwHash); toast('Reset done.'); render(); };
