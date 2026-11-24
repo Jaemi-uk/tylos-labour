@@ -295,6 +295,7 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       this._detachShared(ref, opts.rewritten);
       const old = cells.get(col);
       let s = opts.style || (old ? attr(old.attrs, 's') : null) || this.styleNear(col, row - 1);
+      if (spec && spec.time && this.wb) s = this.wb.timeStyleFor(s);
       let a = ` r="${ref}"` + (s ? ` s="${s}"` : ''); let inner = '';
       if (spec == null || spec === '') { /* empty, keep style */ }
       else if (spec.f != null) {
@@ -354,15 +355,39 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       }
       wb.sst = parseSharedStrings(await wb.zip.text('xl/sharedStrings.xml'));
       wb.sheets = new Map();
+      await wb.loadStyles();
       return wb;
     }
     findSheetName(pred) { const s = this.sheetList.find(x => pred(x.name)); return s ? s.name : null; }
     async sheet(name) {
       if (this.sheets.has(name)) return this.sheets.get(name);
       const info = this.sheetList.find(s => s.name === name); if (!info) return null;
-      const sh = new Sheet(await this.zip.text(info.path), this.sst); sh.path = info.path; this.sheets.set(name, sh); return sh;
+      const sh = new Sheet(await this.zip.text(info.path), this.sst); sh.path = info.path; sh.wb = this; this.sheets.set(name, sh); return sh;
+    }
+    async loadStyles() {
+      if (this.stylesXml != null) return;
+      this.stylesXml = (await this.zip.text('xl/styles.xml')) || '';
+      const m = /<cellXfs\b[^>]*>([\s\S]*?)<\/cellXfs>/.exec(this.stylesXml);
+      this.xfs = []; if (m) { const re = /<xf\b[^>]*?(?:\/>|>[\s\S]*?<\/xf>)/g; let x; while ((x = re.exec(m[1]))) this.xfs.push(x[0]); }
+      this.numFmts = new Map(); const nf = /<numFmt\b[^>]*numFmtId="(\d+)"[^>]*formatCode="([^"]*)"/g; let y; while ((y = nf.exec(this.stylesXml))) this.numFmts.set(+y[1], unescXml(y[2]));
+      this.timeXf = new Map(); this.stylesDirty = false;
+    }
+    /* Style index that looks like `s` but shows a time (hh:mm). Creates it in styles.xml if needed. */
+    timeStyleFor(s) {
+      const si = s == null ? 0 : +s; if (this.timeXf.has(si)) return this.timeXf.get(si);
+      const xf = this.xfs[si] || this.xfs[0] || '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>';
+      const id = +(attr(xf, 'numFmtId') || 0); const code = (this.numFmts.get(id) || '').toLowerCase();
+      const isTime = [18, 19, 20, 21, 45, 46, 47].includes(id) || (/h/.test(code) && /m/.test(code) && !/y/.test(code));
+      if (isTime) { this.timeXf.set(si, String(si)); return String(si); }
+      let nx = xf.replace(/\bnumFmtId="\d+"/, 'numFmtId="20"'); if (!/numFmtId=/.test(nx)) nx = nx.replace('<xf', '<xf numFmtId="20"');
+      nx = /applyNumberFormat=/.test(nx) ? nx.replace(/applyNumberFormat="[^"]*"/, 'applyNumberFormat="1"') : nx.replace('<xf', '<xf applyNumberFormat="1"');
+      this.xfs.push(nx); const idx = String(this.xfs.length - 1); this.timeXf.set(si, idx); this.stylesDirty = true; return idx;
     }
     async save() {
+      if (this.stylesDirty) {
+        this.stylesXml = this.stylesXml.replace(/<cellXfs\b[^>]*>[\s\S]*?<\/cellXfs>/, `<cellXfs count="${this.xfs.length}">${this.xfs.join('')}</cellXfs>`);
+        this.zip.setText('xl/styles.xml', this.stylesXml);
+      }
       for (const sh of this.sheets.values()) if (sh.dirty) this.zip.setText(sh.path, sh.toXml());
       // force recalculation on open; drop calcChain (Excel rebuilds it)
       let wx = this.workbookXml;
@@ -533,9 +558,9 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
       if (L.status && L.status !== 'worked') {
         sh.set('P' + r, { s: L.statusLabel }, o); sh.set('Q' + r, null, o); sh.set('R' + r, { v: L.hours }, o);
       } else if (L.paidIn == null || L.paidOut == null) {
-        sh.set('P' + r, L.rawIn != null ? { v: minToFrac(L.rawIn) } : null, o); sh.set('Q' + r, L.rawOut != null ? { v: minToFrac(L.rawOut) } : null, o); sh.set('R' + r, null, o);
+        sh.set('P' + r, L.rawIn != null ? { v: minToFrac(L.rawIn), time: true } : null, o); sh.set('Q' + r, L.rawOut != null ? { v: minToFrac(L.rawOut), time: true } : null, o); sh.set('R' + r, null, o);
       } else {
-        sh.set('P' + r, { v: minToFrac(L.paidIn) }, o); sh.set('Q' + r, { v: minToFrac(L.paidOut) }, o);
+        sh.set('P' + r, { v: minToFrac(L.paidIn), time: true }, o); sh.set('Q' + r, { v: minToFrac(L.paidOut), time: true }, o);
         sh.set('R' + r, L.formula ? { f: TL.DAILY_R(r), v: L.hours } : { v: L.hours }, o);
       }
       sh.set('S' + r, L.remark ? { s: L.remark } : null, o);
@@ -545,8 +570,8 @@ fieldset.box,form.box{margin:12px 0;padding:12px 14px;border:1px solid var(--lin
   };
   /* JASHAN-type slot: In/Out time, calc col = hours formula, hour col = OT formula (kept) */
   TL.writeSlot = function (sh, slot, row, L, kind) {
-    const style = TL.slotTimeStyle(sh, slot, row);
-    const t = m => style === 'hhmm' ? { v: minToHHMM(m) } : { v: minToFrac(m) };
+    const style = 'time'; // always real times (hh:mm), never 900-style numbers
+    const t = m => ({ v: minToFrac(m), time: true });
     if (L.status && L.status !== 'worked') {
       sh.set(slot.inCol + row, { s: L.statusLabel }); sh.set(slot.outCol + row, null);
       if (kind === 'inhouse') { sh.set(slot.calcCol + row, { v: L.hours }); sh.setCached(slot.hourCol + row, L.hours - L.otAfter); }
