@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-<meta name="tl-build" content="1795536918">
+<meta name="tl-build" content="1795685380">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -82,6 +82,12 @@ html,body{overflow-x:hidden}
 th.off,td.off{background:#f3f4f6;color:#a0a7b0}.wkh{margin:18px 0 4px;font-size:15px}
 a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10px;padding:2px 6px 2px 2px;margin-left:-2px}a.brand.home:hover{background:rgba(255,255,255,.08)}
 .updbar{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:10px;background:#0f2a44;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px}.updbar svg{color:#5fd3b5}
+.rgrid.v2 p{margin:4px 0 8px;line-height:1.7}.rgrid.v2 fieldset{min-width:0}.examples{margin-top:8px;font-size:12.5px;display:grid;gap:4px}.examples div{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:center}.examples i{font-style:normal;color:var(--muted);width:72px}.examples span{background:#f3f6f9;border-radius:8px;padding:1px 8px}input.t.auto{color:#7a8794}
+.rules:has(.r2){grid-template-columns:1fr}.r2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:20px;align-items:start}@media(max-width:980px){.r2{grid-template-columns:1fr}}
+.rl{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);line-height:1.9}.rl>b{font-size:13px;color:#3c4a58;padding-top:1px}
+input.inl{width:62px!important;display:inline-block!important;padding:3px 6px!important;margin:0 4px;text-align:center}input.wide{width:100%}
+.rside{display:grid;gap:12px}.rside .examples{background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0}.rside .examples div{margin-top:6px}
+.rside .tester{display:grid;gap:6px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:0}.rside .tester input{width:auto}.more summary{cursor:pointer;color:var(--muted);padding:6px 0}
 </style>
 </head>
 <body>
@@ -440,6 +446,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
     const r = { paidIn: null, paidOut: null, worked: 0, breakH: 0, hours: 0, ot: 0, notes: [] };
     if (e.status && e.status !== 'worked') { r.hours = (e.status === 'annual' || e.status === 'sick-paid') ? leaveHours : 0; return r; }
     if (e.inMin == null || e.outMin == null) { r.notes.push('Missing time'); return r; }
+    if (+p.v === 2) return TL.computeV2(e, p, r);
     const sched = e.start != null ? e.start : null;
     let pin = e.inMin, clamped = false;
     if (sched != null && p.clampStart && pin < sched) { pin = sched; clamped = true; }
@@ -456,6 +463,44 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
     if (p.breakH > 0 && dur > p.breakAfterH * 60) { r.breakH = p.breakH; h -= p.breakH; }
     r.paidIn = pin; r.paidOut = pout; r.hours = Math.max(0, Math.round(h * 100) / 100);
     if (p.otAfterH > 0) r.ot = Math.round((r.hours - p.otAfterH) * 100) / 100;
+    return r;
+  };
+  /* Pay rule v2 (Nov 2026, Cheryl): official start & finish, 5-min grace, 15-minute steps.
+     Arrive:  on time or up to <lateGrace> min late → start; later → next quarter after start (08:06 → 08:15, 08:16 → 08:30).
+              Early arrival → start (unless payEarly).
+     Leave early (before finish): within <leaveGrace> min before a quarter → that quarter, else the quarter before
+              (16:55 → 17:00, 16:54 → 16:45, 16:43 → 16:45, 16:23 → 16:15).
+     Stay late (after finish): full quarters only, no grace (17:14 → 17:00, 17:15 → 17:15); off = nothing after finish.
+     Official finish = the person's own finish if set, else start + shiftH (08:00 + 9 h = 17:00). */
+  TL.ruleStep = p => Math.max(1, +p.step || 15);
+  /* turn any older rule into the Nov 2026 rule — keeps its name, break, overtime and notes */
+  TL.toRuleV2 = function (r) {
+    const payEarly = r.clampStart === false, payLate = r.capEnd !== true; // keep what each rule already did
+    const keep = { id: r.id, name: r.name, breakH: +r.breakH || 0, breakAfterH: +r.breakAfterH || 0, otAfterH: +r.otAfterH || 0, showActual: !!r.showActual, note: '' }; // old notes described the old timing, so they are cleared
+    for (const k of Object.keys(r)) delete r[k];
+    return Object.assign(r, keep, { v: 2, lateGraceMin: 5, leaveGraceMin: 5, step: 15, shiftH: 9, payEarly, payLate });
+  };
+  TL.officialFinish = (e, p) => e.end != null ? e.end : (e.start != null ? e.start + Math.round((+p.shiftH || 9) * 60) : null);
+  TL.computeV2 = function (e, p, r) {
+    const q = TL.ruleStep(p), lg = Math.max(0, +p.lateGraceMin || 0), eg = Math.max(0, +p.leaveGraceMin || 0);
+    const S = e.start != null ? e.start : null, F = TL.officialFinish(e, p);
+    const upQ = m => Math.ceil(m / q) * q, downQ = m => Math.floor(m / q) * q;
+    const arrive = m => { const q0 = downQ(m); return m - q0 <= lg ? q0 : q0 + q; }; // up to grace past a quarter = that quarter, else the next
+    let pin = e.inMin;
+    if (S == null) pin = arrive(pin);
+    else if (pin <= S) pin = p.payEarly ? arrive(pin) : S;
+    else { const late = pin - S; pin = late <= lg ? S : S + upQ(late); }
+    let pout = e.outMin;
+    const leaveEarly = m => { const nxt = upQ(m); return (nxt - m) <= eg ? nxt : downQ(m); };
+    if (F != null && pout >= F) pout = p.payLate === false ? F : F + downQ(pout - F);
+    else if (F != null && F - pout <= eg) pout = F;
+    else pout = leaveEarly(pout);
+    if (pout < pin) pout = pin;
+    const dur = pout - pin;
+    let h = dur / 60; r.worked = h;
+    if (+p.breakH > 0 && dur > (+p.breakAfterH || 0) * 60) { r.breakH = +p.breakH; h -= +p.breakH; }
+    r.paidIn = pin; r.paidOut = pout; r.hours = Math.max(0, Math.round(h * 100) / 100);
+    if (+p.otAfterH > 0) r.ot = Math.round((r.hours - p.otAfterH) * 100) / 100;
     return r;
   };
   /* Does profile behave exactly like the sheet's R formula (so we can write the formula)? */
@@ -1284,7 +1329,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
 </script>
 <script>window.TL_DEFAULTS={
  "version": 1,
- "defaultStart": "07:30",
+ "defaultStart": "08:00",
  "leaveHours": 8,
  "categoryRules": {
   "air": "Air",
@@ -1572,7 +1617,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
 
   /* ---------------- describe changes for the change log ---------------- */
   const FIELD = { name: 'site name', cat: 'category', display: 'workbook name', group: 'group', profile: 'pay rule', start: 'start', end: 'finish', source: 'source', role: 'role', agencyRole: 'timesheet section', slot: 'sheet column', active: 'active', normal: 'normal rate', ot: 'OT rate',
-    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', snapEndMin: 'finish tolerance (min)', startFrom: 'start changes', note: 'note' };
+    clampStart: 'no pay before start', graceMin: 'grace minutes', inRound: 'late-arrival rounding', capEnd: 'no pay after finish', outRound: 'check-out rounding', durRound: 'total rounding', lateGraceMin: 'arrival grace (min)', leaveGraceMin: 'leaving grace (min)', payEarly: 'pay early arrival', payLate: 'pay after finish', shiftH: 'shift length (h)', step: 'pay unit (min)', breakAfterH: 'break after (h)', breakH: 'break (h)', otAfterH: 'OT after (h/day)', showActual: 'write actual times', snapEndMin: 'finish tolerance (min)', startFrom: 'start changes', note: 'note' };
   const show = (k, v) => Array.isArray(v) ? (v.map(x => x && x.from ? `${x.start} from ${TL.fmtDMY(x.from)}` : JSON.stringify(x)).join(', ') || '(none)') : k === 'group' ? GL(v) : k === 'profile' ? ((S.profiles.find(x => x.id === v) || {}).name || v) : (v === '' || v == null ? '(blank)' : typeof v === 'boolean' ? (v ? 'yes' : 'no') : String(v));
   function diffList(a, b, idKey, label, nameOf) {
     const out = []; const A = new Map((a || []).map(x => [x[idKey], x])), B = new Map((b || []).map(x => [x[idKey], x]));
@@ -1727,6 +1772,14 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
   /* ---------------- one-off upgrades of shared settings ---------------- */
   async function runMigrations() {
     S.migrations = S.migrations || {};
+    if (!S.migrations.ruleV2 && S.profiles && S.profiles.length) {
+      S.migrations.ruleV2 = Date.now();
+      for (const r of S.profiles) if (+r.v !== 2) TL.toRuleV2(r);
+      const seen = new Set(); for (const r of S.profiles) { let n = String(r.name || '').replace(/\s*[–-]\s*(match current sheet|15-min clock rounding)\s*$/i, ''); while (seen.has(n)) n += ' (2)'; seen.add(n); r.name = n; }
+      S.defaultStart = '08:00';
+      logEvent('Setup', 'New pay rule for every group (Nov 2026): 5-min grace, 15-min steps — late 08:06 → 08:15, leaving 16:54 → 16:45, staying 17:14 → 17:00; official finish = start + 9 h; default start for new people 08:00');
+      await commitSettings('Setup', true);
+    }
     if (!S.migrations.otForAll && S.roster.length) {
       S.migrations.otForAll = Date.now();
       for (const r of S.profiles) {
@@ -2002,7 +2055,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
     const flags = l.flags.filter(f => !(f.code === 'missing' && l.include && l.inMin != null));
     if (l.status === 'worked' && l.rawIn && l.inMin != null && l.start != null) {
       const d = l.start - l.inMin;
-      if (p.clampStart && d >= 20) flags.unshift({ code: 'early', text: `Arrived ${TL.toHM(l.inMin)} — ${d} min before start (not paid unless start changed)` });
+      if ((p.clampStart || (+p.v === 2 && !p.payEarly)) && d >= 20) flags.unshift({ code: 'early', text: `Arrived ${TL.toHM(l.inMin)} — ${d} min before start (not paid unless start changed)` });
       else if (d <= -10) flags.unshift({ code: 'late', text: `Late ${-d} min` });
     }
     const bad = l.include && (l.group === 'New' || (l.status === 'worked' && (l.inMin == null || l.outMin == null || l.outMin <= l.inMin)));
@@ -2018,7 +2071,7 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
       <td>${timeIn('start', l.start, 'list="startTimes"')}</td>
       <td>${leave ? '' : timeIn('inMin', l.inMin)}</td>
       <td>${leave ? '' : timeIn('outMin', l.outMin)}</td>
-      <td>${p.capEnd ? timeIn('end', l.end) : `<span class="muted small">${l.end != null ? '' : ''}–</span>`}</td>
+      <td>${+p.v === 2 ? (leave ? '' : timeIn('end', l.end != null ? l.end : TL.officialFinish(l, p), l.end != null ? '' : 'class="t auto" title="Official finish = start + shift length. Change it for this day if needed."')) : p.capEnd ? timeIn('end', l.end) : `<span class="muted small">–</span>`}</td>
       <td class="paid">${leave ? esc(TL.STATUS[l.status]) : r.paidIn != null ? TL.toHM(r.paidIn) + '–' + TL.toHM(r.paidOut) : '<span class="muted">–</span>'}</td>
       <td class="r">${r.breakH ? fmtH(r.breakH) : ''}</td>
       <td class="r hrs">${fmtH(r.hours)}${p.otAfterH && r.hours > p.otAfterH ? `<small>OT ${fmtH(r.hours - p.otAfterH)}</small>` : ''}</td>
@@ -2250,43 +2303,49 @@ a.brand.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:10p
   }
   const ROUND_OPTS = [['none', 'No rounding'], ['down15', 'Down to 15 min'], ['up15', 'Up to 15 min'], ['nearest15', 'Nearest 15 min']];
   function setupRules(p) {
-    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Pay rules</h2><p class="muted small">A pay rule says how scanned times become paid hours. Each person uses one rule (Staff list), and you can switch it per day in the confirm step. Payroll unit is 15 minutes.</p></div><button class="btn sm" id="addRule">${ICON.plus} New rule</button></div>
+    p.innerHTML = `<div class="card"><div class="card-h"><div><h2>Pay rules</h2><p class="muted small">How check-in and check-out times become paid hours. Each rule says how lateness, leaving early and staying late are paid — change any number and the examples on the right update straight away. Each person uses one rule (Staff), and you can switch it for one day on the confirm screen.</p></div><button class="btn sm" id="addRule">${ICON.plus} New rule</button></div>
       <div class="rules">${S.profiles.map((r, i) => ruleCard(r, i)).join('')}</div></div>`;
     $$('.rule', p).forEach(card => {
       const i = +card.dataset.i; const r = S.profiles[i];
-      $$('[data-k]', card).forEach(el => el.onchange = () => { const k = el.dataset.k; r[k] = el.type === 'checkbox' ? el.checked : (el.type === 'number' ? +el.value : el.value); markDirty(); testRule(card, r); });
+      $$('[data-k]', card).forEach(el => el.onchange = () => { const k = el.dataset.k; r[k] = el.type === 'checkbox' ? el.checked : (el.type === 'number' ? +el.value : el.value); markDirty(); if (k === 'step' || k === 'shiftH') setupRules(p); else testRule(card, r); });
       $$('.tester input', card).forEach(el => el.oninput = () => testRule(card, r));
       testRule(card, r);
       const dup = $('[data-dup]', card); dup.onclick = () => { const c = JSON.parse(JSON.stringify(r)); c.id = 'r' + Date.now().toString(36); c.name = r.name + ' (copy)'; S.profiles.splice(i + 1, 0, c); markDirty(); setupRules(p); };
       const del = $('[data-rdel]', card); del.onclick = () => { const used = S.roster.filter(x => x.profile === r.id).length; if (S.profiles.length < 2) return; if (!confirm(`Delete rule "${r.name}"?${used ? `\n${used} person(s) use it and will switch to "${S.profiles.find(x => x !== r).name}".` : ''}`)) return; const fb = S.profiles.find(x => x !== r).id; S.roster.forEach(x => { if (x.profile === r.id) x.profile = fb; }); S.profiles.splice(i, 1); markDirty(); setupRules(p); };
     });
-    $('#addRule').onclick = () => { S.profiles.push({ id: 'r' + Date.now().toString(36), name: 'New rule', clampStart: true, graceMin: 0, inRound: 'none', capEnd: false, outRound: 'none', durRound: 'down15', breakAfterH: 4, breakH: 0.5, otAfterH: 0, showActual: false, note: '' }); markDirty(); setupRules(p); };
+    $('#addRule').onclick = () => { S.profiles.push(TL.toRuleV2({ id: 'r' + Date.now().toString(36), name: 'New rule', breakAfterH: 4, breakH: 0.5, otAfterH: 0, note: '' })); markDirty(); setupRules(p); };
   }
   function ruleCard(r, i) {
-    const sel = (k, opts) => `<select data-k="${k}">${opts.map(([v, t]) => `<option value="${v}" ${r[k] === v ? 'selected' : ''}>${t}</option>`).join('')}</select>`;
-    return `<div class="rule card sub" data-i="${i}"><div class="rule-h"><input data-k="name" class="title" value="${esc(r.name)}"><div><button class="icon" data-dup title="Duplicate">⧉</button><button class="icon" data-rdel title="Delete">${ICON.trash}</button></div></div>
-      <div class="rgrid">
-        <fieldset><legend>Arrival</legend>
-          <label class="ck"><input type="checkbox" data-k="clampStart" ${r.clampStart ? 'checked' : ''}> Don't pay before the scheduled start (early arrival not paid)</label>
-          <label>Grace minutes <input type="number" min="0" max="59" data-k="graceMin" value="${r.graceMin}" class="xs"> <small class="muted">late by up to this many minutes = on time</small></label>
-          <label>Late arrival time ${sel('inRound', ROUND_OPTS)}</label></fieldset>
-        <fieldset><legend>Departure</legend>
-          <label class="ck"><input type="checkbox" data-k="capEnd" ${r.capEnd ? 'checked' : ''}> Don't pay after the scheduled finish <small class="muted">(no overtime possible)</small></label>
-          <label>Leaving less than <input type="number" min="0" max="59" data-k="snapEndMin" value="${r.snapEndMin || 0}" class="xs"> min after the finish counts as the finish</label>
-          <label>Check-out time ${sel('outRound', ROUND_OPTS)}</label></fieldset>
-        <fieldset><legend>Hours</legend>
-          <label>Total time worked ${sel('durRound', ROUND_OPTS)}</label>
-          <label>Unpaid break <input type="number" step="0.25" min="0" data-k="breakH" value="${r.breakH}" class="xs"> h if shift over <input type="number" step="0.5" min="0" data-k="breakAfterH" value="${r.breakAfterH}" class="xs"> h</label>
-          <label><b>Overtime</b> after <input type="number" step="0.5" min="0" data-k="otAfterH" value="${r.otAfterH}" class="xs"> h/day <small class="muted">(0 = no overtime). OT hours use the person's OT rate.</small></label>
-          <label class="ck"><input type="checkbox" data-k="showActual" ${r.showActual ? 'checked' : ''}> Write actual scanned times (not rounded) in the sheet</label></fieldset>
-      </div>
-      <label class="note">Note <input data-k="note" value="${esc(r.note || '')}"></label>
-      <div class="tester"><b>Try it</b> start <input type="time" data-t="start" value="08:00"> finish <input type="time" data-t="end" value="17:00"> scanned in <input type="time" data-t="in" value="08:06"> out <input type="time" data-t="out" value="17:05"> <span class="res"></span></div></div>`;
+    if (+r.v !== 2) TL.toRuleV2(r);
+    const q = TL.ruleStep(r), qq = q === 15 ? 'quarter hour' : `${q}-minute mark`;
+    const num = (k, step, min, max) => `<input type="number" step="${step}" min="${min}" ${max != null ? `max="${max}"` : ''} data-k="${k}" value="${r[k] ?? ''}" class="inl">`;
+    const ck = (k, label) => `<label class="ck"><input type="checkbox" data-k="${k}" ${r[k] ? 'checked' : ''}> ${label}</label>`;
+    const line = (lab, html) => `<div class="rl"><b>${lab}</b><div>${html}</div></div>`;
+    return `<div class="rule card sub" data-i="${i}"><div class="rule-h"><input data-k="name" class="title" value="${esc(r.name)}"><div><span class="muted small">used by ${S.roster.filter(x => x.profile === r.id).length} people</span> <button class="icon" data-dup title="Duplicate">⧉</button><button class="icon" data-rdel title="Delete">${ICON.trash}</button></div></div>
+      <div class="r2">
+        <div class="rset">
+          ${line('Arriving', `Up to ${num('lateGraceMin', 1, 0, 30)} min late counts as on time. Later → paid from the next ${qq}.<br>${ck('payEarly', 'Also pay time before the official start')}`)}
+          ${line('Leaving early', `Up to ${num('leaveGraceMin', 1, 0, 30)} min before a ${qq} counts as that ${qq}. Otherwise → back to the ${qq} before.`)}
+          ${line('Staying late', ck('payLate', `Pay the time after the official finish — full ${q === 15 ? 'quarter hours' : q + ' minutes'} only`))}
+          ${line('Official finish', `Start + ${num('shiftH', 0.25, 1, 16)} h &nbsp;<span class="muted">(08:00 → ${TL.toHM(480 + Math.round((+r.shiftH || 9) * 60))})</span> — unless the person has their own finish time`)}
+          ${line('Break', `${num('breakH', 0.25, 0)} h unpaid when the paid time is over ${num('breakAfterH', 0.5, 0)} h`)}
+          ${line('Overtime', `After ${num('otAfterH', 0.5, 0)} h a day <span class="muted">(0 = none · in-house staff use 40 h a week)</span>`)}
+          <details class="small more"><summary>More settings</summary>${line('Pay unit', `${num('step', 5, 5, 60)} min`)}${line('In the sheet', ck('showActual', 'Write the actual scanned times instead of the paid times'))}${line('Note', `<input data-k="note" value="${esc(r.note || '')}" class="wide">`)}</details>
+        </div>
+        <div class="rside">
+          <div class="examples"></div>
+          <div class="tester"><b>Try any times</b><div>Start <input type="time" data-t="start" value="08:00"> finish <input type="time" data-t="end" value="17:00"></div><div>Check-in <input type="time" data-t="in" value="08:06"> check-out <input type="time" data-t="out" value="16:54"></div><div class="res"></div></div>
+        </div>
+      </div></div>`;
   }
   function testRule(card, r) {
     const g = k => TL.hm($(`[data-t="${k}"]`, card).value);
     const res = TL.compute({ inMin: g('in'), outMin: g('out'), start: g('start'), end: g('end'), status: 'worked' }, r);
     $('.res', card).innerHTML = res.paidIn == null ? '–' : `→ paid <b>${TL.toHM(res.paidIn)}–${TL.toHM(res.paidOut)}</b>${res.breakH ? `, break ${fmtH(res.breakH)} h` : ''} = <b class="big">${fmtH(res.hours)} h</b>${r.otAfterH && res.hours > r.otAfterH ? ` (OT ${fmtH(res.hours - r.otAfterH)} h)` : ''}`;
+    const ex = (i, o) => { const x = TL.compute({ inMin: TL.hm(i), outMin: TL.hm(o), start: 480, end: 1020, status: 'worked' }, r); return [TL.toHM(x.paidIn), TL.toHM(x.paidOut)]; };
+    const ins = ['07:50', '08:05', '08:06', '08:15', '08:16'].map(t => `<span>${t} → <b>${ex(t, '17:00')[0]}</b></span>`).join('');
+    const outs = ['16:43', '16:54', '16:55', '17:06', '17:14', '17:15'].map(t => `<span>${t} → <b>${ex('08:00', t)[1]}</b></span>`).join('');
+    const e = $('.examples', card); if (e) e.innerHTML = `<b>What this rule pays</b> <small class="muted">(start 08:00, finish 17:00)</small><div><i>Check-in</i>${ins}</div><div><i>Check-out</i>${outs}</div>`;
   }
   function setupRates(p) {
     const q = TL.normName(st.rateQ); const list = S.rates.map((r, i) => [r, i]).filter(([r]) => !q || TL.normName(r.name).includes(q));
