@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-<meta name="tl-build" content="1795685380">
+<meta name="tl-build" content="1795685926">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
@@ -1772,6 +1772,11 @@ input.inl{width:62px!important;display:inline-block!important;padding:3px 6px!im
   /* ---------------- one-off upgrades of shared settings ---------------- */
   async function runMigrations() {
     S.migrations = S.migrations || {};
+    if (S.migrations.ruleV2 && !S.migrations.ruleV2names) {
+      S.migrations.ruleV2names = Date.now(); let n = 0;
+      for (const r of S.profiles) { const nn = String(r.name || '').replace(/\s*\((?:out to )?nearest 15 min\)\s*$/i, ''); if (nn !== r.name) { r.name = nn; n++; } }
+      if (n) { logEvent('Setup', 'Pay rule names tidied (old rounding wording removed)'); await commitSettings('Setup', true); }
+    }
     if (!S.migrations.ruleV2 && S.profiles && S.profiles.length) {
       S.migrations.ruleV2 = Date.now();
       for (const r of S.profiles) if (+r.v !== 2) TL.toRuleV2(r);
